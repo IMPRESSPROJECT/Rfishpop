@@ -33,7 +33,7 @@ Population.Modeling(ctrPop, ctrBio, ctrFish, SR)
 \item CV_Mat=coefficient of variation associated to the a50_Mat parameter. In each iteration the maturity matrix values comes from a logistic function whose a50_Mat parameter is generated from a log-normal distribution centered on the given value of a50_Mat and variability detrmined by CV_Mat.}}
 
 \item{ctrFish}{A list containg the following fishing parameters of the population: \itemize{
-\item f=is the annual component of fishing mortality F = f * SEL. Can be different for each of the iterations, hence we introduce a matrix whose row contain the annual vector for each iteration.
+\item f=is the annual component of fishing mortality F = f * SEL. Can be different for each of the iterations, hence we introduce a matrix whose rows contain the annual vector for each iteration.
 \item ctrSEL= list of two objects, "type" which specifies the selectivity function considered and "par" which contains the corresponding parameters. Below the different selectivity functions are described.\itemize{
 \item type="cte", a constant selectivity function is used, which means that there is no dependence on the age of the the prey and the probability to be captured. In this case the element "par" contains:\itemize{
 \item cte= the constant probability value (cte is a value in [0,1]).

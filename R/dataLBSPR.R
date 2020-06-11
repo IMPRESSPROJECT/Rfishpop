@@ -1,4 +1,4 @@
-#' @title Length Based Spawning Potential Ratio (LB-SPR)
+#' @title Data to Length Based Spawning Potential Ratio (LB-SPR)
 #'
 #' @description The function provides required information for computing Length Based Spawning Potential Ratio (LB-SPR): Length distributions of catches.
 #'

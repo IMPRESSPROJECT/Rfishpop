@@ -2,7 +2,7 @@
 % Please edit documentation in R/dataLBSPR.R
 \name{Data.to.LB.SPR}
 \alias{Data.to.LB.SPR}
-\title{Length Based Spawning Potential Ratio (LB-SPR)}
+\title{Data to Length Based Spawning Potential Ratio (LB-SPR)}
 \usage{
 Data.to.LB.SPR(Pop.Mod, CV)
 }
