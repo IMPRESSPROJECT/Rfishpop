@@ -33,7 +33,7 @@ Population.Modeling(ctrPop, ctrBio, ctrFish, SR)
 \item CV_Mat=coefficient of variation associated to the a50_Mat parameter. In each iteration the maturity matrix values comes from a logistic function whose a50_Mat parameter is generated from a log-normal distribution centered on the given value of a50_Mat and variability detrmined by CV_Mat.}}
 
 \item{ctrFish}{A list containg the following fishing parameters of the population: \itemize{
-\item f=is the annual component of fishing mortality F = f * SEL.
+\item f=is the annual component of fishing mortality F = f * SEL. Can be different for each of the iterations, hence we introduce a matrix whose row contain the annual vector for each iteration.
 \item ctrSEL= list of two objects, "type" which specifies the selectivity function considered and "par" which contains the corresponding parameters. Below the different selectivity functions are described.\itemize{
 \item type="cte", a constant selectivity function is used, which means that there is no dependence on the age of the the prey and the probability to be captured. In this case the element "par" contains:\itemize{
 \item cte= the constant probability value (cte is a value in [0,1]).
@@ -159,7 +159,7 @@ ctrSEL<-list(type="Gamma", par=list(gamma=10,alpha=15, beta=0.03),CV_SEL=0.05)
 # Andersen selectivity
 ctrSEL<-list(type="Andersen", par=list(p1=2,p3=0.2,p4=0.2,p5=40),CV_SEL=0.05)
 
-f=rep(0.5,number_years)
+f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
 ctrFish<-list(f=f,ctrSEL=ctrSEL)
 
 # Finally, we show below the three possible stock recruitment relationship.

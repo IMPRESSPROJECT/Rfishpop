@@ -26,7 +26,7 @@
 #'   \item ad_Mat=minus the inverse of the logistic growth rate (steepness of the curve) used to generate the maturity matrix. Zero or positive are NOT valid.
 #'   \item CV_Mat=coefficient of variation associated to the a50_Mat parameter. In each iteration the maturity matrix values comes from a logistic function whose a50_Mat parameter is generated from a log-normal distribution centered on the given value of a50_Mat and variability detrmined by CV_Mat.}
 #'@param ctrFish A list containg the following fishing parameters of the population: \itemize{
-#' \item f=is the annual component of fishing mortality F = f * SEL.
+#' \item f=is the annual component of fishing mortality F = f * SEL. Can be different for each of the iterations, hence we introduce a matrix whose rows contain the annual vector for each iteration.
 #' \item ctrSEL= list of two objects, "type" which specifies the selectivity function considered and "par" which contains the corresponding parameters. Below the different selectivity functions are described.\itemize{
 #' \item type="cte", a constant selectivity function is used, which means that there is no dependence on the age of the the prey and the probability to be captured. In this case the element "par" contains:\itemize{
 #'\item cte= the constant probability value (cte is a value in [0,1]).
@@ -152,7 +152,7 @@
 #' # Andersen selectivity
 #' ctrSEL<-list(type="Andersen", par=list(p1=2,p3=0.2,p4=0.2,p5=40),CV_SEL=0.05)
 #'
-#' f=rep(0.5,number_years)
+#' f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
 #' ctrFish<-list(f=f,ctrSEL=ctrSEL)
 #'
 #' # Finally, we show below the three possible stock recruitment relationship.
@@ -184,7 +184,12 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
   if(is.null(tc)){tc=0.5}
 
 
-  if(is.numeric(ctrPop$seed)){set.seed(ctrPop$seed)}
+  if(is.numeric(ctrPop$seed)){
+    seed=ctrPop$seed
+    set.seed(ctrPop$seed)}else{
+      seed=sample(1:10000,1)
+      set.seed(seed)}
+
   Sel_type=ctrFish$ctrSEL$type
 
   ### Taking out the values of the list
@@ -223,7 +228,13 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
   check.sum<-sum(c(CV_SEL,CV_M,CV_L,CV_Mat,CV_LC,CV_REC_BH,CV_REC_RK))
   if(check.sum>0 & niter==1){ stop("niter is equal to 1 whereas the coefficients of variation are not zero. Note that the first iteration is the deterministic one, hence you need al least one iteration more to use the coefficients of variation")}
 
-  if(check.sum==0 & niter>1){ stop("The coefficients of variation are zero whereas the number of iterations (niter) is greater than 1")}
+  f<-ctrFish$f
+  nf=dim(f)[1]
+  ll=length(apply(f,2,unique))
+  if(check.sum==0 & niter>1 & ll==number_years){ stop("The coefficients of variation are zero whereas the number of iterations (niter) is greater than 1, and the matrix of the annual component of fishing mortality has constant rows")}
+
+  if(niter!=nf){stop("The annual component of fishing mortality must be a matrix whose rows contain the annual vector for each iteration")}
+
 
 
 
@@ -289,7 +300,7 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
   s<-N
 
   if(CV_SEL>0){
-  s<-stochastic_logistic_SEL_1(a50_Sel,ad_Sel,CV_SEL,niter,s,ages,number_years,ctrPop$seed)
+  s<-stochastic_logistic_SEL_1(a50_Sel,ad_Sel,CV_SEL,niter,s,ages,number_years,seed)
 
   s[,,1]<-sd
   }}
@@ -306,7 +317,7 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
     s<-N
 
     if(CV_SEL>0){
-      s<-stochastic_cte_SEL_1(cte,CV_SEL,niter,s,number_years,number_ages,ctrPop$seed)
+      s<-stochastic_cte_SEL_1(cte,CV_SEL,niter,s,number_years,number_ages,seed)
 
       s[,,1]<-sd
     }}
@@ -322,7 +333,7 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
     s<-N
 
     if(CV_SEL>0){
-      s<-stochastic_andersen_SEL_1(p1=p1,p3=p3,p4=p4,p5=p5,CV_SEL,niter,s,ages,number_years,ctrPop$seed)
+      s<-stochastic_andersen_SEL_1(p1=p1,p3=p3,p4=p4,p5=p5,CV_SEL,niter,s,ages,number_years,seed)
 
       s[,,1]<-sd
     }
@@ -344,7 +355,7 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
     s<-N
 
     if(CV_SEL>0){
-      s<-stochastic_gamma_SEL_1(alpha,beta,gamma,CV_SEL,niter,s,ages,number_years,ctrPop$seed)
+      s<-stochastic_gamma_SEL_1(alpha,beta,gamma,CV_SEL,niter,s,ages,number_years,seed)
 
       s[,,1]<-sd
     }}
@@ -357,13 +368,13 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
 
 
   F<-N
-
+  for(kk in 1:niter){
   for(i in 1:number_ages){
     for (j in 1:number_years){
-      F[i,j,]<-s[i,j,]*f[j]
+      F[i,j,kk]<-s[i,j,kk]*f[kk,j]
     }
   }
-
+  }
   ### NATURAL MORTALITY
   Md<-M
 
@@ -415,7 +426,8 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
     for(j in 1:number_years){
       m<-Ld[i,j]
       v<-(CV_L*m)
-      L[i,j,]<-stats::rnorm(niter,m,v)
+      L[i,j,]<-rnorm.seed(niter,m,v,seed)
+
     }}
     L[,,1]<-Ld
   }
@@ -486,11 +498,11 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
   if(niter>1){ SSB[,1,]<-colSums(WMA[,1,])} else {SSB[,1,1]<-sum(WMA[,1,1])}
   if(type=="cte"){N[1,1,]<-N[1,1,]}
   if(type=="BH"){
-    if(CV_REC_BH>0){N[1,1,-1]<-Log.normal(RBH(SSB[,1,-1],a_BH,b_BH),CV_REC_BH,ctrPop$seed)}#Beverton-Holt Recruitment Model
+    if(CV_REC_BH>0){N[1,1,-1]<-Log.normal(RBH(SSB[,1,-1],a_BH,b_BH),CV_REC_BH,seed)}#Beverton-Holt Recruitment Model
     N[1,1,1]<-RBH(SSB[,1,1],a_BH,b_BH)
     }
   if(type=="RK"){
-    if(CV_REC_RK>0){N[1,1,-1]<-Log.normal(RRK(SSB[,1,-1],a_RK,b_RK),CV_REC_RK,ctrPop$seed)}# Ricker Recruitment Model
+    if(CV_REC_RK>0){N[1,1,-1]<-Log.normal(RRK(SSB[,1,-1],a_RK,b_RK),CV_REC_RK,seed)}# Ricker Recruitment Model
     N[1,1,1]<-RRK(SSB[,1,1],a_RK,b_RK)
     }
 
@@ -514,14 +526,14 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
       if(niter>1){SSB[,j,]<-colSums(WMA[,j,])} else {SSB[,j,1]<-sum(WMA[,j,])}
       if(type=="cte"){N[1,j,]<-N[1,1,]}
       if(type=="BH"){
-        if(CV_REC_BH>0){ N[1,j,-1]<-Log.normal(RBH(SSB[,j,-1],a_BH,b_BH),CV_REC_BH,ctrPop$seed)
+        if(CV_REC_BH>0){ N[1,j,-1]<-Log.normal(RBH(SSB[,j,-1],a_BH,b_BH),CV_REC_BH,seed)
         N[1,j,1]<-RBH(SSB[,j,1],a_BH,b_BH)
         }
         if(niter==1 & CV_REC_BH==0){if(type=="BH"){N[1,j,1]<-RBH(SSB[,j,1],a_BH,b_BH)}}
         if(niter>1 & CV_REC_BH==0) {if(type=="BH"){N[1,j,1:niter]<-RBH(SSB[,j,1:niter],a_BH,b_BH)}}
       }
       if(type=="RK"){
-        if(CV_REC_RK>0){ N[1,j,-1]<-Log.normal(RRK(SSB[,j,-1],a_RK,b_RK),CV_REC_RK,ctrPop$seed)
+        if(CV_REC_RK>0){ N[1,j,-1]<-Log.normal(RRK(SSB[,j,-1],a_RK,b_RK),CV_REC_RK,seed)
         N[1,j,1]<-RRK(SSB[,j,1],a_RK,b_RK)
         }
         if(niter==1 & CV_REC_RK==0){if(type=="RK"){N[1,j,1]<-RRK(SSB[,j,1],a_RK,b_RK)}}
@@ -553,7 +565,7 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
     for(j in 1:number_years){
       m<-L_cd[i,j]
       v<-(CV_LC*m)
-      L_c[i,j,]<-stats::rnorm(niter,m,v)
+      L_c[i,j,]<-rnorm.seed(niter,m,v,seed)
     }}
     L_c[,,1]<-L_cd
   }
@@ -584,6 +596,6 @@ Population.Modeling<-function(ctrPop,ctrBio,ctrFish,SR){
 
   results<-list()
   results[[1]]<-list(N=N,M=M,F=F,W=W,Mat=Mat,C_N=C_N,C_W=C_W)
-  results[[2]]<-list(ctrBio=ctrBio[-1],ctrFish=ctrFish,SR=SR,minFage=min_age,maxFage=max_age,seed=ctrPop$seed,ts=ts,tc=tc)
+  results[[2]]<-list(ctrBio=ctrBio[-1],ctrFish=ctrFish,SR=SR,minFage=min_age,maxFage=max_age,seed=seed,ts=ts,tc=tc)
   names(results)<-c("Matrices","Info")
   return(results)}

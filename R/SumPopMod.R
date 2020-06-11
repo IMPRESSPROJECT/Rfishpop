@@ -56,7 +56,7 @@
 #' # Andersen selectivity
 #' ctrSEL<-list(type="Andersen", par=list(p1=2,p3=0.2,p4=0.2,p5=40),CV_SEL=0.05)
 #'
-#' f=rep(0.5,number_years)
+#' f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
 #' ctrFish<-list(f=f,ctrSEL=ctrSEL)
 #'
 #' # Finally, we show below the three possible stock recruitment relationship.
@@ -81,7 +81,10 @@
 Sum.Pop.Mod<-function(Pop.Mod,Elements){
   ts<-Pop.Mod$Info$ts
   tc<-Pop.Mod$Info$tc
-  if(is.numeric(Pop.Mod$Info$seed)){set.seed(Pop.Mod$Info$seed)}
+
+    seed=Pop.Mod$Info$seed
+    set.seed(Pop.Mod$Info$seed)
+
   Sel_type=Pop.Mod$Info$ctrFish$ctrSEL$type
   CV_SEL<-Pop.Mod$Info$ctrFish$ctrSEL$CV_SEL
   ### Stochastic Parameters
@@ -129,7 +132,7 @@ Sum.Pop.Mod<-function(Pop.Mod,Elements){
       for(j in 1:number_years){
         m<-Ld[i,j]
         v<-(CV_L*m)
-        L[i,j,]<-stats::rnorm(niter,m,v)
+        L[i,j,]<-rnorm.seed(niter,m,v,seed)
       }}
     L[,,1]<-Ld
   }
@@ -151,7 +154,7 @@ Sum.Pop.Mod<-function(Pop.Mod,Elements){
       for(j in 1:number_years){
         m<-L_cd[i,j]
         v<-(CV_LC*m)
-        L_c[i,j,]<-stats::rnorm(niter,m,v)
+        L_c[i,j,]<-rnorm.seed(niter,m,v,seed)
       }}
     L_c[,,1]<-L_cd
   }
@@ -203,7 +206,7 @@ Sum.Pop.Mod<-function(Pop.Mod,Elements){
     s<-N
 
     if(CV_SEL>0){
-      s<-stochastic_logistic_SEL_1(a50_Sel,ad_Sel,CV_SEL,niter,s,ages,number_years,seed=Pop.Mod$Info$seed)
+      s<-stochastic_logistic_SEL_1(a50_Sel,ad_Sel,CV_SEL,niter,s,ages,number_years,seed=seed)
 
       s[,,1]<-sd
     }}
@@ -220,7 +223,7 @@ Sum.Pop.Mod<-function(Pop.Mod,Elements){
     s<-N
 
     if(CV_SEL>0){
-      s<-stochastic_cte_SEL_1(cte,CV_SEL,niter,s,number_years,number_ages,seed=Pop.Mod$Info$seed)
+      s<-stochastic_cte_SEL_1(cte,CV_SEL,niter,s,number_years,number_ages,seed=seed)
 
       s[,,1]<-sd
     }}
@@ -236,7 +239,7 @@ Sum.Pop.Mod<-function(Pop.Mod,Elements){
     s<-N
 
     if(CV_SEL>0){
-      s<-stochastic_andersen_SEL_1(p1=p1,p3=p3,p4=p4,p5=p5,CV_SEL,niter,s,ages,number_years,seed=Pop.Mod$Info$seed)
+      s<-stochastic_andersen_SEL_1(p1=p1,p3=p3,p4=p4,p5=p5,CV_SEL,niter,s,ages,number_years,seed=seed)
 
       s[,,1]<-sd
     }
@@ -258,7 +261,7 @@ Sum.Pop.Mod<-function(Pop.Mod,Elements){
     s<-N
 
     if(CV_SEL>0){
-      s<-stochastic_gamma_SEL_1(alpha,beta,gamma,CV_SEL,niter,s,ages,number_years,seed=Pop.Mod$Info$seed)
+      s<-stochastic_gamma_SEL_1(alpha,beta,gamma,CV_SEL,niter,s,ages,number_years,seed=seed)
 
       s[,,1]<-sd
     }}

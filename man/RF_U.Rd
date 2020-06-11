@@ -17,7 +17,7 @@ RF_U(Pop.Mod, Fish.years, Bio.years, Method, par, FM_type, iters)
 
 \item{par}{If Method="own" it is a list containing the age vector of weight (stock and captures), natural mortality, selectivity and maturity (for the first iteration). In other case is equal to NULL.}
 
-\item{FM_type}{which of the three reference fishery mortalities must be computed. The possibilities have been described above: FM_type="F_max", FM_type="F_0.1" and FM_type="F_msy".}
+\item{FM_type}{which of the four reference fishery mortalities must be computed. The possibilities have been described above: FM_type="F_max", FM_type="F_0.1", FM_type="F_msy" and FM_type="F_Crash".}
 
 \item{iters}{A vector containing the iteration for which the reference fishery mortalities must be computed.}
 }
@@ -26,12 +26,13 @@ One of the three following elements depending the above selection:
 \item{F_max:}{the value of F that produces maximum YPR with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 \item{F_0.1:}{the value of F at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 \item{F_msy:}{the value of F at which the MSY is attained with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
+\item{F_Crash:}{the value of F which will drive the stock to extinction with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 }
 \description{
-Return the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1") and the reference fishery mortality at which the MSY is attained (FM_type="F_msy"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. THIS FUNCTION IS EQUIVALENT TO RF FUNCTION, BUT THE IMPLEMENTATION IS A LITTLE DIFFERENT THEN DEPENDING ON THE NUMBERS OF ITERATIONS FOR WHICH THE REFERENCE FISHERY MORTALITIES MUST BE COMPUTED THIS RF_U CAN BE FASTER THAN THE RF FUNCTION IF YOU USE A CODE SIMILAR TO THE ONE IN THE EXAMPLE.
+Returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1"), the reference fishery mortality at which the MSY is attained (FM_type="F_msy") and the reference fishery mortality which will drive the stock to extinction (FM_type="F_Crash"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. THIS FUNCTION IS EQUIVALENT TO RF FUNCTION, BUT THE IMPLEMENTATION IS A LITTLE DIFFERENT THEN DEPENDING ON THE NUMBERS OF ITERATIONS FOR WHICH THE REFERENCE FISHERY MORTALITIES MUST BE COMPUTED THIS RF_U CAN BE FASTER THAN THE RF FUNCTION IF YOU USE A CODE SIMILAR TO THE ONE IN THE EXAMPLE.
 }
 \details{
-The function returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1") and the reference fishery mortality at which the MSY is attained (FM_type="F_msy"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. If the fishing effort is equal to 10 can be that optimize process had not found the correct value in the default sequence.
+The function returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1"), the reference fishery mortality at which the MSY is attained (FM_type="F_msy") and  the reference fishery mortality which will drive the stock to extinction (FM_type="F_Crash"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. If the fishing effort is equal to 10 can be that optimize process had not found the correct value in the default sequence (except for FM_type="F_Crash", it this case the sequence finish at 60).
 }
 \examples{
 # If you desire to compute the reference fishery mortalities for a large number of iterations,

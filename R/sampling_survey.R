@@ -1,4 +1,4 @@
-#' @title Index of biomass and abundance
+#' @title Index of biomass (for each year) and abundance (for each year and age)
 #'
 #' @description Returns the indices of abundance for each year, age and iteration, and indices of biomass for each year and iteration.
 #'
@@ -56,7 +56,7 @@
 #' # Andersen selectivity
 #' ctrSEL<-list(type="Andersen", par=list(p1=2,p3=0.2,p4=0.2,p5=40),CV_SEL=0.05)
 #'
-#' f=rep(0.5,number_years)
+#' f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
 #' ctrFish<-list(f=f,ctrSEL=ctrSEL)
 #'
 #' # Finally, we show below the three possible stock recruitment relationship.

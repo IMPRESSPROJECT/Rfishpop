@@ -2,9 +2,9 @@
 % Please edit documentation in R/Distribution_length.R
 \name{Distribution.length}
 \alias{Distribution.length}
-\title{Length distribution}
+\title{Stock Length and Capture Length Distribution for each year}
 \usage{
-Distribution.length(Pop.Mod, CV, Type, scale)
+Distribution.length(Pop.Mod, CV, Type)
 }
 \arguments{
 \item{Pop.Mod}{A list containing the components returned by Population.Modeling function (main function).}
@@ -12,8 +12,6 @@ Distribution.length(Pop.Mod, CV, Type, scale)
 \item{CV}{The coefficient of variation associated to the log-normal distribution (see Details).}
 
 \item{Type}{An indicator of which distribution length must be computed, length stock distribution (Type="LengthS") whereas length captures distribution (Type="LengthC").}
-
-\item{scale}{A rescale parameter, the matrix N (Type="LengthS") or C (Type="LengthC") is divided by this value to avoid large times of computation. See details.}
 }
 \value{
 An array whose third dimension is the number of iterations, and the second one is the different years. Hence each column contains the distribution length (stock or captures) for each year.
@@ -23,7 +21,7 @@ Return the stock length or captures length distribution for each year and iterat
 }
 \details{
 The function returns the stochastic length distribution of the stock (Type="LengthS") or length captures distribution (Type="LengthC") for each year and iteration.
-In the case of the stock length distribution it is computed generating for each age, year and iteration random values from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. The number of values generated in each case is determined by the population size N if scale=NULL, in other case the number of values is determined by N/scale. In this way the distribution can be approximated correctly without the need of generation of large sequences of values. For the captures length distribution the mean of the log-normal distribution is given by the corresponding capture length, and the number of random values is given by the corresponding number of captures, C if scale=NULL or by C/scale in other case.
+In the case of the stock length distribution it is computed generating for each age, year and iteration random values from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. For the captures length distribution the mean of the log-normal distribution is given by the corresponding capture length, and the number of random values is given by the corresponding number of captures, C.
 }
 \examples{
 
@@ -50,7 +48,7 @@ ctrBio<-list(M=M,CV_M=0.2, L_inf=124.5, t0=0, k=0.164, CV_L=0, CV_LC=0, a=4.5*10
 # Logistic selectivity
 ctrSEL<-list(type="Logistic", par=list(a50_Sel=1.5, ad_Sel=-1),CV_SEL=0)
 
-f=rep(0.5,number_years)
+f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
 ctrFish<-list(f=f,ctrSEL=ctrSEL)
 
 # Finally, we show below the three possible stock recruitment relationship.
@@ -71,9 +69,9 @@ Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
 
 
 # We compute the captures length distribution:
-L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthC",scale=NULL)
+L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthC")
 # We compute the stock length distribution:
- L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthS",scale=NULL)
+ L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthS")
 }
 \author{
 \itemize{

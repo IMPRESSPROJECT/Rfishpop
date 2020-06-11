@@ -1,4 +1,4 @@
-#' @title Length distribution
+#' @title Stock Length and Capture Length Distribution for each year
 #'
 #' @description Return the stock length or captures length distribution for each year and iteration.
 #'
@@ -6,10 +6,9 @@
 #' @param Pop.Mod A list containing the components returned by Population.Modeling function (main function).
 #' @param CV The coefficient of variation associated to the log-normal distribution (see Details).
 #' @param Type An indicator of which distribution length must be computed, length stock distribution (Type="LengthS") whereas length captures distribution (Type="LengthC").
-#' @param scale A rescale parameter, the matrix N (Type="LengthS") or C (Type="LengthC") is divided by this value to avoid large times of computation. See details.
 #' @return An array whose third dimension is the number of iterations, and the second one is the different years. Hence each column contains the distribution length (stock or captures) for each year.
 #' @details The function returns the stochastic length distribution of the stock (Type="LengthS") or length captures distribution (Type="LengthC") for each year and iteration.
-#' In the case of the stock length distribution it is computed generating for each age, year and iteration random values from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. The number of values generated in each case is determined by the population size N if scale=NULL, in other case the number of values is determined by N/scale. In this way the distribution can be approximated correctly without the need of generation of large sequences of values. For the captures length distribution the mean of the log-normal distribution is given by the corresponding capture length, and the number of random values is given by the corresponding number of captures, C if scale=NULL or by C/scale in other case.
+#' In the case of the stock length distribution it is computed generating for each age, year and iteration random values from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. For the captures length distribution the mean of the log-normal distribution is given by the corresponding capture length, and the number of random values is given by the corresponding number of captures, C.
 #' @author
 #' \itemize{
 #' \item{Marta Cousido-Rocha}
@@ -40,7 +39,7 @@
 #' # Logistic selectivity
 #' ctrSEL<-list(type="Logistic", par=list(a50_Sel=1.5, ad_Sel=-1),CV_SEL=0)
 #'
-#' f=rep(0.5,number_years)
+#' f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
 #' ctrFish<-list(f=f,ctrSEL=ctrSEL)
 #'
 #' # Finally, we show below the three possible stock recruitment relationship.
@@ -61,24 +60,34 @@
 #'
 #'
 #' # We compute the captures length distribution:
-#' L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthC",scale=NULL)
+#' L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthC")
 #' # We compute the stock length distribution:
-#'  L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthS",scale=NULL)
+#'  L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthS")
 #' @export
 
 
 
 
-Distribution.length<-function(Pop.Mod,CV,Type,scale){
+Distribution.length<-function(Pop.Mod,CV,Type){
   if(CV==0){ stop("The value of CV must be strictly positive")}
 
   if(is.numeric(Pop.Mod$Info$seed)){set.seed(Pop.Mod$Info$seed)}
-  N<-Pop.Mod$Matrices$N
-  C<-Pop.Mod$Matrices$C_N
-  if(is.numeric(scale)){N<-N/scale
-  C<-C/scale}
 
 
+  aux.N=Pop.Mod$Matrices$N[,,1]
+  max.v=apply(aux.N,2,max)
+  max.vv=max(max.v)
+  multiplier.N=150000/max.vv
+
+  N<-Pop.Mod$Matrices$N*multiplier.N
+
+
+  aux.C=Pop.Mod$Matrices$C_N[,,1]
+  max.v=apply(aux.C,2,max)
+  max.vv=max(max.v)
+  multiplier.C=20000/max.vv
+
+  C<-Pop.Mod$Matrices$C_N*multiplier.C
 
 
 
@@ -125,7 +134,7 @@ Distribution.length<-function(Pop.Mod,CV,Type,scale){
         RS[,i,1]<-d
       }
 
-      return(RS)}
+      return(RS/multiplier.N)}
 
     if(Type=="LengthC"){
 
@@ -163,7 +172,7 @@ Distribution.length<-function(Pop.Mod,CV,Type,scale){
         RC[,i,1]<-d
       }
 
-      return(RC)}}
+      return(RC/multiplier.C)}}
 
 
 
@@ -181,11 +190,11 @@ Distribution.length<-function(Pop.Mod,CV,Type,scale){
 
 
   if(Type=="LengthS"){RS=f_RLD(Lm,N,number_ages,number_years,niter,column.names,max_length,CV,Pop.Mod)
-  return(LD=RS)
+  return(LD=RS/multiplier.N)
   }
 
   if(Type=="LengthC"){RC=f_RLD(L.cm,C,number_ages,number_years,niter,column.names,max_length,CV,Pop.Mod)
-  return(LD=RC)
+  return(LD=RC/multiplier.C)
   }}
 
 

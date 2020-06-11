@@ -1,4 +1,4 @@
-#' @title Sampling length
+#' @title Sampling length (stock or captures)
 #'
 #' @description Return a sample of the stock or capture length from the corresponding distribution computed using Distribution.length function.
 #'
@@ -35,7 +35,7 @@
 #' # Logistic selectivity
 #' ctrSEL<-list(type="Logistic", par=list(a50_Sel=1.5, ad_Sel=-1),CV_SEL=0)
 #'
-#' f=rep(0.5,number_years)
+#' f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
 #' ctrFish<-list(f=f,ctrSEL=ctrSEL)
 #'
 #' # Finally, we show below the three possible stock recruitment relationship.
@@ -52,7 +52,7 @@
 #'
 #' # We need to compute the distribution length.
 #'
-#' L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthC",scale=NULL)
+#' L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthC")
 #'
 #' # Now, from the distribution function we generated a sample.
 #'

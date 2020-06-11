@@ -1,83 +1,50 @@
 #' @title Reference Fishery Mortalities
 #'
-#' @description Returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1") and the reference fishery mortality at which the MSY is attained (FM_type="F_msy"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned.
+#' @description Returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1"), the reference fishery mortality at which the MSY is attained (FM_type="F_msy") and the reference fishery mortality which will drive the stock to extinction (FM_type="F_Crash"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned.
 #'
 #' @param Pop.Mod A list containing the components returned by Population.Modeling function (main function).
 #' @param Fish.years The number of recent years to estimate the mean of SEL (selectivity).
 #' @param Bio.years The number of recent years to estimate the mean of M, Mat, WC, and W (natural mortality, maturity, stock weight and capture weight).
 #' @param Method The procedure to obtain the age vector of weight (stock and captures), natural mortality, selectivity and maturity. By default is "mean" which means that the mean of the last "Bio.years" is used. The alternative option is "own", the user can introduce these elements.
 #' @param par If Method="own" it is a list containing the age vector of weight (stock and captures), natural mortality, selectivity and maturity (for the first iteration). In other case is equal to NULL.
-#' @param FM_type which of the three reference fishery mortalities must be computed. The possibilities have been described above: FM_type="F_max", FM_type="F_0.1" and FM_type="F_msy".
+#' @param FM_type which of the four reference fishery mortalities must be computed. The possibilities have been described above: FM_type="F_max", FM_type="F_0.1", FM_type="F_msy" and FM_type="F_Crash".
 #' @param iters A vector containing the iteration for which the reference fishery mortalities must be computed.
-#' @details The function returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1") and the reference fishery mortality at which the MSY is attained (FM_type="F_msy"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. If the fishing effort is equal to 10 can be that optimize process had not found the correct value in the default sequence.
+#' @details The function returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1"), the reference fishery mortality at which the MSY is attained (FM_type="F_msy") and  the reference fishery mortality which will drive the stock to extinction (FM_type="F_Crash"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. If the fishing effort is equal to 10 can be that optimize process had not found the correct value in the default sequence (except for FM_type="F_Crash", it this case the sequence finish at 60).
 #'
 #' @return One of the three following elements depending the above selection:
 #' \item{F_max:}{the value of F that produces maximum YPR with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 #' \item{F_0.1:}{the value of F at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 #' \item{F_msy:}{the value of F at which the MSY is attained with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
+#' \item{F_Crash:}{the value of F which will drive the stock to extinction with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 #' @author
 #' \itemize{
 #' \item{Marta Cousido-Rocha}
 #' \item{Santiago Cerviño López}
 #' }
 #' @examples
-#' # First we introduce the basic parameters to define the population.
-#' # Note that N0 is equal to 10000 individuals, and hence below we are
-#' # consistent with this unit when we introduce the biological and
-#' # stock-recruitment parameters.
-#' ctrPop<-list(years=seq(1980,2020,by=1),niter=20,N0=10000,ages=0:15,minFage=4,
-#' maxFage=7,ts=0,tc=0.5,seed=NULL)
-#'
-#' # Now, we introduce the biological parameters of the population.
-#' # Note that L_inf is in cm, and a and b parameters allow us to relate
-#' # the length in cm with the weight in Kg.
+#' ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
+#' maxFage=7,ts=0,tc=0.5,tseed=NULL)
 #' number_ages<-length(ctrPop$ages);number_years<-length(ctrPop$years)
 #' M<-matrix(rep(0.4,number_ages*number_years),ncol = number_years)
 #' colnames(M)<-ctrPop$years
 #' rownames(M)<-ctrPop$ages
-#' ctrBio<-list(M=M,CV_M=0.2, L_inf=124.5, t0=0, k=0.164, CV_L=0.2, CV_LC=0.2, a=4.5*10^(-6), b=3.1049,
-#'            a50_Mat=3, ad_Mat=-0.5,CV_Mat=0.2)
-#'
-#' # We continue introducing the fishing parameters.
-#' # Below, we have different objects ctrSEL depending on which selectivity function is used.
-#' # Constant selectivity
-#' ctrSEL<-list(type="cte", par=list(cte=0.5),CV_SEL=0.2)
-#'
-#' # Logistic selectivity
+#' ctrBio<-list(M=M,CV_M=0.2, L_inf=124.5, t0=0, k=0.164, CV_L=0.2, CV_LC=0.2,
+#' a=4.5*10^(-6),b=3.1049,a50_Mat=3, ad_Mat=-0.5,CV_Mat=0.2)
 #' ctrSEL<-list(type="Logistic", par=list(a50_Sel=1.5, ad_Sel=-1),CV_SEL=0.2)
-#'
-#' # Gamma selectivity
-#' ctrSEL<-list(type="Gamma", par=list(gamma=10,alpha=15, beta=0.03),CV_SEL=0.05)
-#'
-#' # Andersen selectivity
-#' ctrSEL<-list(type="Andersen", par=list(p1=2,p3=0.2,p4=0.2,p5=40),CV_SEL=0.05)
-#'
-#' f=rep(0.5,number_years)
+#' f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
 #' ctrFish<-list(f=f,ctrSEL=ctrSEL)
-#'
-#' # Finally, we show below the three possible stock recruitment relationship.
-#' # The values of the parameters of Beverton-Holt Recruitment Model and Ricker
-#' # Recruitment Model are ones suitables when the biomass is measured in Kg and
-#' # the recruitment is measured as number of individuals.
-#'
-#' a_BH=10000; b_BH=400; CV_REC_BH=0.2; a_RK=10; b_RK=0.0002; CV_REC_RK=0.2
-#' # If the spawning stock recruiment relationship is constant:
-#' SR<-list(type="cte",par=NULL)
-#' # If the spawning stock recruitment relationship is Beverton-Holt Recruitment Model:
+#' a_BH=10000; b_BH=400; CV_REC_BH=0.2
 #' SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
-#' # If the spawning stock recruitment relationship is Ricker Recruitment Model:
-#' SR<-list(type="RK",par=c(a_RK,b_RK,CV_REC_RK))
-#'
-#' # The following lines allow us to use the described function.
 #' Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
 #' # We compute the reference fishery mortalities.
-#' #RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_max",iters=1:20)
-#' #RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_0.1",iters=1:20)
-#' #RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_msy",iters=1:20)
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_max",iters=1:2)
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_0.1",iters=1:2)
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_msy",iters=1:2)
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_Crash",iters=1:2)
 #' # If par is not NULL must be something like (assuming that W, WC,
 #' # M, Mat and SEL are defined previously).
 #' # par=list(); par$W<-W; par$WC<-WC; par$SEL<-SEL; par$Mat<-Mat; par$M<-M
-#'
+
 #'
 #' @export
 #'
@@ -138,7 +105,7 @@ RF<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters){
       Pop.Mod2$Matrices$Mat<-Pop.Mod$Matrices$Mat[,,a]
       Pop.Mod2$Matrices$C_N<-Pop.Mod$Matrices$C_N[,,a]
       Pop.Mod2$Matrices$C_W<-Pop.Mod$Matrices$C_W[,,a]
-      Resul[,,(seq2[i]+1):n]<-RF_U(Pop.Mod2, 3,3,Method="mean",par=NULL,FM_type="F_max",iters =1:blo)[,,1:rest]
+      Resul[,,(seq2[i]+1):n]<-RF_U(Pop.Mod2, 3,3,Method="mean",par=NULL,FM_type=FM_type,iters =1:blo)[,,1:rest]
     }}
   colnames(Resul)=c("f","F","YPR","BPR","R","Y","B")
   return(Resul)

@@ -8,7 +8,7 @@ Maintainer: Marta Cousido Rocha <martacousido@uvigo.es>
 Description: Modeling of an exploited population (structured by age).
 License: GPL-2
 LazyData: FALSE
-Imports:
+Imports: FLCore
 Suggests:
 Encoding: UTF-8
 RoxygenNote: 7.1.0

@@ -1,20 +1,21 @@
 #' @title Reference Fishery Mortalities (alternative)
 #'
-#' @description Return the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1") and the reference fishery mortality at which the MSY is attained (FM_type="F_msy"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. THIS FUNCTION IS EQUIVALENT TO RF FUNCTION, BUT THE IMPLEMENTATION IS A LITTLE DIFFERENT THEN DEPENDING ON THE NUMBERS OF ITERATIONS FOR WHICH THE REFERENCE FISHERY MORTALITIES MUST BE COMPUTED THIS RF_U CAN BE FASTER THAN THE RF FUNCTION IF YOU USE A CODE SIMILAR TO THE ONE IN THE EXAMPLE.
+#' @description Returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1"), the reference fishery mortality at which the MSY is attained (FM_type="F_msy") and the reference fishery mortality which will drive the stock to extinction (FM_type="F_Crash"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. THIS FUNCTION IS EQUIVALENT TO RF FUNCTION, BUT THE IMPLEMENTATION IS A LITTLE DIFFERENT THEN DEPENDING ON THE NUMBERS OF ITERATIONS FOR WHICH THE REFERENCE FISHERY MORTALITIES MUST BE COMPUTED THIS RF_U CAN BE FASTER THAN THE RF FUNCTION IF YOU USE A CODE SIMILAR TO THE ONE IN THE EXAMPLE.
 #'
 #' @param Pop.Mod A list containing the components returned by Population.Modeling function (main function).
 #' @param Fish.years The number of recent years to estimate the mean of SEL (selectivity).
 #' @param Bio.years The number of recent years to estimate the mean of M, Mat, WC, and W (natural mortality, maturity, stock weight and capture weight).
 #' @param Method The procedure to obtain the age vector of weight (stock and captures), natural mortality, selectivity and maturity. By default is "mean" which means that the mean of the last "Bio.years" is used. The alternative option is "own", the user can introduce these elements.
 #' @param par If Method="own" it is a list containing the age vector of weight (stock and captures), natural mortality, selectivity and maturity (for the first iteration). In other case is equal to NULL.
-#' @param FM_type which of the three reference fishery mortalities must be computed. The possibilities have been described above: FM_type="F_max", FM_type="F_0.1" and FM_type="F_msy".
+#' @param FM_type which of the four reference fishery mortalities must be computed. The possibilities have been described above: FM_type="F_max", FM_type="F_0.1", FM_type="F_msy" and FM_type="F_Crash".
 #' @param iters A vector containing the iteration for which the reference fishery mortalities must be computed.
-#' @details The function returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1") and the reference fishery mortality at which the MSY is attained (FM_type="F_msy"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. If the fishing effort is equal to 10 can be that optimize process had not found the correct value in the default sequence.
+#' @details The function returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1"), the reference fishery mortality at which the MSY is attained (FM_type="F_msy") and  the reference fishery mortality which will drive the stock to extinction (FM_type="F_Crash"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. If the fishing effort is equal to 10 can be that optimize process had not found the correct value in the default sequence (except for FM_type="F_Crash", it this case the sequence finish at 60).
 #'
 #' @return One of the three following elements depending the above selection:
 #' \item{F_max:}{the value of F that produces maximum YPR with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 #' \item{F_0.1:}{the value of F at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 #' \item{F_msy:}{the value of F at which the MSY is attained with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
+#' \item{F_Crash:}{the value of F which will drive the stock to extinction with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 #' @author
 #' \itemize{
 #' \item{Marta Cousido-Rocha}
@@ -55,12 +56,14 @@
 RF_U<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters){
   if(is.null(Method)){Method="mean"}
 
-  ### SUM.POP.MOD function
 
   Sum.Pop.Mod<-function(Pop.Mod,Elements){
     ts<-Pop.Mod$Info$ts
     tc<-Pop.Mod$Info$tc
-    if(is.numeric(Pop.Mod$Info$seed)){set.seed(Pop.Mod$Info$seed)}
+
+    seed=Pop.Mod$Info$seed
+    set.seed(Pop.Mod$Info$seed)
+
     Sel_type=Pop.Mod$Info$ctrFish$ctrSEL$type
     CV_SEL<-Pop.Mod$Info$ctrFish$ctrSEL$CV_SEL
     ### Stochastic Parameters
@@ -108,7 +111,7 @@ RF_U<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters){
         for(j in 1:number_years){
           m<-Ld[i,j]
           v<-(CV_L*m)
-          L[i,j,]<-stats::rnorm(niter,m,v)
+          L[i,j,]<-rnorm.seed(niter,m,v,seed)
         }}
       L[,,1]<-Ld
     }
@@ -130,7 +133,7 @@ RF_U<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters){
         for(j in 1:number_years){
           m<-L_cd[i,j]
           v<-(CV_LC*m)
-          L_c[i,j,]<-stats::rnorm(niter,m,v)
+          L_c[i,j,]<-rnorm.seed(niter,m,v,seed)
         }}
       L_c[,,1]<-L_cd
     }
@@ -182,7 +185,7 @@ RF_U<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters){
       s<-N
 
       if(CV_SEL>0){
-        s<-stochastic_logistic_SEL_1(a50_Sel,ad_Sel,CV_SEL,niter,s,ages,number_years,seed=Pop.Mod$Info$seed)
+        s<-stochastic_logistic_SEL_1(a50_Sel,ad_Sel,CV_SEL,niter,s,ages,number_years,seed=seed)
 
         s[,,1]<-sd
       }}
@@ -199,7 +202,7 @@ RF_U<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters){
       s<-N
 
       if(CV_SEL>0){
-        s<-stochastic_cte_SEL_1(cte,CV_SEL,niter,s,number_years,number_ages,seed=Pop.Mod$Info$seed)
+        s<-stochastic_cte_SEL_1(cte,CV_SEL,niter,s,number_years,number_ages,seed=seed)
 
         s[,,1]<-sd
       }}
@@ -215,7 +218,7 @@ RF_U<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters){
       s<-N
 
       if(CV_SEL>0){
-        s<-stochastic_andersen_SEL_1(p1=p1,p3=p3,p4=p4,p5=p5,CV_SEL,niter,s,ages,number_years,seed=Pop.Mod$Info$seed)
+        s<-stochastic_andersen_SEL_1(p1=p1,p3=p3,p4=p4,p5=p5,CV_SEL,niter,s,ages,number_years,seed=seed)
 
         s[,,1]<-sd
       }
@@ -237,7 +240,7 @@ RF_U<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters){
       s<-N
 
       if(CV_SEL>0){
-        s<-stochastic_gamma_SEL_1(alpha,beta,gamma,CV_SEL,niter,s,ages,number_years,seed=Pop.Mod$Info$seed)
+        s<-stochastic_gamma_SEL_1(alpha,beta,gamma,CV_SEL,niter,s,ages,number_years,seed=seed)
 
         s[,,1]<-sd
       }}
@@ -290,22 +293,47 @@ RF_U<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
   ######################################################################## useful functions
 
 
 
   RF_aux<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,ind2){
+    if (FM_type=="F_Crash"){
+      type=Pop.Mod$Info$SR$type
+      a=Pop.Mod$Info$SR$par[1]
+      b=Pop.Mod$Info$SR$par[2]
+
+      if(type=="BH"){
+        slopeSR=RBH(SSB=1, a, b)
+      }
+
+      if(type=="RK"){
+        slopeSR=RRK(SSB=1, a, b)
+      }
+
+      if(type=="cte"){
+        slopeSR=Pop.Mod$Info$SR$par
+      }
+
+
+
+      crash <- function (f, Pop.Mod,Fish.years,Bio.years,plot=FALSE,Method=Method,par=par,ind2){
+        RE<-BYR.eq_RF(Pop.Mod,f,Fish.years,Bio.years,plot=FALSE,Method=Method,par=par,ind2)
+        return(abs(RE$DPM[,4]-(1/slopeSR)))
+      }
+
+      #xx <- stats::uniroot(crash,c(0.0001,60), Pop.Mod=Pop.Mod, Fish.years=Fish.years,Bio.years=Bio.years,plot=FALSE,Method=Method,par=par,ind2=ind2, tol=0.01)
+      #f.c<-xx$root
+
+      xx <- stats::optimize(crash,c(0.0001,60), Pop.Mod=Pop.Mod, Fish.years=Fish.years,Bio.years=Bio.years,plot=FALSE,Method=Method,par=par,ind2=ind2, tol=0.01)
+      f.c<-xx$minimum
+
+      RE<-BYR.eq_RF(Pop.Mod,f.c,Fish.years,Bio.years,plot=FALSE,Method=Method,par=par,ind2)
+
+      DPM<-RE$DPM; Fc_resul<-DPM
+      return(F_Crash=Fc_resul)
+
+    }
 
     if (FM_type=="F_max"){
       N<-Pop.Mod$Matrices$N;ages<-as.numeric(rownames(N))
