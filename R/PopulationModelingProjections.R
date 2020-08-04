@@ -1,16 +1,17 @@
-#' @title Projecting our Exploited Population on based of desired captures or efforts
+#' @title Projecting our Exploited Population on based of desired catches or efforts
 #'
 #'
-#' @description This function allows us to extend our simulated Population through the years on based of the desired captures for such years (strategy="catch") or on based of the desired effort f (component of fishing mortality F = f * SEL) for such years (strategy="effort") .
+#' @description This function allows us to extend our simulated Population through the years on based of the desired catches for such years (strategy="catch") or on based of the desired effort f (component of fishing mortality F = f * SEL) for such years (strategy="effort") .
 #'
 #'
 #' @param Pop.Mod A list containing the components returned by Population.Modeling function (main function).
 #' @param new.years The years for which our Population must be projected.
 #' @param strategy The strategy for the next years, this can be "catch" if we want to fix the catches for the next years (argument my.catch must be used) or "effort" if we want to fix the value of effort f, component of fishing mortality F = f * SEL (argument my.effort must be used).
-#' @param my.catch Weight of the captures for each of the years for which the projections are carried out.
+#' @param my.catch Weight of the catches for each of the years for which the projections are carried out.
 #' @param my.effort A vector containing for the projecting years the value for which the effort of the last year must be multiplied to obtain the desired effort f (component of fishing mortality F = f * SEL) for the new years.
 #' @param tol The level of tolerence in the optimization process. If tol=NULL the default value of 0.01 is used.
 #' @param limit.f Maximum value of effort f (component of fishing mortality F = f * SEL) considered in the optimization process. If limit.f=NULL the default value of 4 is used.
+#' @param M.new.years matrix containing the rates of instantaneous natural mortality for each of the new.years and age. If it is null the M corresponding to the last year in Pop.Mod object is used.
 #' @return The object Pop.Mod updated containing the information for the new years for which the population has been projected.
 #' @details This package is an open and developing project, for this reason this function must still be optimized for good execution times.
 #' @author
@@ -25,7 +26,7 @@
 #' # consistent with this unit when we introduce the biological and
 #' # stock-recruitment parameters.
 #' ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
-#' maxFage=7,ts=0,tc=0.5,tseed=NULL)
+#' maxFage=7,tc=0.5,tseed=NULL)
 #'
 #' # Now, we introduce the biological parameters of the population.
 #' # Note that L_inf is in cm, and a and b parameters allow us to relate
@@ -82,30 +83,38 @@
 
 
 
-Population.Modeling.Projections=function(Pop.Mod,new.years,my.catch,tol,limit.f,strategy,my.effort){
+Population.Modeling.Projections=function(Pop.Mod,new.years,my.catch,tol,limit.f,strategy,my.effort,M.new.years=NULL){
 
   if(strategy=="catch"){
   len.new.years=length(new.years)
   len.my.catch=length(my.catch)
 
   if(len.new.years!=len.my.catch){stop("The lengths of new.years and my.catch vectors must be the same")}
+  if(is.null(M.new.years)){
+    ny=dim(Pop.Mod$Matrices$M)[2]
+    M.new.years=matrix(rep(Pop.Mod$Matrices$M[,ny,1],len.new.years),ncol=len.new.years)
+  }
   for(kk in 1:len.new.years){
 
-  Pop.Mod1=Population.Modeling.Projections.Internal(Pop.Mod,new.years=new.years[kk],my.catch=my.catch[kk],tol=tol,limit.f=limit.f)
+  Pop.Mod1=Pop.Mod.proj.internal(Pop.Mod,new.years=new.years[kk],my.catch=my.catch[kk],tol=tol,limit.f=limit.f,M.new.year=M.new.years[,kk])
   Pop.Mod=Pop.Mod1
   }}
 
-
   if(strategy=="effort"){
     len.new.years=length(new.years)
-    len.my.catch=length(my.effort)
+    len.my.effort=length(my.effort)
 
-    if(len.new.years!=len.my.catch){stop("The lengths of new.years and my.effort vectors must be the same")}
+    if(len.new.years!=len.my.effort){stop("The lengths of new.years and my.catch vectors must be the same")}
+    if(is.null(M.new.years)){
+      ny=dim(Pop.Mod$Matrices$M)[2]
+      M.new.years=matrix(rep(Pop.Mod$Matrices$M[,ny,1],len.new.years),ncol=len.new.years)
+    }
     for(kk in 1:len.new.years){
 
-      Pop.Mod1=Population.Modeling.Projections.Internal2(Pop.Mod,new.years=new.years[kk],my.effort=my.effort[kk])
+      Pop.Mod1=Pop.Mod.proj.internal2(Pop.Mod,new.years=new.years[kk],my.effort=my.effort[kk],M.new.year=M.new.years[,kk])
       Pop.Mod=Pop.Mod1
     }}
+
 
   return(Pop.Mod1)
 

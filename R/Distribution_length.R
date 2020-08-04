@@ -1,16 +1,17 @@
-#' @title Stock Length and Capture Length Distribution for each year
+#' @title Stock Length and Catches Length Distribution for each year
 #'
-#' @description Return the stock length or captures length distribution for each year and iteration.
+#' @description Return the stock length or catches length distribution for each year and iteration.
 #'
 #'
 #' @param Pop.Mod A list containing the components returned by Population.Modeling function (main function).
 #' @param CV The coefficient of variation associated to the log-normal distribution (see Details).
-#' @param Type An indicator of which distribution length must be computed, length stock distribution (Type="LengthS") whereas length captures distribution (Type="LengthC").
-#' @return An array whose third dimension is the number of iterations, and the second one is the different years. Hence each column contains the distribution length (stock or captures) for each year.
-#' @details The function returns the stochastic length distribution of the stock (Type="LengthS") or length captures distribution (Type="LengthC") for each year and iteration.
-#' In the case of the stock length distribution it is computed generating for each age, year and iteration random values from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. For the captures length distribution the mean of the log-normal distribution is given by the corresponding capture length, and the number of random values is given by the corresponding number of captures, C.
+#' @param Type An indicator of which distribution length must be computed, length stock distribution (Type="LengthS") whereas length catches distribution (Type="LengthC").
+#' @param RF.value The number of values generated for each age (given a year and an iteration) from the log-normal distribution (see details). By default RF.value=1000.
+#' @return An array whose third dimension is the number of iterations, and the second one is the different years. Hence each column contains the distribution length (stock or catches) for each year.
+#' @details The function returns the stochastic length distribution of the stock (Type="LengthS") or length catches distribution (Type="LengthC") for each year and iteration.
+#' In the case of the stock length distribution it is computed generating for each age, year and iteration RF.value random values from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. For the catches length distribution the mean of the log-normal distribution is given by the corresponding catch length. For the stock length distribution the distribution obtain for each age (given a year and an iteration) is scaled using the corresponding stock number (N matrix), whereas in the catch distribution this role is for the catch matrix C.
 #' @author
-#' \itemize{
+#'  \itemize{
 #' \item{Marta Cousido-Rocha}
 #' \item{Santiago Cerviño López}
 #' }
@@ -21,7 +22,7 @@
 #' # consistent with this unit when we introduce the biological and
 #' # stock-recruitment parameters.
 #' ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
-#' maxFage=7,ts=0,tc=0.5,tseed=NULL)
+#' maxFage=7,tc=0.5,tseed=NULL)
 #'
 #' # Now, we introduce the biological parameters of the population.
 #' # Note that L_inf is in cm, and a and b parameters allow us to relate
@@ -59,145 +60,93 @@
 #'
 #'
 #'
-#' # We compute the captures length distribution:
-#' L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthC")
+#' # We compute the catches length distribution:
+#' # UNCOMMENT THE FOLLOWING LINES
+#' #L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthC")
 #' # We compute the stock length distribution:
-#'  L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthS")
+#' # L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthS")
 #' @export
 
 
 
-
-Distribution.length<-function(Pop.Mod,CV,Type){
-  if(CV==0){ stop("The value of CV must be strictly positive")}
-
-  if(is.numeric(Pop.Mod$Info$seed)){set.seed(Pop.Mod$Info$seed)}
+Distribution.length<-function(Pop.Mod,CV,Type,RF.value=1000){
+  message("It is working, please give us a while :)")
 
 
-  aux.N=Pop.Mod$Matrices$N[,,1]
-  max.v=apply(aux.N,2,max)
-  max.vv=max(max.v)
-  multiplier.N=150000/max.vv
+  a=list()
+  N<-Pop.Mod$Matrices$N;niter<-dim(N)[3];number_years<-dim(N)[2]
+  Nc=N
+  C_Nc=Pop.Mod$Matrices$C_N
+  LSc<-Sum.Pop.Mod(Pop.Mod,c("LS"))$LS
+  LCc=Sum.Pop.Mod(Pop.Mod,c("LC"))$LC
 
-  N<-Pop.Mod$Matrices$N*multiplier.N
+  for (i in 1:niter){
+    seed=Pop.Mod$Info$seed
+    N<-Nc[,,i]
+    C_N<-C_Nc[,,i]
+    LS<-LSc[,,i]
+    LC<-LCc[,,i]
+    L_inf<-Pop.Mod$Info$ctrBio$L_inf
 
-
-  aux.C=Pop.Mod$Matrices$C_N[,,1]
-  max.v=apply(aux.C,2,max)
-  max.vv=max(max.v)
-  multiplier.C=20000/max.vv
-
-  C<-Pop.Mod$Matrices$C_N*multiplier.C
-
-
-
-  number_years<-dim(N)[2];number_ages<-dim(N)[1]
-  Lm<-Sum.Pop.Mod(Pop.Mod,c("LS"))$LS
-  L.cm<-Sum.Pop.Mod(Pop.Mod,c("LC"))$LC
-  niter<-dim(N)[3]
-
-  if(niter==1){
-    if(Type=="LengthS"){
-      Ls<-list()
-      for(j in 1:number_years){
-        Ls[[j]]<-0
-      }
-      for (j in 1:number_years) {
-        L<-Lm[,j,1]
-
-        for(i in 1:number_ages){
-
-          v<-(CV*mean(L[i]))^2
-          m<-mean(L[i])
-          if (m>0){
-            mu<-log(m^2/sqrt(m^2+v))}
-          sigma<-sqrt(log(v/m^2+1))
-
-
-          if(N[i,j,1]>1 &m>0&sigma>0){
-            Ls[[j]]<-c(Ls[[j]],(stats::rlnorm((N[i,j,1]), meanlog =mu, sdlog =sigma)))}
-        }}
-
-      L_inf<-Pop.Mod$Info$ctrBio$L_inf
-      max_length<-round(L_inf+(2*CV*L_inf))
-      lengths<-0:max_length
-      column.names <- colnames(N)
-      RS<-array(0, dim=c(max_length+1, number_years, 1),dimnames=list(lengths,column.names,1))
-
-      for (i in 1:number_years){
-        aux<-c(Ls[[i]][-1],max_length)
-        ind_aux<-which(aux>max_length);aux[ind_aux]<-max_length
-        # trick +1 to count zero
-        d<-stats::setNames(tabulate(floor(aux+1)), 0:max_length)
-        # take_out artificial
-        d[max_length+1]<-d[max_length+1]-1
-        RS[,i,1]<-d
-      }
-
-      return(RS/multiplier.N)}
-
-    if(Type=="LengthC"){
-
-      Lsc<-list()
-      for(j in 1:number_years){
-        Lsc[[j]]<-0
-      }
-      for (j in 1:number_years) {
-        L.c<-L.cm[,j,1]
-        for(i in 1:number_ages){
-
-          v.c<-(CV*mean(L.c[i]))^2
-          m.c<-mean(L.c[i])
-          if (m.c>0){
-            mu.c<-log(m.c^2/sqrt(m.c^2+v.c))}
-          sigma.c<-sqrt(log(v.c/m.c^2+1))
-          if(C[i,j,1]>1&m.c>0&sigma.c>0){
-            Lsc[[j]]<-c(Lsc[[j]],(stats::rlnorm((C[i,j,1]), meanlog =mu.c, sdlog =sigma.c)))}
-        }}
-
-      L_inf<-Pop.Mod$Info$ctrBio$L_inf
-      max_length<-round(L_inf+(2*CV*L_inf))
-      lengths<-0:max_length
-      column.names <- colnames(N)
-
-      RC<-array(0, dim=c(max_length+1, number_years, 1),dimnames=list(lengths,column.names,1))
-
-      for (i in 1:number_years){
-        aux<-c(Lsc[[i]][-1],max_length)
-        ind_aux<-which(aux>max_length);aux[ind_aux]<-max_length
-        # trick +1 to count zero
-        d<-stats::setNames(tabulate(floor(aux+1)), 0:max_length)
-        # take_out artificial
-        d[max_length+1]<-d[max_length+1]-1
-        RC[,i,1]<-d
-      }
-
-      return(RC/multiplier.C)}}
-
-
-
-
-  if (niter>1){
-  ### We need to compute the maximun posible length
-  L_inf<-Pop.Mod$Info$ctrBio$L_inf
-  max_length<-round(L_inf+(2*CV*L_inf))
-
-  ### Vector of lengths
-  lengths<-0:max_length
-  column.names <- colnames(N)
-  matrix.names <- 1:niter
-  RLD<-array(0, dim=c(max_length+1, number_years, niter),dimnames=list(lengths,column.names,matrix.names))
-
-
-  if(Type=="LengthS"){RS=f_RLD(Lm,N,number_ages,number_years,niter,column.names,max_length,CV,Pop.Mod)
-  return(LD=RS/multiplier.N)
+    a[[i]]=list(seed=seed,N=N,C_N=C_N,LS=LS,LC=LC,L_inf=L_inf)
   }
 
-  if(Type=="LengthC"){RC=f_RLD(L.cm,C,number_ages,number_years,niter,column.names,max_length,CV,Pop.Mod)
-  return(LD=RC/multiplier.C)
-  }}
+  if(Type=="LengthS"){
+    for (i in 1:niter){
+      seed=Pop.Mod$Info$seed
+      N<-Nc[,,i]
 
+      LS<-LSc[,,i]
 
+      L_inf<-Pop.Mod$Info$ctrBio$L_inf
+
+      a[[i]]=list(seed=seed,N=N,LS=LS,L_inf=L_inf)
     }
+
+  }
+  if(Type=="LengthC"){
+    for (i in 1:niter){
+      seed=Pop.Mod$Info$seed
+
+      C_N<-C_Nc[,,i]
+
+      LC<-LCc[,,i]
+      L_inf<-Pop.Mod$Info$ctrBio$L_inf
+
+      a[[i]]=list(seed=seed,N=C_N,LS=LC,L_inf=L_inf)
+    }
+
+  }
+
+
+  numCores <- parallel::detectCores()
+
+  cl <- parallel::makeCluster(numCores)
+
+  parallel::clusterExport(cl,c("Distribution.length.aux"),
+                          envir=environment())
+
+  ret<-parallel::parLapply(cl, a,Distribution.length.aux, CV,RF.value)
+  parallel::stopCluster(cl)
+
+
+  matrix.names <- 1:niter
+  max_length<-round(L_inf+(2*CV*L_inf))
+  lengths<-0:max_length
+  column.names <- colnames(N)
+  res<-array(0, dim=c(max_length+1, number_years, niter),dimnames=list(lengths,column.names,matrix.names))
+
+  for(i in 1:niter){
+    res[,,i]=ret[[i]][,,1]
+  }
+
+
+return(res)
+
+
+
+}
+
+
 
 

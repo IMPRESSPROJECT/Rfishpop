@@ -1,9 +1,10 @@
-#' @title Data to Length Based Spawning Potential Ratio (LB-SPR)
+#' @title Length Based Spawning Potential Ratio (LB-SPR)
 #'
 #' @description The function provides required information for computing Length Based Spawning Potential Ratio (LB-SPR): Length distributions of catches.
 #'
 #' @param Pop.Mod A list containing the components returned by Population.Modeling function (main function).
 #' @param CV The coefficient of variation associated to the log-normal distribution used in Distribution.length function (see Details of such function).
+#' @param RF.value The number of values generated for each age (given a year and an iteration) from the log-normal distribution used in Distribution.length function (see Details of such function). By default RF.value=1000.
 #' @details The function reports the length distributions of catches for each year and iteration in our Pop.Mod object.
 #'
 #'
@@ -33,8 +34,9 @@
 #' SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
 #' Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
 #'
-#' # Then, we use the function to obtain the captures length distribution.
-#' resul=Data.to.LB.SPR(Pop.Mod,CV=0.2)
+#' # Then, we use the function to obtain the catches length distribution.
+#' # UNCOMMENT THE FOLLOWING LINES
+#' # resul=Data.to.LB.SPR(Pop.Mod,CV=0.2)
 #'
 #' # Furthermore, than the data provided by Data.to.LB.SPR
 #' # function the LB-SPR method also needs some life history parameters.
@@ -75,13 +77,15 @@
 #' # myFit<- LBSPRfit(MyPars,Len)
 #' @export
 
-Data.to.LB.SPR=function(Pop.Mod,CV){
+Data.to.LB.SPR=function(Pop.Mod,CV,RF.value=1000){
   Len.list=list()
 
 
   niter=dim(Pop.Mod$Matrices$N)[3]
   number_years=dim(Pop.Mod$Matrices$N)[2]
 
+  if(RF.value!=1000){
+    L.D<-Distribution.length(Pop.Mod,CV=CV,Type="LengthC", RF.value=RF.value)}
   L.D<-Distribution.length(Pop.Mod,CV=CV,Type="LengthC")
 
   for (i in 1:niter){

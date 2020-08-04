@@ -2,26 +2,28 @@
 % Please edit documentation in R/Distribution_length.R
 \name{Distribution.length}
 \alias{Distribution.length}
-\title{Stock Length and Capture Length Distribution for each year}
+\title{Stock Length and Catches Length Distribution for each year}
 \usage{
-Distribution.length(Pop.Mod, CV, Type)
+Distribution.length(Pop.Mod, CV, Type, RF.value = 1000)
 }
 \arguments{
 \item{Pop.Mod}{A list containing the components returned by Population.Modeling function (main function).}
 
 \item{CV}{The coefficient of variation associated to the log-normal distribution (see Details).}
 
-\item{Type}{An indicator of which distribution length must be computed, length stock distribution (Type="LengthS") whereas length captures distribution (Type="LengthC").}
+\item{Type}{An indicator of which distribution length must be computed, length stock distribution (Type="LengthS") whereas length catches distribution (Type="LengthC").}
+
+\item{RF.value}{The number of values generated for each age (given a year and an iteration) from the log-normal distribution (see details). By default RF.value=1000.}
 }
 \value{
-An array whose third dimension is the number of iterations, and the second one is the different years. Hence each column contains the distribution length (stock or captures) for each year.
+An array whose third dimension is the number of iterations, and the second one is the different years. Hence each column contains the distribution length (stock or catches) for each year.
 }
 \description{
-Return the stock length or captures length distribution for each year and iteration.
+Return the stock length or catches length distribution for each year and iteration.
 }
 \details{
-The function returns the stochastic length distribution of the stock (Type="LengthS") or length captures distribution (Type="LengthC") for each year and iteration.
-In the case of the stock length distribution it is computed generating for each age, year and iteration random values from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. For the captures length distribution the mean of the log-normal distribution is given by the corresponding capture length, and the number of random values is given by the corresponding number of captures, C.
+The function returns the stochastic length distribution of the stock (Type="LengthS") or length catches distribution (Type="LengthC") for each year and iteration.
+In the case of the stock length distribution it is computed generating for each age, year and iteration RF.value random values from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. For the catches length distribution the mean of the log-normal distribution is given by the corresponding catch length. For the stock length distribution the distribution obtain for each age (given a year and an iteration) is scaled using the corresponding stock number (N matrix), whereas in the catch distribution this role is for the catch matrix C.
 }
 \examples{
 
@@ -30,7 +32,7 @@ In the case of the stock length distribution it is computed generating for each 
 # consistent with this unit when we introduce the biological and
 # stock-recruitment parameters.
 ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
-maxFage=7,ts=0,tc=0.5,tseed=NULL)
+maxFage=7,tc=0.5,tseed=NULL)
 
 # Now, we introduce the biological parameters of the population.
 # Note that L_inf is in cm, and a and b parameters allow us to relate
@@ -68,10 +70,11 @@ Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
 
 
 
-# We compute the captures length distribution:
-L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthC")
+# We compute the catches length distribution:
+# UNCOMMENT THE FOLLOWING LINES
+#L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthC")
 # We compute the stock length distribution:
- L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthS")
+# L.D<-Distribution.length(Pop.Mod,CV=0.2,Type="LengthS")
 }
 \author{
 \itemize{

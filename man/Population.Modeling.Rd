@@ -9,28 +9,27 @@ Population.Modeling(ctrPop, ctrBio, ctrFish, SR)
 \arguments{
 \item{ctrPop}{A list containg the following elements:  \itemize{
 \item years=vector containing the years for which the dynamics of the fishery system is simulated.
-\item ages=vector containing the different ages presented in the stock. The oldest age defines a plus group.
+\item ages=vector containing the different ages presented in the stock. The oldest age defines a plus group. The first age must be 0, in the current version the OM is not adapted to treat with populations started in other ages.
 \item niter=number of iterations of the simulation process (see Details for more information about the stochastic and deterministic performance).
 \item N0=a number corresponding to the population size at first age and year, or a vector containing the population size at first year for all ages. It is worth to mention that the user needs to know in which units is the number introduced here. For example, it can refers to individuals or thousands of individuals.
 \item minFage=minimum age for which the corresponding fishing mortality is considered to compute the mean fishing mortality.
 \item maxFage=maximum age for which the corresponding fishing mortality is considered to compute the mean fishing mortality.
-\item ts=time of the year at which the stock is simulated. This parameter takes a value between 0 and 1, since the year is considered as a unit. For example, ts=0.25 means that the stock is simulated on March. By default is zero (January), it is interesting to control this parameter for example when we compute the SSB.
-\item tc=time of the year at which the capture is simulated. This parameter takes a value between 0 and 1, since the year is considered as a unit. By default is 0.5 half of the year.
+\item tc=time of the year at which the catches are simulated. This parameter takes a value between 0 and 1, since the year is considered as a unit. By default  tc=0.5, the catches occurs at mid of the year (this is an approximation since the catches can occur during a period of the year not in a particular moment).
 \item seed=a numeric value to introduce into set.seed() function for having a reproducible result. By default is NULL, which means that the results are not  reproducible, that is, each run returns different results.}}
 
 \item{ctrBio}{A list containg the following biological parameters of the population: \itemize{
 \item M=matrix containing the rates of instantaneous natural mortality for each year and age.
-\item CV_M=coefficient of variation associated to the natural mortality. In each iteration the rates of instantaneous natural mortality come from a log-normal distribution centered on the corresponding value of M and variability determined by CV_M.
-\item L_inf=asymptotic average maximum body size (parameter of Von Bertalanffy Growth Model, see Details). It is important to take care of the units of the introduced number, which must be in accordance with other parameter. The unit can be, for example, cm.
+\item CV_M=coefficient of variation associated to the natural mortality. In each stochastic iteration the rates of instantaneous natural mortality come from a log-normal distribution centered on the corresponding value of M and variability determined by CV_M.
+\item L_inf=asymptotic average maximum body size (parameter of Von Bertalanffy Growth Model, see Details). It is important to take care of the units of the introduced number, which must be in accordance with others parameters. The unit can be, for example, cm.
 \item t0=hypothetical age at which the species has zero length (parameter of Von Bertalanffy Growth Model, see Details).
 \item k=growth rate coefficient that determines how quickly the maximum is attained (parameter of Von Bertalanffy Growth Model, see Details)
-\item CV_L=coefficient of variation associated to the stock length.  In each iteration the length comes from a normal distribution centered on the corresponding length obtained from Von Bertalanffy Growth Model (for each age at ts) and the corresponding variability is determined by CV_L.
-\item CV_LC=coefficient of variation associated to the captures length. In each iteration the length comes from a normal distribution centered on the corresponding length obtained from Von Bertalanffy Growth Model (for each age at tc) and the corresponding variability is determined by CV_LC.
+\item CV_L=coefficient of variation associated to the stock length.  In each stochastic iteration the length comes from a normal distribution centered on the corresponding length obtained from Von Bertalanffy Growth Model (for each age at ts=0 the time of the year at which the stock is simulated which has been fixed in 0 by default) and the corresponding variability is determined by CV_L.
+\item CV_LC=coefficient of variation associated to the captures length. In each stochastic iteration the length comes from a normal distribution centered on the corresponding length obtained from Von Bertalanffy Growth Model (for each age at tc) and the corresponding variability is determined by CV_LC.
 \item a=allometric growth parameter. It is important to introduce this parameter in a unit according to the units used to measure the length and weight.
 \item b=scaling constant of allometric growth. It is important to introduce this parameter in a unit according to the units used to measure the length and weight.
 \item a50_Mat=x-value of the sigmoid's midpoint of the logistic function used to generate the maturity matrix.
 \item ad_Mat=minus the inverse of the logistic growth rate (steepness of the curve) used to generate the maturity matrix. Zero or positive are NOT valid.
-\item CV_Mat=coefficient of variation associated to the a50_Mat parameter. In each iteration the maturity matrix values comes from a logistic function whose a50_Mat parameter is generated from a log-normal distribution centered on the given value of a50_Mat and variability detrmined by CV_Mat.}}
+\item CV_Mat=coefficient of variation associated to the a50_Mat parameter. In each stochastic iteration the maturity matrix values comes from a logistic function whose a50_Mat parameter is generated from a log-normal distribution centered on the given value of a50_Mat and variability detrmined by CV_Mat.}}
 
 \item{ctrFish}{A list containg the following fishing parameters of the population: \itemize{
 \item f=is the annual component of fishing mortality F = f * SEL. Can be different for each of the iterations, hence we introduce a matrix whose rows contain the annual vector for each iteration.
@@ -54,24 +53,24 @@ Population.Modeling(ctrPop, ctrBio, ctrFish, SR)
 \item ad_Sel=minus the inverse of the logistic growth rate (steepness of the curve). Zero or positive are NOT valid.
 }}
 \item CV_SEL=coefficient of variation associated to the selectivity. \itemize{
-\item for type="cte", the values of the selectivity matrix comes from a uniform distribution with mean equal to "cte" and whose variability is determined by CV_SEL.
-\item for type="Logistic", the value of the parameter a50_SEL in each iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL.
-\item for type="Andersen", the value of the parameter p1 in each iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL.
-\item for type="Gamma", the value of the parameter alpha in each iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL.
+\item for type="cte", the values of the selectivity matrix for each stochastic iteration comes from a uniform distribution with mean equal to "cte" and whose variability is determined by CV_SEL.
+\item for type="Logistic", the value of the parameter a50_SEL in each stochastic iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL.
+\item for type="Andersen", the value of the parameter p1 in each stochastic iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL.
+\item for type="Gamma", the value of the parameter alpha in each stochastic iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL.
 }}}
 
 \item{SR}{A list containing the following parameters of spawning stock recruitment relationship: \itemize{
 \item type=stock recruitment model options. Three choices are available: "cte" which means that a constant recruitment is used, "BH" which corresponds to Beverton-Holt Recruitment Model and "RK" which refers to Ricker Recruitment Model. The default option is "cte".
 \item par= parameters of the stock recruitment model specified in the argument "type". In order to introduce the following parameters correctly we need to know which are the units of biomass and  N0 to be consistent.  \itemize{
-  \item type="cte" then recruitment is equal to the population size at first age and year introduced previously in N0 parameter then par=NULL.
+  \item type="cte" then recruitment is equal to the population size at first age and year introduced previously in N0 parameter then par contains only CV_REC_C which is the associated coefficient of variation. For the stochastic iterations the recruitment is generated from a  log-normal distribution centered on N0 and whose variability is determined by CV_REC_C.
   \item type="BH" then par is equal to a vector containing the following elements: \itemize{
     \item a_BH=maximum number of recruitments produced (parameter of Beverton-Holt Recruitment Model, see Details).
     \item b_BH=spawning stock needed to produce recruitment equal to half maximum (parameter of Beverton-Holt Recruitment Model, see Details).
-    \item CV_REC_BH=coefficient of variation associated to the Beverton-Holt Recruitment Model. In each iteration the deterministic equation of the model is multipled by log-normal residuals centered on 0 and whose variability is determined by CV_REC_BH.}
+    \item CV_REC_BH=coefficient of variation associated to the Beverton-Holt Recruitment Model. In each stochastic iteration the deterministic equation of the model is multipled by log-normal residuals centered on 0 and whose variability is determined by CV_REC_BH.}
   \item type="RK" then par is equal to a vector containing the following elements: \itemize{
      \item a_RK=recruits-per-spawner at low stock levels (parameter of Ricker Recruitment Model, see Details).
      \item b_RK=relates to the rate of decreasing of recruits-per-spawner as SSB increases (parameter of Ricker Recruitment Model, see Details).
-     \item CV_REC_RK=coefficient of variation associated to the Ricker Recruitment Model. In each iteration the deterministic equation of the model is multipled by log-normal residuals centered on 0 and whose variability is determined by CV_REC_RK.}
+     \item CV_REC_RK=coefficient of variation associated to the Ricker Recruitment Model. In each  stochastic iteration the deterministic equation of the model is multipled by log-normal residuals centered on 0 and whose variability is determined by CV_REC_RK.}
      }}}
 }
 \value{
@@ -80,7 +79,7 @@ A list containing the following components.
 \item{N: }{Third dimensional array containing the population size for each age, year and iteration.}
 \item{F:}{Third dimensional array containing the instantaneous fishing mortality for each age, year and iteration.}
 \item{M:}{Third dimensional array containing the instantaneous natural mortality for each age, year and iteration.}
-\item{W:}{Third dimensional array containing the stock weight for each age, year and iteration (at ts).}
+\item{W:}{Third dimensional array containing the weight corresponding to the stock length for each age, year and iteration (at ts the time of the year at which the stock is simulated which has been fixed in 0 by default).}
 \item{Mat:}{Third dimensional array containing the proportion of mature at each age, year and iteration.}
 \item{C_N:}{Third dimensional arraycontaining the number of captures for each age, year and iteration.}
 \item{C_W:}{Third dimensional array containing the weight of captures for each age, year and iteration (at tc).}}
@@ -90,8 +89,8 @@ A list containing the following components.
 \item{SR:}{Argument of the function containing stock-recruitment relationship.}
 \item{minFage:}{minimum age for which the corresponding fishing mortality is considered to compute the mean fishing mortality.}
 \item{maxFage:}{maximum age for which the corresponding fishing mortality is considered to compute the mean fishing mortality.}
-\item{ts:}{time of the year at which the stock is simulated. This parameter takes a value between 0 and 1, since the year is considered as a unit. For example, ts=0.3 means that the stock is simulated on March. By default is zero (January), it is interesting to control this parameter for example when we compute the SSB.}
- \item{tc:}{time of the year at which the capture is simulated. This parameter takes a value between 0 and 1, since the year is considered as a unit. By default is 0.5 half of the year.}
+\item{ts:}{time of the year at which the stock is simulated. It has been fixed in 0 by default. No possibility of changing such default value is provided.}
+ \item{tc:}{time of the year at which the catches are simulated. This parameter takes a value between 0 and 1, since the year is considered as a unit. By default is 0.5 half of the year.}
 \item{seed:}{a numeric value to introduce into set.seed() function for having a reproducible result. By default is NULL, which means that the results are not  reproducible, that is, each run returns different results.}}
 }
 \description{
@@ -101,10 +100,10 @@ Provides a flexible and generic operating model (OM) which simulates the real dy
 STOCHASTIC AND DETERMINISTIC PERFORMANCE
 
 
-The first iteration (niter=1) contains the results corresponding to the deterministic case, to wit, all the coefficients of variation (CV's) associated to the different bilogical and fishery components are zero. The next iterations contain the stochastic results.
+The first iteration (niter=1) contains the results corresponding to the deterministic case, to wit, all the coefficients of variation (CV's) associated to the different biological and fishery components are zero. The next iterations contain the stochastic results.
 Hence, if niter=1 (CV's=0), we only obtain the deterministic performance.
 If niter=1 and  the CV's are different than 0, the function returns ERROR because the first iteration is the deterministic one and hence the CV's can not be used.
-If niter>1 and the CV's are 0, the function returns ERROR because it does has sense to repeat a deterministic process (a process without variability).
+If niter>1, the CV's are 0 and the matrix of the annual component of fishing mortality has constant rows, the function returns ERROR because it does has sense to repeat a deterministic process (a process without variability).
 
 VON BERTALANFFY GROWTH MODEL
 
@@ -126,6 +125,13 @@ RECRUITMENT MODELS
 The formulation of the Beverton-Holt Recruitment Model equation is: \deqn{R=a_BH*SSB/(b_BH+SSB)} where SSB is the maturity biomass (spawning stock), a_BH is the maximum number of recruitments produced and b_BH is the spawning stock needed to produce recruitment equal to half maximum.
 
 The formulation of the Ricker equation is: \deqn{R=a_RK*SSB*exp(-b_RK*SSB)} where SSB is the maturity biomass (spawning stock), a_RK is the recruits-per-spawner at low stock levels and b_RK relates to the rate of decreasing of recruits-per-spawner as SSB increases.
+
+STOCK NUMBERS
+
+If N0 is a number then its is updated using the recruitment model evaluated at the SSB of the first year (such SSB assume negligible the contribution of age 0). More precisely, the maturity at first age (age 0 years) is assumed 0. Whereas if N0 is a vector such procedure of updated is not carried out.
+Remember that: N0 is a number corresponding to the population size at first age and year, or a vector containing the population size at first year for all ages.
+
+Note that the time of the year at which the stock is simulated has been fixed in 0 by default, which means that the stock numbers correspond to January. No possibility of changing such default value is provided.
 }
 \examples{
 # First we introduce the basic parameters to define the population.
@@ -133,7 +139,7 @@ The formulation of the Ricker equation is: \deqn{R=a_RK*SSB*exp(-b_RK*SSB)} wher
 # consistent with this unit when we introduce the biological and
 # stock-recruitment parameters.
 ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
-maxFage=7,ts=0,tc=0.5,tseed=NULL)
+maxFage=7,tc=0.5,seed=NULL)
 
 # Now, we introduce the biological parameters of the population.
 # Note that L_inf is in cm, and a and b parameters allow us to relate
@@ -168,8 +174,9 @@ ctrFish<-list(f=f,ctrSEL=ctrSEL)
 # the recruitment is measured as number of individuals.
 
 a_BH=10000; b_BH=400; CV_REC_BH=0.2; a_RK=10; b_RK=0.0002; CV_REC_RK=0.2
+CV_REC_C=0.2
 # If the spawning stock recruiment relationship is constant:
-SR<-list(type="cte",par=NULL)
+SR<-list(type="cte",par=c(CV_REC_C))
 # If the spawning stock recruitment relationship is Beverton-Holt Recruitment Model:
 SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
 # If the spawning stock recruitment relationship is Ricker Recruitment Model:
@@ -186,5 +193,6 @@ Pop.Mod$Info
 \itemize{
 \item{Marta Cousido-Rocha}
 \item{Santiago Cerviño López}
+\item{Maria Grazia Pennino}
 }
 }

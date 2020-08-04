@@ -11,15 +11,15 @@ steepness(Pop.Mod, Fish.years, Bio.years, type, h, Method, par)
 
 \item{Fish.years}{The number of recent years to estimate the mean of SEL (selectivity).}
 
-\item{Bio.years}{The number of recent years to estimate the mean of M, Mat, WC, and W (natural mortality, maturity, stock weight and capture weight).}
+\item{Bio.years}{The number of recent years to estimate the mean of M, Mat, WC, and W (natural mortality, maturity, stock weight and catch weight).}
 
 \item{type}{The  desired approach which has two possibilities, type="steepness" or  type="parameters".}
 
 \item{h}{The desired value of the steepness when type="parameters". In other case (type="steepness") this parameter is equal to NULL.}
 
-\item{Method}{The procedure to obtain the age vector of weight (stock and captures), natural mortality, selectivity and maturity. By default is "mean" which means that the mean of the last "Bio.years" is used. The alternative option is "own", the user can introduce these elements.}
+\item{Method}{The procedure to obtain the age vector of weight (stock and catches), natural mortality, selectivity and maturity. By default is "mean" which means that the mean of the last "Bio.years" is used. The alternative option is "own", the user can introduce these elements.}
 
-\item{par}{If Method="own" it is a list containing the matrices whose columns report for each iteration the age vector of weight (stock and captures), natural mortality, selectivity and maturity. In other case is equal to NULL.}
+\item{par}{If Method="own" it is a list containing the matrices whose columns report for each iteration the age vector of weight (stock and catches), natural mortality, selectivity and maturity. In other case is equal to NULL.}
 }
 \value{
 \itemize{
@@ -38,7 +38,7 @@ The function returns the steepness of a stock recruitment relationship. Remember
 # consistent with this unit when we introduce the biological and
 # stock-recruitment parameters.
 ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
-maxFage=7,ts=0,tc=0.5,tseed=NULL)
+maxFage=7,tc=0.5,seed=NULL)
 
 # Now, we introduce the biological parameters of the population.
 # Note that L_inf is in cm, and a and b parameters allow us to relate
@@ -73,8 +73,9 @@ ctrFish<-list(f=f,ctrSEL=ctrSEL)
 # the recruitment is measured as number of individuals.
 
 a_BH=10000; b_BH=400; CV_REC_BH=0.2; a_RK=10; b_RK=0.0002; CV_REC_RK=0.2
+CV_REC_C=0.2
 # If the spawning stock recruiment relationship is constant:
-SR<-list(type="cte",par=NULL)
+SR<-list(type="cte",par=c(CV_REC_C))
 # If the spawning stock recruitment relationship is Beverton-Holt Recruitment Model:
 SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
 # If the spawning stock recruitment relationship is Ricker Recruitment Model:

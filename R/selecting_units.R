@@ -5,9 +5,9 @@
 #'
 #' @param Pop.Mod A list containing the components returned by Population.Modeling function (main function).
 #' @param Elements A vector specifing which of the following elements must be reported by the function.\itemize{
-#' \item{"C":}{Weight of the captures for each year and iteration.}
+#' \item{"C":}{Weight of the catches for each year and iteration.}
 #' \item{"BIO":}{Total biomass for each year and iteration.}
-#' \item{"SSB":}{Maturity biomass for each year (spawning stock) and iteration.}}
+#' \item{"SSB":}{Maturity biomass for each year (spawning stock biomass) and iteration.}}
 #' @return A list containing the objects specified before using argument "Elements" in tonnes.
 #' @author
 #' \itemize{

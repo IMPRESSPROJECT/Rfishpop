@@ -1,113 +1,315 @@
-#' @title Reference Fishery Mortalities
+#' @title Reference Points
 #'
-#' @description Returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1"), the reference fishery mortality at which the MSY is attained (FM_type="F_msy") and the reference fishery mortality which will drive the stock to extinction (FM_type="F_Crash"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned.
+#' @description Returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1"), the reference fishery mortality at which the MSY is attained (FM_type="F_msy"), the reference fishery mortality which will drive the stock to extinction (FM_type="F_Crash") and the reference fishery mortality at which the BPR is equal to prop multiplied by BPR0 where prop is any proportion that the user can fix and BPR0 is the BPR at virgin biomass (FM_type="F_BPR"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned.
 #'
 #' @param Pop.Mod A list containing the components returned by Population.Modeling function (main function).
 #' @param Fish.years The number of recent years to estimate the mean of SEL (selectivity).
-#' @param Bio.years The number of recent years to estimate the mean of M, Mat, WC, and W (natural mortality, maturity, stock weight and capture weight).
-#' @param Method The procedure to obtain the age vector of weight (stock and captures), natural mortality, selectivity and maturity. By default is "mean" which means that the mean of the last "Bio.years" is used. The alternative option is "own", the user can introduce these elements.
-#' @param par If Method="own" it is a list containing the age vector of weight (stock and captures), natural mortality, selectivity and maturity (for the first iteration). In other case is equal to NULL.
-#' @param FM_type which of the four reference fishery mortalities must be computed. The possibilities have been described above: FM_type="F_max", FM_type="F_0.1", FM_type="F_msy" and FM_type="F_Crash".
-#' @param iters A vector containing the iteration for which the reference fishery mortalities must be computed.
-#' @details The function returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1"), the reference fishery mortality at which the MSY is attained (FM_type="F_msy") and  the reference fishery mortality which will drive the stock to extinction (FM_type="F_Crash"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. If the fishing effort is equal to 10 can be that optimize process had not found the correct value in the default sequence (except for FM_type="F_Crash", it this case the sequence finish at 60).
+#' @param Bio.years The number of recent years to estimate the mean of M, Mat, WC, and W (natural mortality, maturity, stock weight and catch weight).
+#' @param Method The procedure to obtain the age vector of weight (stock and catches), natural mortality, selectivity and maturity. By default is "mean" which means that the mean of the last "Bio.years" is used. The alternative option is "own", the user can introduce these elements.
+#' @param par If Method="own" it is a list containing the age vector of weight (stock and catches), natural mortality, selectivity and maturity (for the first iteration). In other case is equal to NULL.
+#' @param FM_type a vector containing which of the five reference fishery mortalities must be computed. The possibilities have been described above: FM_type="F_max", FM_type="F_0.1", FM_type="F_msy", FM_type="F_Crash" and FM_type="F_BPR".
+#' @param iters A vector containing the iterations for which the reference fishery mortalities must be computed.
+#' @param plot A logical parameter equal to TRUE if the user desires to obtain several informative plots (see details).
+#' @param prop The proportion of BPR at virgin biomass at which FM_type="F_BPR" refers. By default is 0.3. If the user desires the result for different proportions a vector containing the different values must be introduced using prop argument.
+#' @details The function returns the reference fishery mortality which produces maximum YPR (FM_type="F_max"), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type="F_0.1"), the reference fishery mortality at which the MSY is attained (FM_type="F_msy"), the reference fishery mortality which will drive the stock to extinction (FM_type="F_Crash") and and the reference fishery mortality at which the BPR is equal to prop multiplied by BPR0 where prop is any proportion that the user can fix and BPR0 is the BPR at virgin biomass (FM_type="F_BPR"). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned. If the fishing effort is equal to 10 can be that optimize process had not found the correct value in the default sequence (except for FM_type="F_Crash", in this case the sequence finishes at 60).
 #'
-#' @return One of the three following elements depending the above selection:
+#' If plot=TRUE, the function reports the plots: equilibrium biomass v. fishing mortality, equilibrium yield v. fishing mortality, equilibrium recruitment v. biomass,  and equilibrium yield v. biomass. All the plots are done using the infromation of the first iteration in the vector of parameter *iters*. The corresponding reference fishery mortalities are also plotted in the previous curves. Note that only the fishery mortalities required by the argument FM_type are plotted. If prop is a vector of length greater than 1 only the values corresponding to the first element of the vector will be represented in the plot for simplicity. On the other hand, note that F_msy and F_max coincide when the recruitment relationship is constant and hence only one of both appears in the plot. The reference fishery mortalities F_max and F_Crash can be overlapped in equilibrium recruitment v. biomass and equilibrium yield v. biomass plots then only one can be shown in the plot.
+#'
+#' Note that F_Crash does not exist when the recruitment model is constant.
+#'
+#'
+#'
+#' @return The function returns a list reporting arrays (third dimension *iters*) containing the corresponding elements of the following list depending the above selection (*FM_type* argument). \itemize{
 #' \item{F_max:}{the value of F that produces maximum YPR with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 #' \item{F_0.1:}{the value of F at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 #' \item{F_msy:}{the value of F at which the MSY is attained with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
 #' \item{F_Crash:}{the value of F which will drive the stock to extinction with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.}
+#' \item{F_BPR:}{the value of F at which at which the BPR is equal to prop multiplied by BPR0, where prob is any proportion that the user can fix and BPR0 is the BPR at virgin biomass, with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium. To access to this element use F_BPRprop following by symbol of percentage (without spaces and between quotation marks) where prop is the value that the user specifies. If prop vector length is greater than 1 the function will return several slots in the list reporting the corresponding values for each value of prop. The user can access to the elements as we mentioned before replacing prop for any of the value in such vector.}
+#' Futhermore the function returns also an slot termed INFO containing some information useful for the application of other functions of the package.
+#'
+#' }
 #' @author
 #' \itemize{
 #' \item{Marta Cousido-Rocha}
 #' \item{Santiago Cerviño López}
+#' \item{Maria Grazia Pennino}
 #' }
 #' @examples
-#' ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
-#' maxFage=7,ts=0,tc=0.5,tseed=NULL)
+#' ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=15000,ages=0:15,minFage=2,
+#'              maxFage=5,tc=0.5,seed=NULL)
 #' number_ages<-length(ctrPop$ages);number_years<-length(ctrPop$years)
-#' M<-matrix(rep(0.4,number_ages*number_years),ncol = number_years)
-#' colnames(M)<-ctrPop$years
-#' rownames(M)<-ctrPop$ages
-#' ctrBio<-list(M=M,CV_M=0.2, L_inf=124.5, t0=0, k=0.164, CV_L=0.2, CV_LC=0.2,
-#' a=4.5*10^(-6),b=3.1049,a50_Mat=3, ad_Mat=-0.5,CV_Mat=0.2)
-#' ctrSEL<-list(type="Logistic", par=list(a50_Sel=1.5, ad_Sel=-1),CV_SEL=0.2)
-#' f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
-#' ctrFish<-list(f=f,ctrSEL=ctrSEL)
-#' a_BH=10000; b_BH=400; CV_REC_BH=0.2
-#' SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
-#' Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+#'Mvec=c(1,0.6,0.5,0.4,0.35,0.35,0.3,rep(0.3,9))
+#'M<-matrix(rep(Mvec,number_years),ncol = number_years)
+#'colnames(M)<-ctrPop$years
+#'rownames(M)<-ctrPop$ages
+#'ctrBio<-list(M=M,CV_M=0.2, L_inf=20, t0=-0.25, k=0.3, CV_L=0, CV_LC=0, a=6*10^(-6), b=3,
+#'            a50_Mat=1, ad_Mat=-0.5,CV_Mat=0)
+#'ctrSEL<-list(type="cte", par=list(cte=0.5),CV_SEL=0)
+#'f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
+#'ctrFish<-list(f=f,ctrSEL=ctrSEL)
+#'a_BH=15000; b_BH=50; CV_REC_BH=0
+#'SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
+#'Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+#' # Uncomment the following lines:
 #' # We compute the reference fishery mortalities.
-#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_max",iters=1:2)
-#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_0.1",iters=1:2)
-#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_msy",iters=1:2)
-#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_Crash",iters=1:2)
-#' # If par is not NULL must be something like (assuming that W, WC,
-#' # M, Mat and SEL are defined previously).
-#' # par=list(); par$W<-W; par$WC<-WC; par$SEL<-SEL; par$Mat<-Mat; par$M<-M
-
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_max",iters=1:2,plot=TRUE)
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_0.1",iters=1:2,plot=TRUE)
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_msy",iters=1:2,plot=TRUE)
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_Crash",iters=1:2,plot=TRUE)
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_BPR",iters=1:2,plot=TRUE,prop=0.4)
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type=c("F_Crash","F_msy"),iters=1:2
+#' #,plot=TRUE)
+#' # RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type=c("F_Crash","F_msy",
+#' #"F_0.1","F_max","F_BPR")
+#' #,iters=1:2,plot=TRUE)
+#'
+#' # The following commented lines refers to par argument.
+#' # If par is not NULL must be something like (assuming that W, WC, M,
+#' # Mat and SEL are defined previously).
+#' # par=list(); par$W<-W; par$SEL<-SEL; par$Mat<-Mat; par$M<-M; par$WC<-WC
+#' # RF(Pop.Mod,Method="own",par=par2,FM_type=c("F_Crash","F_msy",
+#' #"F_0.1","F_max","F_BPR"),iters=1:2,plot=TRUE)
 #'
 #' @export
 #'
-RF<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters){
+RF<-function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters,plot,prop=0.3){
+
+  N0=Pop.Mod$Matrices$N[1,1,1]
+
+  if(Method=="own"){
+    Fish.years = 3
+    Bio.years = 3
+  }
   if(is.null(Method)){Method="mean"}
   n=length(iters)
 
+  typeaux=function(Pop.Mod, Fish.years,Bio.years,Method,par,FM_type,iters,N0,prop){
 
-  if(n<=20){
 
-    rest<-20-n
-    iters_list<-as.list(c(iters,rep(1,rest)))
-    Resul<-array(0,dim=c(1,7,n))
-    Pop.Mod2<-Pop.Mod
+  n=length(iters)
 
-    Pop.Mod2$Matrices$N<-Pop.Mod$Matrices$N[,,c(iters,rep(1,rest))]
-    Pop.Mod2$Matrices$F<-Pop.Mod$Matrices$F[,,c(iters,rep(1,rest))]
-    Pop.Mod2$Matrices$M<-Pop.Mod$Matrices$M[,,c(iters,rep(1,rest))]
-    Pop.Mod2$Matrices$W<-Pop.Mod$Matrices$W[,,c(iters,rep(1,rest))]
-    Pop.Mod2$Matrices$Mat<-Pop.Mod$Matrices$Mat[,,c(iters,rep(1,rest))]
-    Pop.Mod2$Matrices$C_N<-Pop.Mod$Matrices$C_N[,,c(iters,rep(1,rest))]
-    Pop.Mod2$Matrices$C_W<-Pop.Mod$Matrices$C_W[,,c(iters,rep(1,rest))]
+  Resul<-RF_U(Pop.Mod, Fish.years = Fish.years,Bio.years = Bio.years,Method=Method,par=par,FM_type=FM_type,iters =iters,N0=N0,prop=prop)
 
-    Resul[,,iters]<-RF_U(Pop.Mod2, Fish.years = Fish.years,Bio.years = Bio.years,Method=Method,par=par,FM_type=FM_type,iters =iters_list)[,,iters]
+  colnames(Resul)=c("f","F","YPR","BPR","R","Y","B")
+  dimnames(Resul)[[3]] <- iters
+  return(Resul)}
 
+  # Except F_BRP
+
+  ind=which(FM_type=="F_BPR")
+
+  if(length(ind)>0){aux=FM_type[-ind]}else{aux=FM_type}
+
+  l.aux=length(aux)
+
+  list_final=list()
+  if(l.aux>0){
+  for (i in 1:l.aux){
+    list_final[[i]]=typeaux(Pop.Mod=Pop.Mod, Fish.years=Fish.years,Bio.years=Bio.years,Method=Method,par=par,FM_type=aux[i],iters=iters,N0=N0,prop=prop)
+  }
+  }
+  l.prop=length(prop)
+  if(length(ind)>0){
+  for (i in 1:l.prop){
+    list_final[[l.aux+i]]=typeaux(Pop.Mod=Pop.Mod, Fish.years=Fish.years,Bio.years=Bio.years,Method=Method,par=par,FM_type="F_BPR",iters=iters,N0=N0,prop=prop[i])
+  }}
+
+if(length(ind)>0){
+vec=1:length(prop)
+for(i in 1:length(prop)){
+vec[i]=paste("F_BPR", prop[i]*100, "%", sep="")}
+names(list_final)=c(aux,vec)
+if(l.aux==0){names(list_final)=c(vec)}}
+  if(length(ind)==0){
+names(list_final)=c(aux)}
+
+
+
+
+
+
+if (plot==TRUE){
+  # Saving information
+  RFmax=list_final$F_max; ind_max=is.null(RFmax)
+  RF01=list_final$F_0.1; ind_01=is.null(RF01)
+  RFmsy=list_final$F_msy; ind_msy=is.null(RFmsy)
+  RFcrash=list_final$F_Crash; ind_crash=is.null(RFcrash)
+
+  ll=length(list_final)
+  names(list_final)=rep("",ll)
+  if(length(ind)>0){
+  RFBPRpro=list_final[[l.aux+1]]; ind_BPR=is.null(RFBPRpro)} else {ind_BPR=TRUE;RFBPRpro=NULL}
+
+
+  Fmax=RFmax[,2,1]
+  F01=RF01[,2,1]
+  Fmsy=RFmsy[,2, 1]
+  Fcrash=RFcrash[,2,1]
+  FBRPpro=RFBPRpro[,2,1]
+
+
+  fmax=RFmax[,1,1];if(is.null(fmax)){fmax=NA}
+  f01=RF01[,1,1];if(is.null(f01)){f01=NA}
+  fmsy=RFmsy[,1,1];if(is.null(fmsy)){fmsy=NA}
+  fcrash=RFcrash[,1,1];if(is.null(fcrash)){fcrash=NA}
+  fBRPpro=RFBPRpro[,1,1];if(is.null(fBRPpro)){fBRPpro=NA}
+
+  bmax=RFmax[,7,1]
+  b01=RF01[,7,1]
+  bmsy=RFmsy[,7,1]
+  bcrash=RFcrash[,7,1]
+  bBRPpro=RFBPRpro[,7,1]
+
+  n <- 4
+  graphics::par(oma = c(4,1,1,1), mfrow = c(2, 2), mar = c(2, 2, 1, 1))
+
+
+
+  f.ref=max(fmax,f01,fmsy,fcrash,fBRPpro,na.rm =TRUE)+0.2
+  f.grid<-seq(0.00,f.ref,by=0.01)
+  RE<-BYR.eq(Pop.Mod,f.grid,Fish.years=Fish.years,Bio.years=Bio.years,plot=FALSE,Method=Method,par=par)
+  F=RE$DPM[,2,iters[1]]
+
+
+
+  # Plot 3
+
+
+  graphics::plot(RE$DPM[,7,iters[1]],RE$DPM[,5,iters[1]],type="l", main="Recruitment v. biomass",xlab="",ylab="")
+  type=Pop.Mod$Info$SR$type
+  a=Pop.Mod$Info$SR$par[1]
+  b=Pop.Mod$Info$SR$par[2]
+
+  if(type=="BH"){
+    slopeSR=RBH(SSB=0.0000001, a, b)
+  }
+
+  if(type=="RK"){
+    slopeSR=RRK(SSB=0.0000001, a, b)
   }
 
 
+  if(ind_max==FALSE){
+  slope <- 1/RFmax[,4,1]
+  intercept <- 0
 
-  if (n>20){
-    blo<-20
-    block<-n%/%blo
-    rest<-n-blo*block
-    seq1<-c(0,(1:(block))*20)+1
-    seq1<-seq1[-length(seq1)]
-    seq2<-seq(blo,n-rest,by=blo)
-    ll<-length(seq1)
-    Resul<-array(0,dim=c(1,7,n))
-    Pop.Mod2<-Pop.Mod
-    for(i in 1:(ll)){
-      Pop.Mod2$Matrices$N<-Pop.Mod$Matrices$N[,,seq1[i]:seq2[i]]
-      Pop.Mod2$Matrices$F<-Pop.Mod$Matrices$F[,,seq1[i]:seq2[i]]
-      Pop.Mod2$Matrices$M<-Pop.Mod$Matrices$M[,,seq1[i]:seq2[i]]
-      Pop.Mod2$Matrices$W<-Pop.Mod$Matrices$W[,,seq1[i]:seq2[i]]
-      Pop.Mod2$Matrices$Mat<-Pop.Mod$Matrices$Mat[,,seq1[i]:seq2[i]]
-      Pop.Mod2$Matrices$C_N<-Pop.Mod$Matrices$C_N[,,seq1[i]:seq2[i]]
-      Pop.Mod2$Matrices$C_W<-Pop.Mod$Matrices$C_W[,,seq1[i]:seq2[i]]
-      Resul[,,seq1[i]:seq2[i]]<-RF_U(Pop.Mod2, Fish.years = Fish.years,Bio.years = Bio.years,Method=Method,par=par,FM_type=FM_type,iters =1:blo)
-    }
+  graphics::abline(intercept, slope,col="red")}
 
-    if(rest>0){
-      i=ll
-      a<-c((seq2[i]+1):n,1:(blo-rest))
-      Pop.Mod2$Matrices$N<-Pop.Mod$Matrices$N[,,a]
-      Pop.Mod2$Matrices$F<-Pop.Mod$Matrices$F[,,a]
-      Pop.Mod2$Matrices$M<-Pop.Mod$Matrices$M[,,a]
-      Pop.Mod2$Matrices$W<-Pop.Mod$Matrices$W[,,a]
-      Pop.Mod2$Matrices$Mat<-Pop.Mod$Matrices$Mat[,,a]
-      Pop.Mod2$Matrices$C_N<-Pop.Mod$Matrices$C_N[,,a]
-      Pop.Mod2$Matrices$C_W<-Pop.Mod$Matrices$C_W[,,a]
-      Resul[,,(seq2[i]+1):n]<-RF_U(Pop.Mod2, 3,3,Method="mean",par=NULL,FM_type=FM_type,iters =1:blo)[,,1:rest]
-    }}
-  colnames(Resul)=c("f","F","YPR","BPR","R","Y","B")
-  return(Resul)
+  if(ind_01==FALSE){
 
+  slope <- 1/RF01[,4,1]
+  intercept <- 0
+
+  graphics::abline(intercept, slope,col="blue")}
+
+  if(ind_msy==FALSE){
+
+  slope <- 1/RFmsy[,4,1]
+  intercept <- 0
+
+  graphics::abline(intercept, slope,col="green")}
+
+  if(ind_crash==FALSE){
+    if(type!="cte"){
+  x=c(0.0000001,bcrash);y=c( slopeSR,RFcrash[,5,1])
+  slope <- diff(y)/diff(x)
+  intercept <- y[1]-slope*x[1]
+
+  graphics::abline(intercept, slope,col="brown")}}
+
+  if(ind_BPR==FALSE){
+
+  slope <- 1/RFBPRpro[,4,1]
+  intercept <-0
+
+  graphics::abline(intercept, slope,col="yellow")}
+
+  graphics::points(bmax,RFmax[,5,1],col="red",cex=1.3,pch=19)
+  graphics::points(b01,RF01[,5,1],col="blue",cex=1.3,pch=19)
+  graphics::points(bmsy,RFmsy[,5,1],col="green",cex=1.3,pch=19)
+  graphics::points(bcrash,RFcrash[,5,1],col="brown",cex=1.3,pch=19)
+  graphics::points(bBRPpro,RFBPRpro[,5,1],col="yellow",cex=1.3,pch=19)
+
+  # Plot 2
+
+  DPM<-RE$DPM[,7,iters[1]]
+  graphics::plot(F,DPM,type="l", main="Biomass v. F",xlab="",ylab="")
+
+  graphics::abline(v=Fmax,col="red")
+  graphics::abline(v=F01,col="blue")
+  graphics::abline(v=Fmsy,col="green")
+  graphics::abline(v=Fcrash,col="brown")
+  graphics::abline(v=FBRPpro,col="yellow")
+
+  graphics::points(Fmax,RFmax[,7,1],col="red",cex=1.3,pch=19)
+  graphics::points(F01,RF01[,7,1],col="blue",cex=1.3,pch=19)
+  graphics::points(Fmsy,RFmsy[,7,1],col="green",cex=1.3,pch=19)
+  graphics::points(Fcrash,RFcrash[,7,1],col="brown",cex=1.3,pch=19)
+  graphics::points(FBRPpro,RFBPRpro[,7,1],col="yellow",cex=1.3,pch=19)
+
+
+
+
+
+  # Plot 4
+
+
+  graphics::plot(RE$DPM[,7,iters[1]],RE$DPM[,6,iters[1]],type="l", main="Yield v. biomass",xlab="",ylab="")
+
+   graphics::abline(v=bmax,col="red")
+   graphics::abline(v=b01,col="blue")
+   graphics::abline(v=bmsy,col="green")
+   graphics::abline(v=bcrash,col="brown")
+   graphics::abline(v=bBRPpro,col="yellow")
+
+  graphics::points(bmax,RFmax[,6,1],col="red",cex=1.3,pch=19)
+  graphics::points(b01,RF01[,6,1],col="blue",cex=1.3,pch=19)
+  graphics::points(bmsy,RFmsy[,6,1],col="green",cex=1.3,pch=19)
+  graphics::points(bcrash,RFcrash[,6,1],col="brown",cex=1.3,pch=19)
+  graphics::points(bBRPpro,RFBPRpro[,6,1],col="yellow",cex=1.3,pch=19)
+
+
+  # plot 1
+  DPM=RE$DPM[,6,iters[1]]
+  graphics::plot(F,DPM,type="l", main="Yield v. F",xlab="",ylab="")
+
+   graphics::abline(v=Fmax,col="red")
+   graphics::abline(v=F01,col="blue")
+   graphics::abline(v=Fmsy,col="green")
+   graphics::abline(v=Fcrash,col="brown")
+   graphics::abline(v=FBRPpro,col="yellow")
+
+  graphics::points(Fmax,RFmax[,6,1],col="red",cex=1.3,pch=19)
+  graphics::points(F01,RF01[,6,1],col="blue",cex=1.3,pch=19)
+  graphics::points(Fmsy,RFmsy[,6,1],col="green",cex=1.3,pch=19)
+  graphics::points(Fcrash,RFcrash[,6,1],col="brown",cex=1.3,pch=19)
+  graphics::points(FBRPpro,RFBPRpro[,6,1],col="yellow",cex=1.3,pch=19)
+
+  per=prop[1]*100
+  graphics::par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+  graphics::plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+  graphics::legend('bottom',legend=c("F_max", "F_0.1","F_msy","F_Crash",
+                                     paste("F_BPR", per, "%", sep="")),
+         col=c("red", "blue","green","brown","yellow"), lwd = 5, xpd = TRUE, horiz = TRUE, cex = 0.8, seg.len=1, bty = 'n')
+
+
+}
+
+  if(length(ind)>0){
+    vec=1:length(prop)
+    for(i in 1:length(prop)){
+      vec[i]=paste("F_BPR", prop[i]*100, "%", sep="")}
+    names(list_final)=c(aux,vec)
+    if(l.aux==0){names(list_final)=c(vec)}}
+  if(length(ind)==0){
+    names(list_final)=c(aux)}
+
+if(Method=="mean"){
+  list_final$INFO=list(Method=Method,Fish.years=Fish.years,Bio.years=Bio.years)
+}
+if(Method=="own"){
+  list_final$INFO=list(Method=Method,par=par)
+  }
+
+return(list_final)
 }

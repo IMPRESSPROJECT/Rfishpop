@@ -11,17 +11,17 @@ Sum.Pop.Mod(Pop.Mod, Elements)
 
 \item{Elements}{A vector specifing which of the following elements must be reported by the function.\itemize{
 \item{"Z": }{Third dimensional array containing the instantaneous mortality for each age, year and iteration.}
-\item{"LS":}{Third dimensional arraycontaining the (stock) length for each age, year and iteration (at ts).}
-\item{"LC":}{Third dimensional array containing the length of the captures for each age, year and iteration (at tc).}
+\item{"LS":}{Third dimensional arraycontaining the (stock) length for each age, year and iteration (at 1st of January).}
+\item{"LC":}{Third dimensional array containing the length of the catches for each age, year and iteration (at tc).}
 \item{"WS":}{Third dimensional array containing the population weight for each age, year and iteration.}
 \item{"WSSB":}{Third dimensional array containing the weight of the mature population for each age, year and iteration.}
-\item{"C":}{Weight of the captures for each year and iteration.}
+\item{"C":}{Weight of the catches for each year and iteration.}
 \item{"SEL":}{Selectivity by age, for each iteration.}
 \item{"BIO":}{Total biomass for each year and iteration.}
-\item{"SSB":}{Maturity biomass for each year (spawning stock) and iteration.}
+\item{"SSB":}{Maturity biomass for each year (spawning stock) and iteration. First age (0) is not contributing to the SSB, their contribution has been assumed negligible.}
 \item{"REC":}{Population numbers at first age.}
 \item{"F":}{Mean fishing mortality (only takes the values between the minFage and maxFage.}
-\item{"WC":}{Third dimensional array containing the weight of captures for each age (at tc), year and iteration.}}}
+\item{"WC":}{Third dimensional array containing the weight corresponding to the catch length for each age (at tc), year and iteration.}}}
 }
 \value{
 A list containing the the objects specified before using argument "Elements".
@@ -36,7 +36,7 @@ This function allows us to extract additional information obtained in the simula
 # consistent with this unit when we introduce the biological and
 # stock-recruitment parameters.
 ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
-maxFage=7,ts=0,tc=0.5,tseed=NULL)
+maxFage=7,tc=0.5,seed=NULL)
 
 # Now, we introduce the biological parameters of the population.
 # Note that L_inf is in cm, and a and b parameters allow us to relate
@@ -71,8 +71,9 @@ ctrFish<-list(f=f,ctrSEL=ctrSEL)
 # the recruitment is measured as number of individuals.
 
 a_BH=10000; b_BH=400; CV_REC_BH=0.2; a_RK=10; b_RK=0.0002; CV_REC_RK=0.2
+CV_REC_C=0.2
 # If the spawning stock recruiment relationship is constant:
-SR<-list(type="cte",par=NULL)
+SR<-list(type="cte",par=c(CV_REC_C))
 # If the spawning stock recruitment relationship is Beverton-Holt Recruitment Model:
 SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
 # If the spawning stock recruitment relationship is Ricker Recruitment Model:

@@ -6,17 +6,17 @@
 #' @param Pop.Mod A list containing the components returned by Population.Modeling function (main function).
 #' @param Elements A vector specifing which of the following elements must be reported by the function.\itemize{
 #' \item{"Z": }{Third dimensional array containing the instantaneous mortality for each age, year and iteration.}
-#' \item{"LS":}{Third dimensional arraycontaining the (stock) length for each age, year and iteration (at ts).}
-#' \item{"LC":}{Third dimensional array containing the length of the captures for each age, year and iteration (at tc).}
+#' \item{"LS":}{Third dimensional arraycontaining the (stock) length for each age, year and iteration (at 1st of January).}
+#' \item{"LC":}{Third dimensional array containing the length of the catches for each age, year and iteration (at tc).}
 #' \item{"WS":}{Third dimensional array containing the population weight for each age, year and iteration.}
 #' \item{"WSSB":}{Third dimensional array containing the weight of the mature population for each age, year and iteration.}
-#' \item{"C":}{Weight of the captures for each year and iteration.}
+#' \item{"C":}{Weight of the catches for each year and iteration.}
 #' \item{"SEL":}{Selectivity by age, for each iteration.}
 #' \item{"BIO":}{Total biomass for each year and iteration.}
-#' \item{"SSB":}{Maturity biomass for each year (spawning stock) and iteration.}
+#' \item{"SSB":}{Maturity biomass for each year (spawning stock) and iteration. First age (0) is not contributing to the SSB, their contribution has been assumed negligible.}
 #' \item{"REC":}{Population numbers at first age.}
 #' \item{"F":}{Mean fishing mortality (only takes the values between the minFage and maxFage.}
-#' \item{"WC":}{Third dimensional array containing the weight of captures for each age (at tc), year and iteration.}}
+#' \item{"WC":}{Third dimensional array containing the weight corresponding to the catch length for each age (at tc), year and iteration.}}
 #' @return A list containing the the objects specified before using argument "Elements".
 #' @author
 #' \itemize{
@@ -30,7 +30,7 @@
 #' # consistent with this unit when we introduce the biological and
 #' # stock-recruitment parameters.
 #' ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
-#' maxFage=7,ts=0,tc=0.5,tseed=NULL)
+#' maxFage=7,tc=0.5,seed=NULL)
 #'
 #' # Now, we introduce the biological parameters of the population.
 #' # Note that L_inf is in cm, and a and b parameters allow us to relate
@@ -65,8 +65,9 @@
 #' # the recruitment is measured as number of individuals.
 #'
 #' a_BH=10000; b_BH=400; CV_REC_BH=0.2; a_RK=10; b_RK=0.0002; CV_REC_RK=0.2
+#' CV_REC_C=0.2
 #' # If the spawning stock recruiment relationship is constant:
-#' SR<-list(type="cte",par=NULL)
+#' SR<-list(type="cte",par=c(CV_REC_C))
 #' # If the spawning stock recruitment relationship is Beverton-Holt Recruitment Model:
 #' SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
 #' # If the spawning stock recruitment relationship is Ricker Recruitment Model:
@@ -79,18 +80,10 @@
 #' @export
 
 Sum.Pop.Mod<-function(Pop.Mod,Elements){
-  ts<-Pop.Mod$Info$ts
-  tc<-Pop.Mod$Info$tc
+  ctrFish=Pop.Mod$Info$ctrFish
+  seed=Pop.Mod$Info$seed
+  set.seed(seed)
 
-    seed=Pop.Mod$Info$seed
-    set.seed(Pop.Mod$Info$seed)
-
-  Sel_type=Pop.Mod$Info$ctrFish$ctrSEL$type
-  CV_SEL<-Pop.Mod$Info$ctrFish$ctrSEL$CV_SEL
-  ### Stochastic Parameters
-
-  CV_LC<-Pop.Mod$Info$ctrBio$CV_LC
-  CV_L<-Pop.Mod$Info$ctrBio$CV_L
 
 
   niter<-dim(Pop.Mod$Matrices$N)[3]
@@ -102,11 +95,9 @@ Sum.Pop.Mod<-function(Pop.Mod,Elements){
   W<-Pop.Mod$Matrices$W
   Mat<-Pop.Mod$Matrices$Mat
   C_W<-Pop.Mod$Matrices$C_W
-
+  C_N<-Pop.Mod$Matrices$C_N
+  f=Pop.Mod$Info$ctrFish$f
   # Bio
-  L_inf<-Pop.Mod$Info$ctrBio$L_inf
-  t0<-Pop.Mod$Info$ctrBio$t0
-  k<-Pop.Mod$Info$ctrBio$k
   a<-Pop.Mod$Info$ctrBio$a
   b<-Pop.Mod$Info$ctrBio$b
   min_age<-Pop.Mod$Info$minFage
@@ -118,57 +109,31 @@ Sum.Pop.Mod<-function(Pop.Mod,Elements){
 
   Z<-M+F
 
-  ### LENGTH
+  # L
+
   L<-N
 
-  Ld<-matrix(rep(Length_VB(L_inf,k,ages+ts,t0),number_years), ncol=number_years,nrow=number_ages)
-
-
-  ### Stochastic (Normal CV_L)
-
-
-  if(CV_L>0){
-    for (i in 1:number_ages){
-      for(j in 1:number_years){
-        m<-Ld[i,j]
-        v<-(CV_L*m)
-        L[i,j,]<-rnorm.seed(niter,m,v,seed)
-      }}
-    L[,,1]<-Ld
-  }
-  ### Deterministic
-  if(niter==1 & CV_L==0){L[,,1]<-Ld}
-  if(niter>1 & CV_L==0) {L[,,1:niter]<-Ld}
-
-
-
-  ### LENGTH CAPTURES
-  L_c<-N
-
-  ### Stochastic (Normal CV_LC)
-
-  L_cd<-matrix(rep(Length_VB(L_inf,k,ages+tc,t0),number_years), ncol=number_years,nrow=number_ages)
-
-  if(CV_LC>0){
-    for (i in 1:number_ages){
-      for(j in 1:number_years){
-        m<-L_cd[i,j]
-        v<-(CV_LC*m)
-        L_c[i,j,]<-rnorm.seed(niter,m,v,seed)
-      }}
-    L_c[,,1]<-L_cd
+  for(i in 1:number_years){
+    L[,i,]<-(W[,i,]/a)^(1/b)
   }
 
-  if(niter==1 & CV_LC==0){L_c[,,1]<-L_cd}
-  if(niter>1 & CV_LC==0) {L_c[,,1:niter]<-L_cd}
 
-
+  # Lc
 
 
   W_c<-N
 
+  for(i in 1:number_ages){
+    for(j in 1:number_years){
+      W_c[i,j,]<-C_W[i,j,]/C_N[i,j,]
+    }
+  }
+
+
+  L_c<-N
+
   for(i in 1:number_years){
-    W_c[,i,]<-Weight(L_c[,i,],a,b)
+    L_c[,i,]<-(W_c[,i,]/a)^(1/b)
   }
 
 
@@ -192,84 +157,14 @@ Sum.Pop.Mod<-function(Pop.Mod,Elements){
 
   # SELECTIVITY: We need to generate stochastic values of a50_Sel (CV_SEL)
 
-  if(Sel_type=="Logistic"){
-
-    a50_Sel<-Pop.Mod$Info$ctrFish$ctrSEL$par$a50_Sel
-    ad_Sel<-Pop.Mod$Info$ctrFish$ctrSEL$par$ad_Sel
-
-    ### Deterministic
-    sd<-matrix(rep(Logistic(x=ages,x50=a50_Sel,xd=ad_Sel),number_years),ncol=number_years)
-    colnames(sd)<-years
-    rownames(sd)<-ages
-
-    ### Stochastic (Log normal distribution)
-    s<-N
-
-    if(CV_SEL>0){
-      s<-stochastic_logistic_SEL_1(a50_Sel,ad_Sel,CV_SEL,niter,s,ages,number_years,seed=seed)
-
-      s[,,1]<-sd
-    }}
-
-  if(Sel_type=="cte"){
-
-    ### Deterministic
-    cte<-Pop.Mod$Info$ctrFish$ctrSEL$par$cte
-    sd<-matrix(rep(cte,number_years*number_ages),ncol=number_years)
-    colnames(sd)<-years
-    rownames(sd)<-ages
-
-    ### Stochastic (Uniform)
-    s<-N
-
-    if(CV_SEL>0){
-      s<-stochastic_cte_SEL_1(cte,CV_SEL,niter,s,number_years,number_ages,seed=seed)
-
-      s[,,1]<-sd
-    }}
-
-  if(Sel_type=="Andersen"){
-    ### Deterministic
-    p1<-Pop.Mod$Info$ctrFish$ctrSEL$par$p1;p3<-Pop.Mod$Info$ctrFish$ctrSEL$par$p3;p4<-Pop.Mod$Info$ctrFish$ctrSEL$par$p4;p5<-Pop.Mod$Info$ctrFish$ctrSEL$par$p5
-    sd<-matrix(rep(andersen(x=ages,p1=p1,p3=p3,p4=p4,p5=p5),number_years),ncol=number_years)
-    colnames(sd)<-years
-    rownames(sd)<-ages
-
-    ### Stochastic (Uniform)
-    s<-N
-
-    if(CV_SEL>0){
-      s<-stochastic_andersen_SEL_1(p1=p1,p3=p3,p4=p4,p5=p5,CV_SEL,niter,s,ages,number_years,seed=seed)
-
-      s[,,1]<-sd
+  s<-N
+  for(kk in 1:niter){
+    for(i in 1:number_ages){
+      for (j in 1:number_years){
+        s[i,j,kk]<-F[i,j,kk]/f[kk,j]
+      }
     }
   }
-
-  if(Sel_type=="Gamma"){
-
-    alpha<-Pop.Mod$Info$ctrFish$ctrSEL$par$alpha
-    gamma<-Pop.Mod$Info$ctrFish$ctrSEL$par$gamma
-    beta<-Pop.Mod$Info$ctrFish$ctrSEL$par$beta
-
-
-    ### Deterministic
-    sd<-matrix(rep(gamma_SEL(x=ages,alpha=alpha,gamma=gamma,beta=beta),number_years),ncol=number_years)
-    colnames(sd)<-years
-    rownames(sd)<-ages
-
-    ### Stochastic (Log normal distribution)
-    s<-N
-
-    if(CV_SEL>0){
-      s<-stochastic_gamma_SEL_1(alpha,beta,gamma,CV_SEL,niter,s,ages,number_years,seed=seed)
-
-      s[,,1]<-sd
-    }}
-
-
-  if(niter==1 & CV_SEL==0){s[,,1]<-sd}
-  if(niter>1 & CV_SEL==0) {s[,,1:niter]<-sd}
-
 
   year_C_W<-array(rep(0,number_years), dim=c(1, number_years, niter),dimnames=list("",column.names,matrix.names))
   biomass<-array(rep(0,number_years), dim=c(1, number_years, niter),dimnames=list("",column.names,matrix.names))
@@ -280,7 +175,7 @@ Sum.Pop.Mod<-function(Pop.Mod,Elements){
   year_C_W[,,ind]<-colSums(C_W[,,ind])
   biomass[,,ind]<-colSums(WM[,,ind])
   Recruiment[,,ind]<-N[1,,ind]
-  F_mean[,,ind]<-apply(F[(min_age+1):(max_age+1),,ind], 2, mean)}
+  F_mean[,,ind]<-apply(F[(min_age-ages[1]+1):(max_age-ages[1]+1),,ind], 2, mean)}
 
 
 

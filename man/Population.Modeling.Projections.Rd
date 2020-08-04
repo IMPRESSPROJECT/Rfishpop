@@ -2,7 +2,7 @@
 % Please edit documentation in R/PopulationModelingProjections.R
 \name{Population.Modeling.Projections}
 \alias{Population.Modeling.Projections}
-\title{Projecting our Exploited Population on based of desired captures or efforts}
+\title{Projecting our Exploited Population on based of desired catches or efforts}
 \usage{
 Population.Modeling.Projections(
   Pop.Mod,
@@ -11,7 +11,8 @@ Population.Modeling.Projections(
   tol,
   limit.f,
   strategy,
-  my.effort
+  my.effort,
+  M.new.years = NULL
 )
 }
 \arguments{
@@ -19,7 +20,7 @@ Population.Modeling.Projections(
 
 \item{new.years}{The years for which our Population must be projected.}
 
-\item{my.catch}{Weight of the captures for each of the years for which the projections are carried out.}
+\item{my.catch}{Weight of the catches for each of the years for which the projections are carried out.}
 
 \item{tol}{The level of tolerence in the optimization process. If tol=NULL the default value of 0.01 is used.}
 
@@ -28,12 +29,14 @@ Population.Modeling.Projections(
 \item{strategy}{The strategy for the next years, this can be "catch" if we want to fix the catches for the next years (argument my.catch must be used) or "effort" if we want to fix the value of effort f, component of fishing mortality F = f * SEL (argument my.effort must be used).}
 
 \item{my.effort}{A vector containing for the projecting years the value for which the effort of the last year must be multiplied to obtain the desired effort f (component of fishing mortality F = f * SEL) for the new years.}
+
+\item{M.new.years}{matrix containing the rates of instantaneous natural mortality for each of the new.years and age. If it is null the M corresponding to the last year in Pop.Mod object is used.}
 }
 \value{
 The object Pop.Mod updated containing the information for the new years for which the population has been projected.
 }
 \description{
-This function allows us to extend our simulated Population through the years on based of the desired captures for such years (strategy="catch") or on based of the desired effort f (component of fishing mortality F = f * SEL) for such years (strategy="effort") .
+This function allows us to extend our simulated Population through the years on based of the desired catches for such years (strategy="catch") or on based of the desired effort f (component of fishing mortality F = f * SEL) for such years (strategy="effort") .
 }
 \details{
 This package is an open and developing project, for this reason this function must still be optimized for good execution times.
@@ -45,7 +48,7 @@ This package is an open and developing project, for this reason this function mu
 # consistent with this unit when we introduce the biological and
 # stock-recruitment parameters.
 ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
-maxFage=7,ts=0,tc=0.5,tseed=NULL)
+maxFage=7,tc=0.5,tseed=NULL)
 
 # Now, we introduce the biological parameters of the population.
 # Note that L_inf is in cm, and a and b parameters allow us to relate

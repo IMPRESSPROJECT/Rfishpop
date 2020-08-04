@@ -5,7 +5,7 @@ random.generator<-function(v,n){
 
   created.vector<-rep(values,repited)
 
-  SAMPLE.vec<-sample(created.vector,n)
+  SAMPLE.vec<-sample(created.vector,n,replace = TRUE)
 
 
   return(SAMPLE.vec)

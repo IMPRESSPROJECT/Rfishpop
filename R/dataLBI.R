@@ -4,7 +4,8 @@
 #'
 #' @param Pop.Mod A list containing the components returned by Population.Modeling function (main function).
 #' @param CV The coefficient of variation associated to the log-normal distribution used in Distribution.length function (see Details of such function).
-#' @details The function reports the length distributions of catches for each year and iteration in our Pop.Mod object. Furthermore, the corresponding average weight per length (for each year and iteration) is also provided. The capture length distribution is computed using the Distribution.length function of this package.
+#' @param RF.value The number of values generated for each age (given a year and an iteration) from the log-normal distribution used in Distribution.length function (see Details of such function). By default RF.value=1000.
+#' @details The function reports the length distributions of catches for each year and iteration in our Pop.Mod object. Furthermore, the corresponding average weight per length (for each year and iteration) is also provided. The catches length distribution is computed using the Distribution.length function of this package.
 #'
 #'
 #' @return A list containing the following components.\itemize{
@@ -20,7 +21,7 @@
 #'
 #'# The first step is to simulate the population.
 #' ctrPop<-list(years=seq(1980,2020,1),niter=1,N0=15000,ages=0:15,minFage=2,
-#' maxFage=5,ts=0,tc=0.5,seed=NULL)
+#' maxFage=5,tc=0.5,seed=NULL)
 #' number_ages<-length(ctrPop$ages);number_years<-length(ctrPop$years)
 #' Mvec=c(1,0.6,0.5,0.4,0.35,0.35,0.3,rep(0.3,9))
 #' M<-matrix(rep(Mvec,number_years),ncol = number_years)
@@ -38,9 +39,10 @@
 #'
 #' # Then the function is used to obtain the length distributions and average
 #' # weight per length.
-#' resul=Data.to.LBI(Pop.Mod,CV=0.2)
-#' freq=resul$length[[1]]
-#' wal=resul$weight[[1]]
+#' # UNCOMMENT THE FOLLOWING LINES
+#' #resul=Data.to.LBI(Pop.Mod,CV=0.2)
+#' #freq=resul$length[[1]]
+#' #wal=resul$weight[[1]]
 #'
 #' # Furthermore, than the data provided by Data.to.LBI
 #' # function the LBI method also needs some life history parameters.
@@ -62,7 +64,7 @@
 #' #LBI=lb_ind(data=freq,binwidth=3,linf=L_inf,lmat=L50,mk_ratio=MK,weight=wal)
 #' @export
 
-Data.to.LBI=function(Pop.Mod,CV){
+Data.to.LBI=function(Pop.Mod,CV, RF.value=1000){
   data.list=list()
   weight.list=list()
   a=Pop.Mod$Info$ctrBio$a; b=Pop.Mod$Info$ctrBio$b
@@ -70,6 +72,8 @@ Data.to.LBI=function(Pop.Mod,CV){
   niter=dim(Pop.Mod$Matrices$N)[3]
   number_years=dim(Pop.Mod$Matrices$N)[2]
 
+  if(RF.value!=1000){
+  L.D<-Distribution.length(Pop.Mod,CV=CV,Type="LengthC", RF.value=RF.value)}
   L.D<-Distribution.length(Pop.Mod,CV=CV,Type="LengthC")
 
   for (i in 1:niter){

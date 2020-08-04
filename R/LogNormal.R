@@ -1,6 +1,5 @@
 
-Log.normal<-function(mean,cv,seed){
-  if(is.numeric(seed)){set.seed(seed)}
+Log.normal<-function(mean,cv){
   m<-mean;n_values<-length(m)
   v<-(cv*m)^2
   mu<-log(m^2/sqrt(m^2+v))
