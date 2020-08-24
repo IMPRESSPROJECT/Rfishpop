@@ -9,6 +9,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6)
+```
 ## Population dynamic tools in support of fisheries managment
 
 In this tutorial we explain how to simulate the real dynamics of the fishery system using a **generic operating model (OM)** implemented in Population.Modeling function which is the main function of our Rfishpop package.

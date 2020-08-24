@@ -9,6 +9,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6)
+```
+
 ## Population dynamic tools in support of fisheries managment
 
 
@@ -196,9 +201,9 @@ cbind(Pop.Mod$Matrices$N[,41,1],IA[,41,1])
 ```
 
 
-Now, taking ${CV}_A=0.2$ we can compare using the following code the abundance index for the first iteration and last year obtained above using ${CV}_A=0$ (black color) with 100 indices computed using ${CV}_A=0.2$ (red color).
+If the user wants, taking ${CV}_A=0.2$ we can compare running the following code the abundance index for the first iteration and last year obtained above using ${CV}_A=0$ (black color) with 100 indices computed using ${CV}_A=0.2$ (red color).
 
-```{r}
+```{r,eval=FALSE}
 q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0.2
 
 IA=list()
@@ -219,9 +224,9 @@ lines(1:16,Pop.Mod$Matrices$N[,41,1])
 ```
 
 
-We can also compare the abundance index using ${CV}_A=0$ (black color) with the mean of the above 100 indices using ${CV}_A=0.2$ (red color).
+If the user wants, we can also compare the abundance index using ${CV}_A=0$ (black color) with the mean of the above 100 indices using ${CV}_A=0.2$ (red color).
 
-```{r}
+```{r, eval=FALSE}
 a=matrix(0,ncol=100,nrow=16)
 
 for (i in 1:100){
@@ -237,7 +242,7 @@ lines(1:16,amean,col="red")
 
 The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).
 
-```{r}
+```{r,eval=FALSE}
 plot(1:16,Pop.Mod$Matrices$N[,41,2],type="l",xlab = "Ages",ylab="Abundance index")
 
 for (i in 1:100){
@@ -278,10 +283,10 @@ bio0=IA$biomass
 
 
 
-Now, taking ${CV}_A=0.2$ we can compare using the following code the biomass index for the first iteration obtained above using ${CV}_A=0$ (black color) with 100 indices computed using ${CV}_A=0.2$ (red color).
+If the user wants,, taking ${CV}_A=0.2$ we can compare running the following code the biomass index for the first iteration obtained above using ${CV}_A=0$ (black color) with 100 indices computed using ${CV}_A=0.2$ (red color).
 
 
-```{r}
+```{r,eval=FALSE}
 q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0.2
 
 IA=list()
@@ -299,11 +304,11 @@ for (i in 1:100){
 lines(1:41,bio0[,,1])
 ```
 
-We can also compare the biomass index using ${CV}_A=0$ (black color) with the mean of the above 100 indices using ${CV}_A=0.2$ (red color).
+If the user wants, we can also compare the biomass index using ${CV}_A=0$ (black color) with the mean of the above 100 indices using ${CV}_A=0.2$ (red color).
 
 
 
-```{r}
+```{r,eval=FALSE}
 a=matrix(0,ncol=100,nrow=41)
 
 for (i in 1:100){
@@ -321,7 +326,7 @@ lines(1:41,amean,col="red")
 The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).
 
 
-```{r}
+```{r,eval=FALSE}
 plot(1:41,bio0[,,2],type="l",xlab = "Years",ylab="Biomass index")
 
 for (i in 1:100){
@@ -471,10 +476,10 @@ We check such correspondence at last year and first iteration, as an example.
 cbind(Pop.Mod$Matrices$C_N[,41,1],IC[,41,1])
 ```
 
-Now, taking ${CV}_{CN}$=0.2 we can compare using the following code the catch numbers for the first iteration and last year obtained above using ${CV}_{CN}$=0 (black color) with 100 replications computed using ${CV}_{CN}$=0.2 (red color).
+If the user wants, taking ${CV}_{CN}$=0.2 we can compare running the following code the catch numbers for the first iteration and last year obtained above using ${CV}_{CN}$=0 (black color) with 100 replications computed using ${CV}_{CN}$=0.2 (red color).
 
 
-```{r}
+```{r, eval=FALSE}
 IC=list()
 
 for (i in 1:100){
@@ -491,9 +496,9 @@ lines(1:16,Pop.Mod$Matrices$C_N[,41,1])
 ```
 
 
-We can also compare the catch numbers using ${CV}_{CN}$=0 (black color) with the mean of the above 100 replications using ${CV}_{CN}$=0.2 (red color).
+If the user wants, we can also compare the catch numbers using ${CV}_{CN}$=0 (black color) with the mean of the above 100 replications using ${CV}_{CN}$=0.2 (red color).
 
-```{r}
+```{r,eval=FALSE}
 a=matrix(0,ncol=100,nrow=16)
 
 for (i in 1:100){
@@ -509,7 +514,7 @@ lines(1:16,amean,col="red")
 
 The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).
 
-```{r}
+```{r,eval=FALSE}
 plot(1:16,Pop.Mod$Matrices$C_N[,41,2],type="l",xlab = "Ages",ylab="Catch numbers")
 
 for (i in 1:100){
@@ -535,10 +540,10 @@ cbind(IC$weight[,,1],Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1])
 ```
 
 
-Now, taking ${CV}_{CN}$=0.2 we can compare using the following code the catch weight for the first iteration obtained above using ${CV}_{CN}$=0 (black color) with 100 replications computed using ${CV}_{CN}$=0.2 (red color).
+If the user wants, taking ${CV}_{CN}$=0.2 we can compare running the following code the catch weight for the first iteration obtained above using ${CV}_{CN}$=0 (black color) with 100 replications computed using ${CV}_{CN}$=0.2 (red color).
 
 
-```{r}
+```{r,eval=FALSE}
 IC=list()
 
 for (i in 1:100){
@@ -555,10 +560,10 @@ lines(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1])
 ```
 
 
-We can also compare the catch weight using ${CV}_{CN}$=0 (black color) with the mean of the above 100 replications using ${CV}_{CN}$=0.2 (red color).
+If the user wants, We can also compare the catch weight using ${CV}_{CN}$=0 (black color) with the mean of the above 100 replications using ${CV}_{CN}$=0.2 (red color).
 
 
-```{r}
+```{r,eval=FALSE}
 a=matrix(0,ncol=100,nrow=41)
 
 for (i in 1:100){
@@ -577,7 +582,7 @@ The above plot focus on the deterministic iteration (iter=1) but the plot can be
 
 
 
-```{r}
+```{r,eval=FALSE}
 plot(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,2],type="l",xlab = "years", ylab="Catch weight")
 
 for (i in 1:100){

@@ -1,3 +1,7 @@
+## ----setup, include=FALSE-----------------------------------------------------
+knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6)
+knitr::opts_chunk$set(cache=TRUE)
+
 ## -----------------------------------------------------------------------------
 library(Rfishpop)
 ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=15000,ages=0:15,minFage=2,

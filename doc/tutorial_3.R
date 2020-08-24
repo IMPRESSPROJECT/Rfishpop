@@ -1,3 +1,6 @@
+## ----setup, include=FALSE-----------------------------------------------------
+knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6)
+
 ## -----------------------------------------------------------------------------
 library(Rfishpop)
 ctrPop<-list(years=seq(1980,2020,by=1),niter=1,N0=15000,ages=0:15,minFage=2,
@@ -54,46 +57,46 @@ IA=Sampling_Survey(Pop.Mod=Pop.Mod,type="abundance",q_A=q_A,gamma=gamma,CV_A=CV_
 ## -----------------------------------------------------------------------------
 cbind(Pop.Mod$Matrices$N[,41,1],IA[,41,1])
 
-## -----------------------------------------------------------------------------
-q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0.2
+## ----eval=FALSE---------------------------------------------------------------
+#  q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0.2
+#  
+#  IA=list()
+#  
+#  for (i in 1:100){
+#  IA[[i]]=Sampling_Survey(Pop.Mod=Pop.Mod,type="abundance",q_A=q_A,gamma=gamma,CV_A=CV_A,tsampling=0)
+#  }
+#  
+#  
+#  plot(1:16,Pop.Mod$Matrices$N[,41,1],type="l",xlab = "Ages",ylab="Abundance index")
+#  
+#  for (i in 1:100){
+#  lines(1:16,IA[[i]][,41,1],col="red")
+#  }
+#  
+#  lines(1:16,Pop.Mod$Matrices$N[,41,1])
+#  
 
-IA=list()
+## ---- eval=FALSE--------------------------------------------------------------
+#  a=matrix(0,ncol=100,nrow=16)
+#  
+#  for (i in 1:100){
+#    a[,i]=IA[[i]][,41,1]
+#  }
+#  
+#  amean=rowMeans(a)
+#  
+#  plot(1:16,Pop.Mod$Matrices$N[,41,1],type="l",xlab = "Ages",ylab="Abundance index")
+#  
+#  lines(1:16,amean,col="red")
 
-for (i in 1:100){
-IA[[i]]=Sampling_Survey(Pop.Mod=Pop.Mod,type="abundance",q_A=q_A,gamma=gamma,CV_A=CV_A,tsampling=0)
-}
-
-
-plot(1:16,Pop.Mod$Matrices$N[,41,1],type="l",xlab = "Ages",ylab="Abundance index")
-
-for (i in 1:100){
-lines(1:16,IA[[i]][,41,1],col="red")
-}
-
-lines(1:16,Pop.Mod$Matrices$N[,41,1])
-
-
-## -----------------------------------------------------------------------------
-a=matrix(0,ncol=100,nrow=16)
-
-for (i in 1:100){
-  a[,i]=IA[[i]][,41,1]
-}
-
-amean=rowMeans(a)
-
-plot(1:16,Pop.Mod$Matrices$N[,41,1],type="l",xlab = "Ages",ylab="Abundance index")
-
-lines(1:16,amean,col="red")
-
-## -----------------------------------------------------------------------------
-plot(1:16,Pop.Mod$Matrices$N[,41,2],type="l",xlab = "Ages",ylab="Abundance index")
-
-for (i in 1:100){
-  lines(1:16,IA[[i]][,41,2],col="red")
-}
-
-lines(1:16,Pop.Mod$Matrices$N[,41,2])
+## ----eval=FALSE---------------------------------------------------------------
+#  plot(1:16,Pop.Mod$Matrices$N[,41,2],type="l",xlab = "Ages",ylab="Abundance index")
+#  
+#  for (i in 1:100){
+#    lines(1:16,IA[[i]][,41,2],col="red")
+#  }
+#  
+#  lines(1:16,Pop.Mod$Matrices$N[,41,2])
 
 ## -----------------------------------------------------------------------------
 q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0
@@ -108,44 +111,44 @@ IA=Sampling_Survey(Pop.Mod=Pop.Mod,type="biomass",q_A=q_A,gamma=gamma,CV_A=CV_A,
 cbind(IA$biomass[,,1],Sum.Pop.Mod(Pop.Mod,c("BIO"))$BIO[,,1])
 bio0=IA$biomass
 
-## -----------------------------------------------------------------------------
-q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0.2
+## ----eval=FALSE---------------------------------------------------------------
+#  q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0.2
+#  
+#  IA=list()
+#  
+#  for (i in 1:100){
+#    IA[[i]]=Sampling_Survey(Pop.Mod=Pop.Mod,type="biomass",q_A=q_A,gamma=gamma,CV_A=CV_A,tsampling=0)
+#  }
+#  
+#  plot(1:41,bio0[,,1],type="l",xlab = "Years",ylab="Biomass index")
+#  
+#  for (i in 1:100){
+#    lines(1:41,IA[[i]]$biomass[,,1],col="red")
+#  }
+#  
+#  lines(1:41,bio0[,,1])
 
-IA=list()
+## ----eval=FALSE---------------------------------------------------------------
+#  a=matrix(0,ncol=100,nrow=41)
+#  
+#  for (i in 1:100){
+#    a[,i]=IA[[i]]$biomass[,,1]
+#  }
+#  
+#  amean=rowMeans(a)
+#  
+#  plot(1:41,bio0[,,1],type="l",xlab = "Years",ylab="Biomass index")
+#  
+#  lines(1:41,amean,col="red")
 
-for (i in 1:100){
-  IA[[i]]=Sampling_Survey(Pop.Mod=Pop.Mod,type="biomass",q_A=q_A,gamma=gamma,CV_A=CV_A,tsampling=0)
-}
-
-plot(1:41,bio0[,,1],type="l",xlab = "Years",ylab="Biomass index")
-
-for (i in 1:100){
-  lines(1:41,IA[[i]]$biomass[,,1],col="red")
-}
-
-lines(1:41,bio0[,,1])
-
-## -----------------------------------------------------------------------------
-a=matrix(0,ncol=100,nrow=41)
-
-for (i in 1:100){
-  a[,i]=IA[[i]]$biomass[,,1]
-}
-
-amean=rowMeans(a)
-
-plot(1:41,bio0[,,1],type="l",xlab = "Years",ylab="Biomass index")
-
-lines(1:41,amean,col="red")
-
-## -----------------------------------------------------------------------------
-plot(1:41,bio0[,,2],type="l",xlab = "Years",ylab="Biomass index")
-
-for (i in 1:100){
-  lines(1:41,IA[[i]]$biomass[,,2],col="red")
-}
-
-lines(1:41,bio0[,,2])
+## ----eval=FALSE---------------------------------------------------------------
+#  plot(1:41,bio0[,,2],type="l",xlab = "Years",ylab="Biomass index")
+#  
+#  for (i in 1:100){
+#    lines(1:41,IA[[i]]$biomass[,,2],col="red")
+#  }
+#  
+#  lines(1:41,bio0[,,2])
 
 ## -----------------------------------------------------------------------------
 q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0
@@ -186,42 +189,42 @@ IC=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch numbers",CV_CN=0)
 ## -----------------------------------------------------------------------------
 cbind(Pop.Mod$Matrices$C_N[,41,1],IC[,41,1])
 
-## -----------------------------------------------------------------------------
-IC=list()
+## ---- eval=FALSE--------------------------------------------------------------
+#  IC=list()
+#  
+#  for (i in 1:100){
+#  IC[[i]]=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch numbers",CV_CN=0.2)
+#  }
+#  
+#  plot(1:16,Pop.Mod$Matrices$C_N[,41,1],type="l",xlab = "Ages",ylab="Catch numbers")
+#  
+#  for (i in 1:100){
+#  lines(1:16,IC[[i]][,41,1],col="red")
+#  }
+#  
+#  lines(1:16,Pop.Mod$Matrices$C_N[,41,1])
 
-for (i in 1:100){
-IC[[i]]=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch numbers",CV_CN=0.2)
-}
+## ----eval=FALSE---------------------------------------------------------------
+#  a=matrix(0,ncol=100,nrow=16)
+#  
+#  for (i in 1:100){
+#    a[,i]=IC[[i]][,41,1]
+#  }
+#  
+#  amean=rowMeans(a)
+#  
+#  plot(1:16,Pop.Mod$Matrices$C_N[,41,1],type="l",xlab = "Ages",ylab="Catch numbers")
+#  
+#  lines(1:16,amean,col="red")
 
-plot(1:16,Pop.Mod$Matrices$C_N[,41,1],type="l",xlab = "Ages",ylab="Catch numbers")
-
-for (i in 1:100){
-lines(1:16,IC[[i]][,41,1],col="red")
-}
-
-lines(1:16,Pop.Mod$Matrices$C_N[,41,1])
-
-## -----------------------------------------------------------------------------
-a=matrix(0,ncol=100,nrow=16)
-
-for (i in 1:100){
-  a[,i]=IC[[i]][,41,1]
-}
-
-amean=rowMeans(a)
-
-plot(1:16,Pop.Mod$Matrices$C_N[,41,1],type="l",xlab = "Ages",ylab="Catch numbers")
-
-lines(1:16,amean,col="red")
-
-## -----------------------------------------------------------------------------
-plot(1:16,Pop.Mod$Matrices$C_N[,41,2],type="l",xlab = "Ages",ylab="Catch numbers")
-
-for (i in 1:100){
-  lines(1:16,IC[[i]][,41,2],col="red")
-}
-
-lines(1:16,Pop.Mod$Matrices$C_N[,41,2])
+## ----eval=FALSE---------------------------------------------------------------
+#  plot(1:16,Pop.Mod$Matrices$C_N[,41,2],type="l",xlab = "Ages",ylab="Catch numbers")
+#  
+#  for (i in 1:100){
+#    lines(1:16,IC[[i]][,41,2],col="red")
+#  }
+#  
+#  lines(1:16,Pop.Mod$Matrices$C_N[,41,2])
 
 ## -----------------------------------------------------------------------------
 IC=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch weight",CV_CN=0)
@@ -229,42 +232,42 @@ IC=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch weight",CV_CN=0)
 ## -----------------------------------------------------------------------------
 cbind(IC$weight[,,1],Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1])
 
-## -----------------------------------------------------------------------------
-IC=list()
+## ----eval=FALSE---------------------------------------------------------------
+#  IC=list()
+#  
+#  for (i in 1:100){
+#    IC[[i]]=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch weight",CV_CN=0.2)
+#  }
+#  
+#  plot(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1],type="l",xlab = "years", ylab="Catch weight")
+#  
+#  for (i in 1:100){
+#    lines(1:41,IC[[i]]$weight[,,1],col="red")
+#  }
+#  
+#  lines(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1])
 
-for (i in 1:100){
-  IC[[i]]=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch weight",CV_CN=0.2)
-}
+## ----eval=FALSE---------------------------------------------------------------
+#  a=matrix(0,ncol=100,nrow=41)
+#  
+#  for (i in 1:100){
+#    a[,i]=IC[[i]]$weight[,,1]
+#  }
+#  
+#  amean=rowMeans(a)
+#  
+#  plot(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1],type="l",xlab = "years", ylab="Catch weight")
+#  
+#  lines(1:41,amean,col="red")
 
-plot(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1],type="l",xlab = "years", ylab="Catch weight")
-
-for (i in 1:100){
-  lines(1:41,IC[[i]]$weight[,,1],col="red")
-}
-
-lines(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1])
-
-## -----------------------------------------------------------------------------
-a=matrix(0,ncol=100,nrow=41)
-
-for (i in 1:100){
-  a[,i]=IC[[i]]$weight[,,1]
-}
-
-amean=rowMeans(a)
-
-plot(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1],type="l",xlab = "years", ylab="Catch weight")
-
-lines(1:41,amean,col="red")
-
-## -----------------------------------------------------------------------------
-plot(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,2],type="l",xlab = "years", ylab="Catch weight")
-
-for (i in 1:100){
-  lines(1:41,IC[[i]]$weight[,,2],col="red")
-}
-
-lines(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,2])
+## ----eval=FALSE---------------------------------------------------------------
+#  plot(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,2],type="l",xlab = "years", ylab="Catch weight")
+#  
+#  for (i in 1:100){
+#    lines(1:41,IC[[i]]$weight[,,2],col="red")
+#  }
+#  
+#  lines(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,2])
 
 ## -----------------------------------------------------------------------------
 IC=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch weight",CV_CN=0)

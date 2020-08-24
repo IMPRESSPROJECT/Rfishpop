@@ -9,7 +9,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6)
+knitr::opts_chunk$set(cache=TRUE)
+```
 ## Population dynamic tools in support of fisheries managment
 
 After describing the operating model used to generate "true" ecosystem dynamics including the
