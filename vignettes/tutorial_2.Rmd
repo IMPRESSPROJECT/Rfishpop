@@ -11,7 +11,6 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6)
-knitr::opts_chunk$set(cache=TRUE)
 ```
 ## Population dynamic tools in support of fisheries managment
 
@@ -260,18 +259,18 @@ RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_Crash",iters=1:2,plot=TRUE)
 
 5. We compute the reference fishery mortality at which the BPR is equal to prop=0.4 multiplied by BPR0 where BPR0 is the BPR at virgin biomass for the two iterations of the Pop.Mod object and we plot the first iteration in *iters* parameter.
 
-```{r}
-RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_BPR",iters=1:2,plot=TRUE,prop=0.4)
+```{r,eval=FALSE}
+RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_BPR",iters=1:2,plot=FALSE,prop=0.4)
 ```
 
 Below, we provide some examples where several fishery mortalities are computed at the same time.
 
-```{r}
-RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type=c("F_Crash","F_msy"),iters=1:2,plot=TRUE)
+```{r,eval=FALSE}
+RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type=c("F_Crash","F_msy"),iters=1:2,plot=FALSE)
 
-RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type=c("F_Crash","F_msy","F_0.1","F_max","F_BPR"),iters=1:2,plot=TRUE)
+RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type=c("F_Crash","F_msy","F_0.1","F_max","F_BPR"),iters=1:2,plot=FALSE)
 
-RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type=c("F_Crash","F_BPR"),iters=1:2,plot=TRUE,prop = c(0.2,0.4))
+RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type=c("F_Crash","F_BPR"),iters=1:2,plot=FALSE,prop = c(0.2,0.4))
 ```
 
 NOTE (remember) that if we want to use *Method="own"* we need to specify argument *par*, the following example is similar to the explained previously for the other functions.
