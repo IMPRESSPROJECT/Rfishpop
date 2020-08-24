@@ -1,0 +1,634 @@
+---
+title: "Rfishpop (First tutorial)"
+author: "Marta Cousido Rocha, Santiago Cerviño López, Maria Grazia Pennino"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Rfishpop (First tutorial)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Population dynamic tools in support of fisheries managment
+
+In this tutorial we explain how to simulate the real dynamics of the fishery system using a **generic operating model (OM)** implemented in Population.Modeling function which is the main function of our Rfishpop package.
+
+<span style="color:red">NOTE:</span> The aim of this tutorial is to learn all the possibilities that the  Population.Modeling function offers, then the values used here for the different parameters required by the OM does not tried to generate a population in a particular situation or corresponding to a particular type of species. The values are more or less realistic values but the idea is to 
+illustrate how to use the function. Next tutorials show examples corresponding to long life species, short life species and so on.
+
+
+
+
+### <span style="color:blue">Population.Modeling function</span>
+
+### Arguments of Population.Modeling function
+
+The first step is to learn which are the arguments of this function. The arguments are divided in 4 blocks:
+
+(1) General information about the population that we desire to simulate and some control arguments.
+
+(2) Biological parameters of the population.
+
+(3) Fishing parameters of the population.
+
+(4) Parameters of spawning stock recruitment relationship.
+
+
+Let's start with **(1)**. 
+
+Argument  *years* is a vector containing the years for which the dynamics of the fishery system is simulated. In this case we consider the period from 1980 to 2020.
+
+Argument *ages* is a vector containing the different ages presented in the stock. Note that the oldest age defines a plus group. <span style="color:red">The first age must be 0, in the current version the OM is not adapted to treat with populations started in other ages.</span>
+In this case we consider a stock where the ages goes from 0 years to 15 years.
+
+Argument *niter* is number of iterations of the simulation process. In this case is fixed in 2 (just to make this example faster!) 
+
+Argument *N0* is a number corresponding to the population size at first age and year, or a vector containing the population size at first year for all ages. In this case we decide to establish only the value at first age and year in 10000 individuals. Note that it is important to take care of the units when we introduce the different parameters since N0 can be measured in individuals or in thousands of individuals.
+
+Arguments *minFage* and *maxFage* are the minimum and maximum age (respectively) for which the corresponding fishing mortality is considered to compute the mean fishing mortality. In this case we fix it in 4 and 7 years, respectively.
+
+Argument *tc* is the time of the year at which the catches are simulated. This parameter takes a value between 0 and 1, since the year is considered as a unit. In this case, we fix  *tc=0.5* assuming that the catches occurs at mid of the year (this is an approximation since the catches occurs during all the year).
+
+Argument *seed* is a numeric value to introduce into set.seed() function for having a reproducible result. In this case is NULL which means that the results are not reproducible, that is, each run returns different results.
+
+```{r}
+library(Rfishpop)
+ctrPop<-list(years=seq(1980,2020,by=1),ages=0:15,niter=2,N0=10000,minFage=4,
+maxFage=7,tc=0.5,seed=NULL)
+```
+
+Now, we continue explaining block **(2)** which contains the biological information.
+
+
+
+Argument *M* is a matrix containing the rates of instantaneous natural mortality for each year and age. As we show below in this case is constant equal to 0.4 for all the years and ages. Associated to *M* we also have the parameter *CV_M* which is the corresponding coefficient of variation. In each stochastic iteration the rates of instantaneous natural mortality come from a log-normal distribution centered on the corresponding value of M and variability determined by CV_M. In this case CV_M=0.2. NOTE THAT the associated coefficient of variation can be equal to 0 and then the instantaneous natural mortality in the stochastic iterations are equal to the ones in the deterministic one.
+
+```{r}
+number_ages<-length(ctrPop$ages);number_years<-length(ctrPop$years)
+M<-matrix(rep(0.4,number_ages*number_years),ncol = number_years)
+colnames(M)<-ctrPop$years
+rownames(M)<-ctrPop$ages
+```
+
+Arguments *L_inf*, *t0* and *k* are parameters of Von Bertalanffy Growth Model whose equation is
+
+$$L(x)=L_{inf}(1-e^{(-k(x-t0))})$$
+
+where *L_inf* is the asymptotic average maximum body size, *t0* is hypothetical age at which the species has zero length, and *k* is growth rate coefficient and x is the vector of ages where the function must be computed. In this case we take $L_{inf}=124.5$, $t0=0$, $k=0.164$. Associated to the length of the stock and catch length we have the coefficients of variation *CV_L* and *CV_LC*, respectively. In each stochastic iteration the length comes from a normal distribution centered on the corresponding length obtained from Von Bertalanffy Growth Model and the corresponding variability is determined by CV_L or CV_LC depending if we focus on stock or catch length. In this case CV_L=0.2 and CV_LC=0.2. <span style="color:red">NOTE: In the section of ISSUES of the GITHUB repository of the package it is possible to learn about the need of modifications of the current process of generating stochastic lengths.</span>
+
+
+Arguments *a* and *b* are the parameters of the Length-Weight relationship whose equation is
+$$W=aL^b$$
+where L is the vector of lengths by age, *a* is the allometric growth parameter, *b* scaling constant, and W is the age weight vector. In this case a=4.5*10^(-6) and b=3.1049, whose units are according to the units used to measure the length and weight which are cm and kg.
+
+
+Arguments *a50_Mat* and *ad_Mat* are parameters of the logistic function used to generate the maturity matrix. More precisily,
+$$L(x)=1/(1+e^{(x-a50_{Mat})/ad_{Mat}})$$
+
+where *a50_Mat* is the x-value of the sigmoid's midpoint of the logistic function, and *ad_Mat* is minus the inverse of the logistic growth rate (steepness of the curve). In this case a50_Mat=3 and ad_Mat=-0.5.
+Associated to the maturity matrix we have the coefficient of variation *CV_Mat*. In each stochastic iteration the maturity matrix values comes from a logistic function whose a50_Mat parameter is generated from a log-normal distribution centered on the given value of a50_Mat and variability determined by CV_Mat. In this case CV_Mat=0.2.
+
+
+```{r}
+
+ctrBio<-list(M=M,CV_M=0.2, L_inf=124.5, t0=0, k=0.164, CV_L=0.2, CV_LC=0.2, a=4.5*10^(-6), b=3.1049,
+           a50_Mat=3, ad_Mat=-0.5,CV_Mat=0.2)
+```
+
+
+The block **(3)** contains the fishing information. Below we describe each of the arguments in this block.
+
+Argument *f* is the annual component of fishing mortality $F = f * SEL$. Can be different for each of the iterations, hence we introduce a matrix whose rows contain the annual vector for each iteration. In this case a constant vector equal to 0.5.
+
+```{r}
+f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
+```
+
+Argument *ctrSEL* specifies the selectivity function considered and the corresponding parameters. The different selectivity functions are:
+
+- Constant selectivity function. In *ctrSEL* we must specify it using *type="cte"* argument, and then in argument *par* we must introduce the constant value, in this case 0.5. Furthermore, we also need to introduce the corresponding coefficient of variation *CV_SEL*. The values of the selectivity matrix comes from a uniform distribution with mean equal to "cte" and whose variability is determined by CV_SEL. In this case CV_SEL=0.2
+
+```{r}
+ctrSEL<-list(type="cte", par=list(cte=0.5),CV_SEL=0.2)
+```
+
+- Andersen selectivity function. In *ctrSEL* we must specify it using *type="Andersen"* argument, and then in argument *par* we must introduce the  values of its parameters.
+
+$$SA(x) = \begin{cases} p0+p2e^{-(ln(p5/x)-p1)^2/p4}, & \mbox{if } {ln(p5/x)\leq p1} \\ p0+p2e^{-(ln(p5/x)-p1)^2/p3}, & \mbox{if } {ln(p5/x)>p1} \end{cases}.$$
+
+
+
+We fixed p0=0, which is the beginning size for the plateau, and p2=1, which is the maximum value attainable by the function. Remember that p3 and p4 are the ascending and descending slope parameters, respectively, whereas p1 and p5 define the value of x at which the transition between the two gaussian functions happens; that is, x=p5/exp(p1). In this case, p1=2,p3=0.2,p4=0.2,p5=40.
+
+
+
+Furthermore, we also need to introduce the corresponding coefficient of variation *CV_SEL*. The value of the parameter p1 in each stochastic iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL. In this case CV_SEL=0.05.
+
+```{r}
+ctrSEL<-list(type="Andersen", par=list(p1=2,p3=0.2,p4=0.2,p5=40),CV_SEL=0.05)
+```
+
+- Gamma selectivity function. In *ctrSEL* we must specify it using *type="Gamma"* argument, and then in argument *par* we must introduce the  values of its parameters.
+
+
+$$SG(x)=((x/((\alpha-1) \beta\;\gamma))^{(\alpha-1))}e^{\alpha-1-(1/\beta\;\gamma)},$$
+
+where *gamma=$\gamma$* is the size of the mesh, *alpha=$\alpha$* is the shape parameter and *beta=$\beta$* is the scale parameter. In this case gamma=10, alpha=15, beta=0.03.
+
+Furthermore, we also need to introduce the corresponding coefficient of variation *CV_SEL*. The value of the parameter alpha in each stochastic iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL. In this case CV_SEL=0.05.
+
+```{r}
+ctrSEL<-list(type="Gamma", par=list(gamma=10,alpha=15, beta=0.03),CV_SEL=0.05)
+```
+
+
+- Logistic selectivity function. In *ctrSEL* we must specify it using *type="Logistic"* argument, and then in argument *par* we must introduce the  values of its parameters.
+
+$$L(x)=1/(1+e^{(x-a50_{Sel})/ad_{Sel}})$$
+
+where a50_Sel is the x-value of the sigmoid's midpoint of the logistic function, and ad_Sel is minus the inverse of the logistic growth rate (steepness of the curve). In this case a50_Sel=1.5 and ad_Sel=-1.
+
+Furthermore, we also need to introduce the corresponding coefficient of variation *CV_SEL*. The value of the parameter a50_SEL in each stochastic iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL. In this case CV_SEL=0.2.
+
+```{r}
+ctrSEL<-list(type="Logistic", par=list(a50_Sel=1.5, ad_Sel=-1),CV_SEL=0.2)
+```
+
+
+Finally, we save in the same object all the fishing information.
+
+
+```{r}
+
+ctrFish<-list(f=f,ctrSEL=ctrSEL)
+```
+
+
+To finish the description of the arguments, we focus on block **(4)**  which contains the stock-recruitment relationship information.
+
+
+Argument *type* specifies the selected stock recruitment model. 
+
+- *type="cte"* means that a constant recruitment is used. Then, argument *par* contains the values of the parameters of the stock recruitment model specified previously. If type="cte" then recruitment is equal to the population size at first age and year introduced previously in N0 parameter then par contains only *CV_REC_C* which is the associated coefficient of variation. For the stochastic iterations the recruitment is generated from a  log-normal distribution centered on N0 and whose variability is determined by CV_REC_C.
+
+```{r}
+CV_REC_C=0.2
+SR<-list(type="cte",par=c(CV_REC_C))
+```
+
+- *type="BH"* corresponds to Beverton-Holt Recruitment Model. Then, argument *par* contains the values of the parameters of the stock recruitment model specified previously. 
+
+$$R=a_{BH}SSB/(b_{BH}+SSB)$$
+
+where SSB is the maturity biomass (spawning stock), a_BH is the maximum number of recruitments produced and b_BH is the spawning stock needed to produce recruitment equal to half maximum. In this case a_BH=1000 and b_BH=400. Furthermore, we have a coefficient of variation associated, in each stochastic iteration the deterministic equation of the model is multipled by log-normal residuals centered on 0 and whose variability is determined by *CV_REC_BH*. In this case is CV_REC_BH=0.2.
+
+```{r}
+a_BH=10000; b_BH=400; CV_REC_BH=0.2
+SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
+```
+
+- *type="RK"*  refers to Ricker Recruitment Model. Then, argument *par* contains the values of the parameters of the stock recruitment model specified previously. 
+
+
+$$R=a_{RK}SSBe^{-b_{RK}*SSB}$$
+
+where SSB is the maturity biomass (spawning stock), a_RK is the recruits-per-spawner at low stock levels and b_RK relates to the rate of decreasing of recruits-per-spawner as SSB increases. In this case, a_RK=10 and b_RK=0.0002. Furthermore, we have a coefficient of variation associated, in each stochastic iteration the deterministic equation of the model is multipled by log-normal residuals centered on 0 and whose variability is determined by CV_REC_RK. In this case CV_REC_RK=0.2.
+
+```{r}
+a_RK=10; b_RK=0.0002; CV_REC_RK=0.2
+SR<-list(type="RK",par=c(a_RK,b_RK,CV_REC_RK))
+```
+
+### Use of Population.Modeling 
+
+Now, that we are defined correctly the FOUR blocks of arguments we introduce them in the main function using the following line of code.
+
+```{r}
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+
+```
+
+### Results of Population.Modeling 
+
+Now, the object Pop.Mod contains two blocks of results.
+
+- Matrices. Arrays of matrices containing the population values.
+
+N: Third dimensional array containing the population size for each age, year and iteration.
+
+```{r}
+N=Pop.Mod$Matrices$N
+```
+
+F: Third dimensional array containing the instantaneous fishing mortality for each age, year and iteration.
+
+```{r}
+F=Pop.Mod$Matrices$F
+```
+
+M: Third dimensional array containing the instantaneous natural mortality for each age, year and iteration.
+
+```{r}
+M=Pop.Mod$Matrices$M
+```
+
+W: Third dimensional array containing the weight corresponding to the stock length for each age, year and iteration (at ts time of the year at which the stock is simulated. It has been fixed in 0 by default. No possibility of changing such default value is provided).
+
+```{r}
+W=Pop.Mod$Matrices$W
+```
+
+Mat: Third dimensional array containing the proportion of mature at each age, year and iteration.
+
+```{r}
+Mat=Pop.Mod$Matrices$Mat
+```
+
+C_N: Third dimensional array containing the number of catches for each age, year and iteration.
+
+```{r}
+C_N=Pop.Mod$Matrices$C_N
+```
+
+C_W: Third dimensional array containing the weight of catches for each age, year and iteration (at tc).
+
+
+```{r}
+C_W=Pop.Mod$Matrices$C_W
+```
+
+
+- Info. In this block we save useful information employed to create the population and which will be used by other functions of Rfishpop package. We can check this information using the next line of code.
+
+```{r}
+Pop.Mod$Info
+```
+
+### Comments about the performance of Population.Modeling function
+
+### N0 argument 
+
+Argument *N0* is a number corresponding to the population size at first age and year, or a vector containing the population size at first year for all ages. If we introduce only the population size at first age and year the remaining values of the first year are computed as follows.
+
+$$ N_{i1}=e^{(-Z_{i-1,1})}*N_{i-1,1}, $$
+for $i \in {2:15}$ in our example, to wit, all ages except the first one and the plus group which is defined as:
+
+$$ N_{i1}=e^{(-Z_{i-1,1})}*N_{i-1,1}/(1-e^{(-Z_{i,1})}),\; i=16.$$
+
+Note that index $i$ corresponds to age $i$ plus 1 since we can not use i=0 which is the first age.
+
+
+Furthermore, if N0 is a number then its is updated using the recruitment model evaluated at the SSB (spawning stock biomass) of the first year (such SSB assume negligible the contribution of age 0). More precisely, the maturity at first age (age 0 years) is assumed 0. Whereas if N0 is a vector such procedure of updated is not carried out.
+
+On the other hand it is important to note that the time of the year ($t_s$) at which the stock  is simulated has been fixed in 0 by default, which means that the stock numbers correspond to 1st of January. No possibility of changing such value is provided.
+
+
+#### Deterministic and stochastic performance
+
+The first iteration (niter=1) contains the results corresponding to the deterministic case, to wit, all the coefficients of variation (CV's) associated to the different biological and fishery components are zero.
+
+We can access to the first iteration of the population size matrix N (for example) as follows.
+
+```{r}
+N_D<-N [,,1]
+```
+
+The next iterations contain the stochastic results. In this case iteration 2, since niter=2.
+
+```{r}
+N_D<-N [,,2]
+```
+
+
+Hence, if niter=1 (CV's=0), we only obtain the deterministic performance. If niter=1 and the CV's are different than 0, the function returns ERROR because the first iteration is the deterministic one and hence the CV's can not be used. 
+
+```{r eval=FALSE}
+ctrPop<-list(years=seq(1980,2020,by=1),niter=1,N0=10000,ages=0:15,minFage=4,
+maxFage=7,tc=0.5,seed=NULL)
+
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+
+```
+
+**Error in Population.Modeling(ctrPop = ctrPop, ctrBio = ctrBio, ctrFish = ctrFish, : niter is equal to 1 whereas the coefficients of variation are not zero. Note that the first iteration is the deterministic one, hence you need al least one iteration more to use the coefficients of variation.**
+
+
+
+If niter>1, the CV's are 0 and the matrix of the annual component of fishing mortality has constant rows, the function returns ERROR because it does has sense to repeat a deterministic process (a process without variability).
+```{r eval=FALSE}
+ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
+maxFage=7,tc=0.5,seed=NULL)
+ctrBio<-list(M=M,CV_M=0, L_inf=124.5, t0=0, k=0.164, CV_L=0, CV_LC=0, a=4.5*10^(-6), b=3.1049,
+             a50_Mat=3, ad_Mat=-0.5,CV_Mat=0)
+
+ctrSEL<-list(type="Logistic", par=list(a50_Sel=1.5, ad_Sel=-1),CV_SEL=0)
+
+f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
+ctrFish<-list(f=f,ctrSEL=ctrSEL)
+
+CV_REC_C=0
+SR<-list(type="cte",par=c(CV_REC_C))
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+```
+
+**Error in Population.Modeling(ctrPop = ctrPop, ctrBio = ctrBio, ctrFish = ctrFish,  : 
+  The coefficients of variation are zero whereas the number of iterations (niter) is greater than 1, and the matrix of the annual component of fishing mortality has constant rows**
+
+
+
+If the number of iterations does not match with the number of rows of the matrix of the annual component of fishing mortality an error is reported.
+
+```{r eval=FALSE}
+ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
+maxFage=7,tc=0.5,seed=NULL)
+ctrBio<-list(M=M,CV_M=0, L_inf=124.5, t0=0, k=0.164, CV_L=0, CV_LC=0, a=4.5*10^(-6), b=3.1049,
+             a50_Mat=3, ad_Mat=-0.5,CV_Mat=0)
+
+ctrSEL<-list(type="Logistic", par=list(a50_Sel=1.5, ad_Sel=-1),CV_SEL=0.2)
+
+f=matrix(rep(0.5,number_years),ncol=number_years,nrow=1,byrow=TRUE)
+ctrFish<-list(f=f,ctrSEL=ctrSEL)
+
+SR<-list(type="cte",par=c(CV_REC_C))
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+```
+
+**Error in Population.Modeling(ctrPop = ctrPop, ctrBio = ctrBio, ctrFish = ctrFish,  : 
+  The annual component of fishing mortality must be a matrix whose rows contain the annual vector for each iteration**
+
+
+### Units of the different parameters
+
+The value of N0 in our example is the number of individuals. The L_inf value is suitable to measure the length in cm. The values of a and b are corrected to relate length in cm with the weight in Kg.
+The values of the parameters of the stock recruitment relationship have been introduced also taken into account that we are working with individuals, Kg and cm.
+
+
+### <span style="color:blue">Function Sum.Pop.Mod</span>
+
+Furthermore than the information accessible by *Pop.Mod$Matrices* we can extract more information using the function Sum.Pop.Mod. This function allows us to extract additional information obtained in the simulation process of Population.Modeling (main function). 
+
+
+### Arguments of  Sum.Pop.Mod function
+
+This function is applied on the object Pop.Mod returned by Population.Modeling function (main function). The second argument is *Elements* in which we specify the information that we desire to extract from Pop.Mod object.
+
+### Results of the main function Sum.Pop.Mod
+
+
+The information that can be extracted is:
+
+-"Z": Third dimensional array containing the instantaneous mortality for each age, year and iteration.
+
+-"LS":Third dimensional array containing the (stock) length for each age, year and iteration (at ts=0, 1st of January).
+
+-"LC":Third dimensional array containing the length of the catches for each age, year and iteration (at tc).
+
+-"WS":Third dimensional array containing the population weight for each age, year and iteration.
+
+-"WSSB":Third dimensional array containing the weight of the mature population for each age, year and iteration.
+
+-"C":Weight of the catches for each year and iteration.
+
+-"SEL":Selectivity by age, for each iteration.
+
+-"BIO":Total biomass for each year and iteration.
+
+-"SSB":Maturity biomass for each year (spawning stock) and iteration.
+
+-"REC":Population numbers at first age.
+
+-"F":Mean fishing mortality (only takes the values between the minFage and maxFage).
+
+-"WC":Third dimensional array containing the weight corresponding to the catch length for each age (at tc), year and iteration.
+
+
+Below we have some examples extracting different elements.
+
+```{r}
+Z<-Sum.Pop.Mod(Pop.Mod,c("Z"))
+LS<-Sum.Pop.Mod(Pop.Mod,c("LS"))
+
+LC<-Sum.Pop.Mod(Pop.Mod,c("LC"))
+WS<-Sum.Pop.Mod(Pop.Mod,c("WS"))
+
+WSSB<-Sum.Pop.Mod(Pop.Mod,c("WSSB"))
+C<-Sum.Pop.Mod(Pop.Mod,c("C"))
+
+SEL<-Sum.Pop.Mod(Pop.Mod,c("SEL"))
+BIO<-Sum.Pop.Mod(Pop.Mod,c("BIO"))
+
+
+SSB<-Sum.Pop.Mod(Pop.Mod,c("SSB"))
+REC<-Sum.Pop.Mod(Pop.Mod,c("REC"))
+
+F<-Sum.Pop.Mod(Pop.Mod,c("F"))
+WC<-Sum.Pop.Mod(Pop.Mod,c("WC"))
+
+```
+
+
+### Selecting_units function
+
+This function returns the following matrices provided by Sum.Pop.Mod function but in tonnes instead on Kg:
+
+- "C":Weight of the catches for each year and iteration.
+
+- "BIO":Total biomass for each year and iteration.
+
+- "SSB":Maturity biomass for each year (spawning stock biomass) and iteration.
+
+Below, we can see the easy use of this function.
+
+```{r}
+E<-selecting_units(Pop.Mod,c("C","BIO","SSB"))
+```
+
+### Internal calls
+
+
+The function Population.Modeling uses some functions that are also available to use independently.
+
+Previously, we mentioned that several selectivity functions are available.
+
+- Andersen Selectivity function. The function *andersen* computes this function, and the arguments are the ones decribed above in Population.Modeling section.
+
+```{r}
+p1=2;p3=0.2;p4=0.2;p5=40
+ages<-0:15
+SA<-andersen(x=ages,p1=p1,p3=p3,p4=p4,p5=p5)
+plot(ages,SA,type="b", pch=19, col="red", main="Andersen Selectivity function")
+```
+
+
+
+- Gamma selectivity function. The function *gamma_SEL* computes this function, and the arguments are the ones decribed above in Population.Modeling section.
+
+```{r}
+gamma=10;alpha=15; beta=0.03
+ages<-seq(0, 15, by=0.1)
+SG<-gamma_SEL(x=ages,alpha=alpha,gamma=gamma,beta=beta)
+plot(ages,SG,type="b", pch=19, col="red", main="Gamma Selectivity function")
+```
+
+
+- Logistic selectivity function. The function *Logistic* computes this function, and the arguments are the ones decribed above in Population.Modeling section.
+
+```{r}
+a50_Sel=1.5; ad_Sel=-1
+ages<-0:15
+LO<-Logistic(x=ages,x50=a50_Sel,xd=ad_Sel)
+plot(ages,LO,type="b", pch=19, col="red", main="Logistic Selectivity function")
+```
+
+The logistic function is also used to determine the maturity.
+
+```{r}
+a50_Mat=3; ad_Mat=-0.5
+ages<-0:15
+Mat<-Logistic(x=ages,x50=a50_Mat,xd=ad_Mat)
+plot(ages,Mat,type="b", pch=19, col="red", main="Maturity function")
+```
+
+
+On the other hand, we have two functions useful to define the length and to obtain then the weight.
+
+The function *Length_VB* computes the length using Von Bertalanffy Growth Model, and the arguments are the ones decribed above in Population.Modeling section.
+
+
+```{r}
+L_inf=124.5; t0=0; k=0.164;ts=0 # (ts=0 is fixed by default)
+ages<-0:15
+LS<-Length_VB(L_inf,k,ages+ts,t0)
+plot(ages,LS,type="b", pch=19, col="red", main="Stock Length")
+```
+
+Once we have the stock length we can obtain the weigth using the function *Weight* which computes the weight from the length using the relationship explained in Population.Modeling section.
+
+```{r}
+a=4.5*10^(-6); b=3.1049
+WS<-Weight(LS,a,b)
+```
+
+There are two insteresting plots that we can provide. The first one gives the weight of the stock for the different ages.
+
+```{r}
+plot(ages,WS,type="b", pch=19, col="red", main="Stock Weight")
+```
+
+The second one shows the length-weight relationship plotting the corresponding weight for each length.
+
+```{r}
+plot(LS,WS,type="b", pch=19, col="red", main="Length-Weight")
+```
+
+
+
+Finally, we have several functions related with stock-recruitment relationship.
+
+- *RBH* which computes the recruitment using Beverton-Holt Recruitment Model.
+
+```{r}
+years=seq(1980,2020,by=1)
+a_BH=10000; b_BH=400
+R<-RBH(SSB$SSB[,,1],a_BH,b_BH)
+plot(years,R,type="b", pch=19, col="red", main="Beverton-Holt Recruitment")
+```
+
+
+
+
+- *RRK* which computes the recruitment using Ricker Model.
+
+```{r}
+a_RK=10; b_RK=0.0002
+R<-RRK(SSB$SSB[,,1],a_RK,b_RK)
+plot(years,R,type="b", pch=19, col="red", main="Ricker Model")
+```
+
+
+Note that we have used the SSB of the first iteration as an example.
+
+
+Related to the stock recruitment relationship the following function is useful.
+
+
+#### <span style="color:blue">Steepness of the Stock Recruitment Relationship</span>
+
+This function returns the steepness of a stock recruitment relationship. Remember that the steepness is commonly defined as the fraction of recruitment from an unfished population obtained when the spawning stock biomass is 20 percentage of its unfished level. The other point of view and possibility of this function is to compute the parameters of a stock recruitment model for which the corresponding steepness is equal to a desired value.
+
+
+The **arguments** of this function are:
+
+- **Pop.Mod**	is the object returned by Population.Modeling function (main function).
+- **Fish.years**	is the number of recent years to estimate the mean of SEL (selectivity).
+- **Bio.years**	is the number of recent years to estimate the mean of M, Mat, WC, and W (natural mortality, maturity, stock weight and catch weight).
+- **type** is the desired approach which has two possibilities, type="steepness" or type="parameters".
+- **h**	is the desired value of the steepness when type="parameters". In other case (type="steepness") this parameter is equal to NULL.
+- **Method** is the procedure to obtain the age vector of weight (stock and catches), natural mortality, selectivity and maturity. By default is "mean" which means that the mean of the last "Bio.years" is used. The alternative option is "own", the user can introduce these elements.
+- **par**	If Method="own" it is a list containing the matrices whose columns report for each iteration the age vector of weight (stock and catches), natural mortality, selectivity and maturity. In other case is equal to NULL.
+
+
+The results of this function are:
+
+- if type="steepness" an array **h** whose third dimension is the number of iterations. For each iteration the value of the steepness is reported.
+
+- if type="parameters" an array **parameters** whose third dimension is the number of iterations. For each iteration the value of the parameters of the stock-recruitment relationship.
+
+
+1. We focus on type="steepness" first.
+
++ We consider the Beverton-Holt Recruitment Model:
+
+```{r}
+a_BH=10000; b_BH=400; CV_REC_BH=0.2
+SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+steepness_value<-steepness(Pop.Mod,Fish.years=3,Bio.years=3,type="steepness",Method="mean",par=NULL)
+steepness_value
+```
+
+
++ We consider the Ricker Recruitment Model:
+
+
+```{r}
+a_RK=10; b_RK=0.0002; CV_REC_RK=0.2
+SR<-list(type="RK",par=c(a_RK,b_RK,CV_REC_RK))
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+steepness_value<-steepness(Pop.Mod,Fish.years=3,Bio.years=3,type="steepness",Method="mean",par=NULL)
+steepness_value
+```
+
+
+2. Now, we focus on type="parameters":
+
+
++ We consider the Beverton-Holt Recruitment Model:
+
+```{r}
+a_BH=10000; b_BH=400; CV_REC_BH=0.2
+SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+parameters_value<-steepness(Pop.Mod,3,3,type="parameters",h=0.93,Method="mean",par=NULL)
+parameters_value
+```
+
++ We consider the Ricker Recruitment Model:
+
+
+```{r}
+a_RK=10; b_RK=0.0002; CV_REC_RK=0.2
+SR<-list(type="RK",par=c(a_RK,b_RK,CV_REC_RK))
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+parameters_value<-steepness(Pop.Mod,3,3,type="parameters",h=2.34,Method="mean",par=NULL)
+parameters_value
+```
+
+
+Note that if we want to use *Method="own"* we need to specify in argument *par* the required vectors. This must be  something like (assuming that W, WC, M,
+ Mat and SEL are defined previously).
+ 
+```{r eval=FALSE} 
+par=list(); par$W<-W; par$SEL<-SEL; par$Mat<-Mat; par$M<-M
+steepness(Pop.Mod,3,3,type="parameters",h=2.34,Method="own",par=par)
+```

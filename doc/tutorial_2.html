@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Marta Cousido Rocha, Santiago Cerviño López, Maria Grazia Pennino" />
+
+<meta name="date" content="2020-08-24" />
+
+<title>Rfishpop (Second tutorial)</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Rfishpop (Second tutorial)</h1>
+<h4 class="author">Marta Cousido Rocha, Santiago Cerviño López, Maria Grazia Pennino</h4>
+<h4 class="date">2020-08-24</h4>
+
+
+
+<div id="population-dynamic-tools-in-support-of-fisheries-managment" class="section level2">
+<h2>Population dynamic tools in support of fisheries managment</h2>
+<p>After describing the operating model used to generate “true” ecosystem dynamics including the natural variations in the system. It is important to address this tutorial which focus on a set of methods contained in the package to estimate Maximum Sustainable Yield (MSY) reference points. These allow to identify management targets in terms of fishing intensity, population status and yield.</p>
+<p>To estimate these reference points several fuctions are required: biomass-per-Recruit, yield-per-Recruit, total Yield, Biomass and Recruitment in equilibrium, and Reference Points.</p>
+<p>To finish the tutorial a description and an application of the Distribution.length function which allow us to compute the stock length or catches length of the population simulated previously using the OM are provided.</p>
+<div id="biomass-per-recruit-bpr-function" class="section level3">
+<h3><span style="color:blue">Biomass-per-Recruit (BPR function)</span></h3>
+<p>The function <em>BPR</em> returns biomass-per-Recruit for each iteration. The arguments of the function are the following.</p>
+<ul>
+<li><p><em>Pop.Mod</em> is a list containing the components returned by Population.Modeling function (main function).</p></li>
+<li><p><em>f.grid</em> is a sequence of <em>f’s</em> which are the annual components of fishing mortality <span class="math inline">\(F = f * SEL\)</span>.</p></li>
+<li><p><em>Fish.years</em> is the number of recent years to estimate the mean of SEL (selectivity, see information about such element in Sum.Pop.Mod function).</p></li>
+<li><p><em>Bio.years</em> is the number of recent years to estimate the mean of M, W and Mat (natural mortality, weight and maturity, see information about such elements in Population.Modeling function).</p></li>
+<li><p><em>plot</em> is a vector of two elements. The first one is a logical parameter. By default is equal to TRUE, which means that a biomass per recruit graph is done. The second element refers to which iteration must be plotted.</p></li>
+<li><p><em>Method</em> is the procedure to obtain the age vector of weight, natural mortality, selectivity and maturity for each iteration. By default is “mean” which means that the mean of the last “Bio.years or”Fish.years&quot; is used. The alternative option is “own”, the user can introduce these vectors in a matrix.</p></li>
+<li><p><em>par</em> If Method=“own” it is a list containing the matrices whose columns report for each iteration the age vector of weight, natural mortality, selectivity and maturity. In other case is equal to NULL.</p></li>
+</ul>
+<p>The result is an array whose third dimension corresponds to the iterations. For each iteration the array contains a matrix reporting the biomass-per-recruit for a range of overall fishing mortalities.</p>
+<p>First of all we need to simulate our population using Population.Modeling function.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(Rfishpop)</a>
+<a class="sourceLine" id="cb1-2" title="2">ctrPop&lt;-<span class="kw">list</span>(<span class="dt">years=</span><span class="kw">seq</span>(<span class="dv">1980</span>,<span class="dv">2020</span>,<span class="dt">by=</span><span class="dv">1</span>),<span class="dt">niter=</span><span class="dv">2</span>,<span class="dt">N0=</span><span class="dv">15000</span>,<span class="dt">ages=</span><span class="dv">0</span><span class="op">:</span><span class="dv">15</span>,<span class="dt">minFage=</span><span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="dt">maxFage=</span><span class="dv">5</span>,<span class="dt">tc=</span><span class="fl">0.5</span>,<span class="dt">seed=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb1-4" title="4">number_ages&lt;-<span class="kw">length</span>(ctrPop<span class="op">$</span>ages);number_years&lt;-<span class="kw">length</span>(ctrPop<span class="op">$</span>years)</a>
+<a class="sourceLine" id="cb1-5" title="5"></a>
+<a class="sourceLine" id="cb1-6" title="6">Mvec=<span class="kw">c</span>(<span class="dv">1</span>,<span class="fl">0.6</span>,<span class="fl">0.5</span>,<span class="fl">0.4</span>,<span class="fl">0.35</span>,<span class="fl">0.35</span>,<span class="fl">0.3</span>,<span class="kw">rep</span>(<span class="fl">0.3</span>,<span class="dv">9</span>))</a>
+<a class="sourceLine" id="cb1-7" title="7">M&lt;-<span class="kw">matrix</span>(<span class="kw">rep</span>(Mvec,number_years),<span class="dt">ncol =</span> number_years)</a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="kw">colnames</span>(M)&lt;-ctrPop<span class="op">$</span>years</a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="kw">rownames</span>(M)&lt;-ctrPop<span class="op">$</span>ages</a>
+<a class="sourceLine" id="cb1-10" title="10"></a>
+<a class="sourceLine" id="cb1-11" title="11">ctrBio&lt;-<span class="kw">list</span>(<span class="dt">M=</span>M,<span class="dt">CV_M=</span><span class="fl">0.2</span>, <span class="dt">L_inf=</span><span class="dv">20</span>, <span class="dt">t0=</span><span class="op">-</span><span class="fl">0.25</span>, <span class="dt">k=</span><span class="fl">0.3</span>, <span class="dt">CV_L=</span><span class="dv">0</span>, <span class="dt">CV_LC=</span><span class="dv">0</span>, <span class="dt">a=</span><span class="dv">6</span><span class="op">*</span><span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">6</span>), <span class="dt">b=</span><span class="dv">3</span>,</a>
+<a class="sourceLine" id="cb1-12" title="12">           <span class="dt">a50_Mat=</span><span class="dv">1</span>, <span class="dt">ad_Mat=</span><span class="op">-</span><span class="fl">0.5</span>,<span class="dt">CV_Mat=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb1-13" title="13"></a>
+<a class="sourceLine" id="cb1-14" title="14">ctrSEL&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;cte&quot;</span>, <span class="dt">par=</span><span class="kw">list</span>(<span class="dt">cte=</span><span class="fl">0.5</span>),<span class="dt">CV_SEL=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb1-15" title="15"></a>
+<a class="sourceLine" id="cb1-16" title="16">f=<span class="kw">matrix</span>(<span class="kw">rep</span>(<span class="fl">0.5</span>,number_years),<span class="dt">ncol=</span>number_years,<span class="dt">nrow=</span><span class="dv">2</span>,<span class="dt">byrow=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb1-17" title="17"></a>
+<a class="sourceLine" id="cb1-18" title="18">ctrFish&lt;-<span class="kw">list</span>(<span class="dt">f=</span>f,<span class="dt">ctrSEL=</span>ctrSEL)</a>
+<a class="sourceLine" id="cb1-19" title="19"></a>
+<a class="sourceLine" id="cb1-20" title="20">a_BH=<span class="dv">15000</span>; b_BH=<span class="dv">50</span>; CV_REC_BH=<span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-21" title="21"></a>
+<a class="sourceLine" id="cb1-22" title="22">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;BH&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(a_BH,b_BH,CV_REC_BH))</a>
+<a class="sourceLine" id="cb1-23" title="23"></a>
+<a class="sourceLine" id="cb1-24" title="24">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a></code></pre></div>
+<p>Now, we can use the <em>BPR</em> function to obtain the biomass-per-recruit for a range of overall fishing mortalities.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">f.grid&lt;-<span class="kw">seq</span>(<span class="fl">0.00</span>,<span class="fl">0.5</span>,<span class="dt">by=</span><span class="fl">0.01</span>)</a>
+<a class="sourceLine" id="cb2-2" title="2">bpr&lt;-<span class="kw">BPR</span>(Pop.Mod,f.grid,<span class="dt">Bio.years=</span><span class="dv">3</span>,<span class="dt">Fish.years=</span><span class="dv">3</span>,<span class="dt">plot=</span><span class="kw">c</span>(<span class="ot">TRUE</span>,<span class="dv">1</span>),<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">head</span>(bpr[,,<span class="dv">1</span>])</a></code></pre></div>
+<pre><code>##          F         BPR
+## [1,] 0.000 0.011298306
+## [2,] 0.005 0.010940730
+## [3,] 0.010 0.010598479
+## [4,] 0.015 0.010270714
+## [5,] 0.020 0.009956652
+## [6,] 0.025 0.009655563</code></pre>
+<p>Note that f.grid is a sequence of fishing efforts that the user must be defined. In this case we have introduced a grid from 0 to 0.5 such that two consecutive points are separated by 0.01.</p>
+<p>If we want to use <em>Method=“own”</em> we need to specify argument <em>par</em>. Assuming that W, M, Mat and SEL are equal to their values in the last year of the population. We have the following example.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">W=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>W[,<span class="dv">41</span>,]</a>
+<a class="sourceLine" id="cb5-2" title="2"></a>
+<a class="sourceLine" id="cb5-3" title="3">SEL=<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="st">&quot;SEL&quot;</span> )<span class="op">$</span>SEL[,<span class="dv">41</span>,]</a>
+<a class="sourceLine" id="cb5-4" title="4"></a>
+<a class="sourceLine" id="cb5-5" title="5">Mat=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>Mat[,<span class="dv">41</span>,]</a>
+<a class="sourceLine" id="cb5-6" title="6"></a>
+<a class="sourceLine" id="cb5-7" title="7">M=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>M[,<span class="dv">41</span>,]</a>
+<a class="sourceLine" id="cb5-8" title="8"></a>
+<a class="sourceLine" id="cb5-9" title="9">par=<span class="kw">list</span>(); par<span class="op">$</span>W&lt;-W; par<span class="op">$</span>SEL&lt;-SEL; par<span class="op">$</span>Mat&lt;-Mat; par<span class="op">$</span>M&lt;-M</a>
+<a class="sourceLine" id="cb5-10" title="10"></a>
+<a class="sourceLine" id="cb5-11" title="11">bpr=<span class="kw">BPR</span>(Pop.Mod,f.grid,<span class="dt">plot=</span><span class="kw">c</span>(<span class="ot">TRUE</span>,<span class="dv">1</span>),<span class="dt">Method=</span><span class="st">&quot;own&quot;</span>,<span class="dt">par=</span>par)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">head</span>(bpr[,,<span class="dv">1</span>])</a></code></pre></div>
+<pre><code>##          F         BPR
+## [1,] 0.000 0.011298306
+## [2,] 0.005 0.010940730
+## [3,] 0.010 0.010598479
+## [4,] 0.015 0.010270714
+## [5,] 0.020 0.009956652
+## [6,] 0.025 0.009655563</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">head</span>(bpr[,,<span class="dv">2</span>])</a></code></pre></div>
+<pre><code>##          F        BPR
+## [1,] 0.000 0.01628834
+## [2,] 0.005 0.01575203
+## [3,] 0.010 0.01524018
+## [4,] 0.015 0.01475130
+## [5,] 0.020 0.01428400
+## [6,] 0.025 0.01383701</code></pre>
+</div>
+<div id="yield-per-recruit-ypr-function" class="section level3">
+<h3><span style="color:blue">Yield-per-Recruit (YPR function) </span></h3>
+<p>The function <em>YPR</em> returns yield-per-Recruit for each iteration. Almost all of the arguments of this function have been explained above in <em>BPR</em> function. Except the following argument which must be described again due to a slightly adjustment.</p>
+<ul>
+<li><em>Bio.years</em> is the number of recent years to estimate the mean of M and WC (natural mortality and catches weight, see information about such elements in Population.Modeling function and Sum.Pop.Mod function, respectively).</li>
+</ul>
+<p>The result is an array whose third dimension corresponds to the iterations. For each iteration the array contains a matrix reporting the yield-per-recruit for a range of overall fishing mortalities.</p>
+<p>The following lines of code allow us to compute the yield-per-Recruit for each iteration.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">ypr&lt;-<span class="kw">YPR</span>(Pop.Mod,f.grid,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">plot=</span><span class="kw">c</span>(<span class="ot">TRUE</span>,<span class="dv">1</span>), <span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAt1BMVEUAAAAAADoAAGYAOjoAOmYAOpAAZrY6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kJA6kLY6kNtmAABmADpmOgBmOjpmOpBmkJBmkNtmtrZmtttmtv+QOgCQZgCQZjqQkGaQtpCQttuQ27aQ2/+2ZgC2Zjq2ZpC2kDq2tma225C227a229u22/+2/7a2/9u2///bkDrbkJDbtmbb29vb/9vb////tmb/25D/27b//7b//9v///9NrKpNAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAKlUlEQVR4nO2dC3ubNhSGcdrG3bq1m9PuVrx2Xbxb1y2sW3Bt/v/vmq4gHPAHQoIDPt/zxAEkHcFrXY5AyEnBOqtk6hOgLgYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBAcUDtEuSjd1Ij9vkyb0TWNvfJVd30U6jzOv4q1cm8QAdbpLVrfi/X4vzmx7Qp1d+mUSsYlmSXKvTU5zqGhPQsEwiAhIQkrTIVU2zxfyXJFm9uHf218njd9W5i6333yTJ4w8qvY0sUK9+epVcqaPVThVeFB8/T5JHr51QbVOU4o3OS9TzxAtRzEZaVq7/tuq0NBBxvlKP78y+RJi4Z74z+7LMVZFlWRQyRc7uOOE23aYKnQUgebbPZCmygHbyixfYzEnL0nV9LwuCA0jE+KjqZhVZ2nnyofi3NKp2nHBh5+v7TzfSjBNaA0SxiulKJq/VAFKnK6/w6s496cONCygtdHvhRJZXnZZGzY4bru1kz/8sQ2cCSH61uoVWJym+bluD1L74UPRqbZDcEg3JrRNZ7Zc2s7JzrBmrh84FkEWgTzJP6tckTr8ZkIiYOpEbAdWNXZ+EGktOdZ4DIHG6aRVQOUdtJchGbitBNWMnUWcJyJaYoig6tUEPioW744ZrO/kX76qo+r/yMeYDSJzk6nUhehtbeHQvtmvrxWzkRkBuuLDz4l67XRUggebTtgKUNfmrHTQqIOO6iDM1tcL6Pad+kClY1iVqBOSE23TXVWjZhjsuBT0/6BRQ8emNOO/nHypP+re1cIBrbdDfb3QMJ3IzICfceNLfu6H7VyLwfdWLSXdLe+j9ROt2xyijsn5iQEAMCIgBAdECRFAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBAQUGlMxGUwEKay6eGBAQAwJiQI2qWh8GZNXSMl88INRbXTCgbr34JQLq5eBcFqB+rp9OEjziJOY6ZdkTjUkVPOIk5nB+XnSKCwDUc0T1MH3wiJOYa8tlABlrInjEScw1ZjGcTrFgQEHoFKMD6n+bxTefYJaCR5zE3InxgNaXByhw6VwYoPB1Nyqg/ToNaQ4qRssWBZB5z1ip5cW3GJcSB3rwiFK5XnRrzBIUq1+MVMUON/Jl7vEAxXMborVBu9XtaIBielXxGuks2YwDKK7TGbEX268fjQAouk8ePGKl49ZZD2q4uah2hmdA0lGMXXyKaIDssnWtr/8HubIxbirFAZSZxUetQzTQXIuJUW66RQF03JZYstrCo37mmjXSTdtIQ43UbuaRhhrjFJ9itiVovIcisdqgVG9EaoNGfGgUbSyme7GW8jPwEsd8qDZHP2jUh45xPemW+uVnzqYc96Hs7ACN/szaP+I/aJGsBkBDH/uMXHwKD0CZGT8ct3AVsfAlaIo5IT0j5qvbYqfXq2y/eqPggCbg0xfQcXutHGXfBU/75+skmYJPX0CHG7Uw/7Nqgd1WHeTysru2MtT/YifB4wEoLeQqhrB6ybqYyYWPQ3nSE/HxBNTqIJeS7Y8ch2WBBqtT8fEE1KWCpQpQoNH8ZHyiAbIlqK2w9bvi6fhEA2TaoKzttn2vS56QT39A8Km7lYra6gwsFdD4+YbPup9mAGhSPl5jsfbHgaV2ov7J5fQDVLFp+fQGlJ2fk2Ck+Dy9rd2+H5bvZOo9FlM/JAQcReU/665u6E37qfn4dfNt3p+VjGWG8gMdxcn5xAGkSk8WogQtFdDhRv4y2EbfPhqQ7/R8IgEqf7Sq1eXulC8BPtEAhciXAp+IQ43B+ZLgQ9iTpsFnbEDdH/sQ4UO3BM0U0OFbeLM1TL5U+Hg00h1ulg3Plwwfr9F8Gj1fOnx82qAgP121ZED2dxPj+UGE+HgAOm5jlyBKfPoD2kVvg0jxIdiL0eJD0A+aN6D4+RLjQw4QNT4MCIkYIHJ8GBASLUD0+NACRJAPA0KiBIgiHwaERAgQST6EANHkQ+ixz2UB6r+wAFE+kQB5LCxwUYA8XgunyicOII+FBS4LUP8SRJZPtDYo1Rtd26BLA9R3YQG6fIg4igzovDnCfGg4ipcHqJ+jSJkPiW7+8gD1cxRJ86FQgi4QUC9HkTYfAo7iZQLqbo44HwaEFBHQ2VdekpP/ZDUxIPJ8GBBSLECZ7sVOXzg8eapBn8/UJYi+GBAQAwKa3A+irskAzUbRAJ1fBa+bURA+LHho8mHR0Sp43YwuGBBaBa+b0QUDQqvgdTO6YEBoFbxuRhcMCK2C183okgGBVfC6GV00oBBGGdCw8BkDgo+el6fAj56Xp8APDpenwI+elycuQUCBHz0vT4EfPS9Ps7kFOJUYEBADAmJAQAwIiAEBBQKUu/eIyp0c3jlqSl4U+8/uvJOr8fSmV/KzCgNILp9cLqFc7tSOdk6uV2V+eLRb8uNWbGRyuajOyc8rCCA9BjG/W1Lu1I52Tq6+eQnIL7lemD8z6153+i2V8woCqDyr2k7taOfkchijhsKeybWN1W3n5EBhAMlfSrAj/HKndrRz8sJu+idXP9/QOTlQEEC6qpsKX+7UjnZOrg7Iy/JPrsbSnZMDLRFQbttoMoBoVTF9L4ZUFQvaSBcWkGdyc+OcVCMdtps3gDyT25t6pLr5wI6iqRheyffrTcPRAQo01Mi0W69+r9XuOBu9kpcth09yZ55y5+RnxYNVIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICARgC0M+utpHr3uE3lY/Ovqrfzyjf1nDf2uit30ggDykZ17PBy4OP5MQDVX57KrovTtVG8wDSlNTvusXzgq1ujA5InfwokJiBZYIdodEBybt46Sa7+khehfn9bAvturf/Lvx9udHUUVXP1Vk9g2a/lwc1+rUNyPZn+8PKtfb1vp6uwrmIy2pMf1USc68Fvj44OSM75sqVITZPLE3FRcnr86lYf19tyKq8Is4DU/HlxJFNHZTRZU4VlVVqkUZnGtEHyT84xUqVn4CSqsQGp5se9iPKgoKWP6209x3BnAW3Kj1RPrsslT2tLtsQygQNIfQFPb+1kRW+N14ulakd94dVFaEL2YNk+iY9qGl5hLtJ+6Cs2PMv2Jjd1tLQhSpWqXWC1LKSxS5C6uvIi1Ks5aSOgDACyPbr6EG7D1R/1EiSLp1pqbWaAaiVIB+u2Z0gJKoNrNl7+rHyg2QHanAByioILyMxzbgDktEE6qpmZf1LFjttnKuMZtEGtvZidLNwE6KQXS52PqhdLNXFdeETPX9qQCM2M8pn1YurbrtoJPWO3EZBs3K9+d2bvVx/WD1KFcJfIJcOEGV1XTVKRp34ZYQZ+UF39vOYh71rsv7zvnd9DjT+az7q9HWC6uwENbKZrGP2x2Im6Do5y5w6Ah/ZrRWYOo/l5iwEBMSAgBgTEgIAYEBADAmJAQAwIiAEBMSAgBgTEgIAYEBADAmJAQAwIiAEBMSAgBgTEgID+Bw7beOFBlcMKAAAAAElFTkSuQmCC" /><!-- --></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">head</span>(ypr[,,<span class="dv">1</span>])</a></code></pre></div>
+<pre><code>##          F          YPR
+## [1,] 0.000 0.000000e+00
+## [2,] 0.005 5.784571e-05
+## [3,] 0.010 1.122286e-04
+## [4,] 0.015 1.633667e-04
+## [5,] 0.020 2.114623e-04
+## [6,] 0.025 2.567033e-04</code></pre>
+<p>If we want to use <em>Method=“own”</em> the same example explained above is suitable.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">WC=<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="st">&quot;WC&quot;</span> )<span class="op">$</span>WC[,<span class="dv">41</span>,]</a>
+<a class="sourceLine" id="cb13-2" title="2"></a>
+<a class="sourceLine" id="cb13-3" title="3">SEL=<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="st">&quot;SEL&quot;</span> )<span class="op">$</span>SEL[,<span class="dv">41</span>,]</a>
+<a class="sourceLine" id="cb13-4" title="4"></a>
+<a class="sourceLine" id="cb13-5" title="5">M=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>M[,<span class="dv">41</span>,]</a>
+<a class="sourceLine" id="cb13-6" title="6"></a>
+<a class="sourceLine" id="cb13-7" title="7">par=<span class="kw">list</span>(); par<span class="op">$</span>WC&lt;-WC; par<span class="op">$</span>SEL&lt;-SEL; par<span class="op">$</span>M&lt;-M</a>
+<a class="sourceLine" id="cb13-8" title="8">ypr=<span class="kw">YPR</span>(Pop.Mod,f.grid,<span class="dt">plot=</span><span class="kw">c</span>(<span class="ot">TRUE</span>,<span class="dv">1</span>),<span class="dt">Method=</span><span class="st">&quot;own&quot;</span>,<span class="dt">par=</span>par)</a></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAt1BMVEUAAAAAADoAAGYAOjoAOmYAOpAAZrY6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kJA6kLY6kNtmAABmADpmOgBmOjpmOpBmkJBmkNtmtrZmtttmtv+QOgCQZgCQZjqQkGaQtpCQttuQ27aQ2/+2ZgC2Zjq2ZpC2kDq2tma225C227a229u22/+2/7a2/9u2///bkDrbkJDbtmbb29vb/9vb////tmb/25D/27b//7b//9v///9NrKpNAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAKlUlEQVR4nO2dC3ubNhSGcdrG3bq1m9PuVrx2Xbxb1y2sW3Bt/v/vmq4gHPAHQoIDPt/zxAEkHcFrXY5AyEnBOqtk6hOgLgYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBAcUDtEuSjd1Ij9vkyb0TWNvfJVd30U6jzOv4q1cm8QAdbpLVrfi/X4vzmx7Qp1d+mUSsYlmSXKvTU5zqGhPQsEwiAhIQkrTIVU2zxfyXJFm9uHf218njd9W5i6333yTJ4w8qvY0sUK9+epVcqaPVThVeFB8/T5JHr51QbVOU4o3OS9TzxAtRzEZaVq7/tuq0NBBxvlKP78y+RJi4Z74z+7LMVZFlWRQyRc7uOOE23aYKnQUgebbPZCmygHbyixfYzEnL0nV9LwuCA0jE+KjqZhVZ2nnyofi3NKp2nHBh5+v7TzfSjBNaA0SxiulKJq/VAFKnK6/w6s496cONCygtdHvhRJZXnZZGzY4bru1kz/8sQ2cCSH61uoVWJym+bluD1L74UPRqbZDcEg3JrRNZ7Zc2s7JzrBmrh84FkEWgTzJP6tckTr8ZkIiYOpEbAdWNXZ+EGktOdZ4DIHG6aRVQOUdtJchGbitBNWMnUWcJyJaYoig6tUEPioW744ZrO/kX76qo+r/yMeYDSJzk6nUhehtbeHQvtmvrxWzkRkBuuLDz4l67XRUggebTtgKUNfmrHTQqIOO6iDM1tcL6Pad+kClY1iVqBOSE23TXVWjZhjsuBT0/6BRQ8emNOO/nHypP+re1cIBrbdDfb3QMJ3IzICfceNLfu6H7VyLwfdWLSXdLe+j9ROt2xyijsn5iQEAMCIgBAdECRFAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBAQUGlMxGUwEKay6eGBAQAwJiQI2qWh8GZNXSMl88INRbXTCgbr34JQLq5eBcFqB+rp9OEjziJOY6ZdkTjUkVPOIk5nB+XnSKCwDUc0T1MH3wiJOYa8tlABlrInjEScw1ZjGcTrFgQEHoFKMD6n+bxTefYJaCR5zE3InxgNaXByhw6VwYoPB1Nyqg/ToNaQ4qRssWBZB5z1ip5cW3GJcSB3rwiFK5XnRrzBIUq1+MVMUON/Jl7vEAxXMborVBu9XtaIBielXxGuks2YwDKK7TGbEX268fjQAouk8ePGKl49ZZD2q4uah2hmdA0lGMXXyKaIDssnWtr/8HubIxbirFAZSZxUetQzTQXIuJUW66RQF03JZYstrCo37mmjXSTdtIQ43UbuaRhhrjFJ9itiVovIcisdqgVG9EaoNGfGgUbSyme7GW8jPwEsd8qDZHP2jUh45xPemW+uVnzqYc96Hs7ACN/szaP+I/aJGsBkBDH/uMXHwKD0CZGT8ct3AVsfAlaIo5IT0j5qvbYqfXq2y/eqPggCbg0xfQcXutHGXfBU/75+skmYJPX0CHG7Uw/7Nqgd1WHeTysru2MtT/YifB4wEoLeQqhrB6ybqYyYWPQ3nSE/HxBNTqIJeS7Y8ch2WBBqtT8fEE1KWCpQpQoNH8ZHyiAbIlqK2w9bvi6fhEA2TaoKzttn2vS56QT39A8Km7lYra6gwsFdD4+YbPup9mAGhSPl5jsfbHgaV2ov7J5fQDVLFp+fQGlJ2fk2Ck+Dy9rd2+H5bvZOo9FlM/JAQcReU/665u6E37qfn4dfNt3p+VjGWG8gMdxcn5xAGkSk8WogQtFdDhRv4y2EbfPhqQ7/R8IgEqf7Sq1eXulC8BPtEAhciXAp+IQ43B+ZLgQ9iTpsFnbEDdH/sQ4UO3BM0U0OFbeLM1TL5U+Hg00h1ulg3Plwwfr9F8Gj1fOnx82qAgP121ZED2dxPj+UGE+HgAOm5jlyBKfPoD2kVvg0jxIdiL0eJD0A+aN6D4+RLjQw4QNT4MCIkYIHJ8GBASLUD0+NACRJAPA0KiBIgiHwaERAgQST6EANHkQ+ixz2UB6r+wAFE+kQB5LCxwUYA8XgunyicOII+FBS4LUP8SRJZPtDYo1Rtd26BLA9R3YQG6fIg4igzovDnCfGg4ipcHqJ+jSJkPiW7+8gD1cxRJ86FQgi4QUC9HkTYfAo7iZQLqbo44HwaEFBHQ2VdekpP/ZDUxIPJ8GBBSLECZ7sVOXzg8eapBn8/UJYi+GBAQAwKa3A+irskAzUbRAJ1fBa+bURA+LHho8mHR0Sp43YwuGBBaBa+b0QUDQqvgdTO6YEBoFbxuRhcMCK2C183okgGBVfC6GV00oBBGGdCw8BkDgo+el6fAj56Xp8APDpenwI+elycuQUCBHz0vT4EfPS9Ps7kFOJUYEBADAmJAQAwIiAEBBQKUu/eIyp0c3jlqSl4U+8/uvJOr8fSmV/KzCgNILp9cLqFc7tSOdk6uV2V+eLRb8uNWbGRyuajOyc8rCCA9BjG/W1Lu1I52Tq6+eQnIL7lemD8z6153+i2V8woCqDyr2k7taOfkchijhsKeybWN1W3n5EBhAMlfSrAj/HKndrRz8sJu+idXP9/QOTlQEEC6qpsKX+7UjnZOrg7Iy/JPrsbSnZMDLRFQbttoMoBoVTF9L4ZUFQvaSBcWkGdyc+OcVCMdtps3gDyT25t6pLr5wI6iqRheyffrTcPRAQo01Mi0W69+r9XuOBu9kpcth09yZ55y5+RnxYNVIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICAGBAQAwJiQEAMCIgBATEgIAYExICARgC0M+utpHr3uE3lY/Ovqrfzyjf1nDf2uit30ggDykZ17PBy4OP5MQDVX57KrovTtVG8wDSlNTvusXzgq1ujA5InfwokJiBZYIdodEBybt46Sa7+khehfn9bAvturf/Lvx9udHUUVXP1Vk9g2a/lwc1+rUNyPZn+8PKtfb1vp6uwrmIy2pMf1USc68Fvj44OSM75sqVITZPLE3FRcnr86lYf19tyKq8Is4DU/HlxJFNHZTRZU4VlVVqkUZnGtEHyT84xUqVn4CSqsQGp5se9iPKgoKWP6209x3BnAW3Kj1RPrsslT2tLtsQygQNIfQFPb+1kRW+N14ulakd94dVFaEL2YNk+iY9qGl5hLtJ+6Cs2PMv2Jjd1tLQhSpWqXWC1LKSxS5C6uvIi1Ks5aSOgDACyPbr6EG7D1R/1EiSLp1pqbWaAaiVIB+u2Z0gJKoNrNl7+rHyg2QHanAByioILyMxzbgDktEE6qpmZf1LFjttnKuMZtEGtvZidLNwE6KQXS52PqhdLNXFdeETPX9qQCM2M8pn1YurbrtoJPWO3EZBs3K9+d2bvVx/WD1KFcJfIJcOEGV1XTVKRp34ZYQZ+UF39vOYh71rsv7zvnd9DjT+az7q9HWC6uwENbKZrGP2x2Im6Do5y5w6Ah/ZrRWYOo/l5iwEBMSAgBgTEgIAYEBADAmJAQAwIiAEBMSAgBgTEgIAYEBADAmJAQAwIiAEBMSAgBgTEgID+Bw7beOFBlcMKAAAAAElFTkSuQmCC" /><!-- --></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">head</span>(ypr[,,<span class="dv">1</span>])</a></code></pre></div>
+<pre><code>##          F          YPR
+## [1,] 0.000 0.000000e+00
+## [2,] 0.005 5.784571e-05
+## [3,] 0.010 1.122286e-04
+## [4,] 0.015 1.633667e-04
+## [5,] 0.020 2.114623e-04
+## [6,] 0.025 2.567033e-04</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">head</span>(ypr[,,<span class="dv">2</span>])</a></code></pre></div>
+<pre><code>##          F          YPR
+## [1,] 0.000 0.000000e+00
+## [2,] 0.005 8.230775e-05
+## [3,] 0.010 1.594510e-04
+## [4,] 0.015 2.317750e-04
+## [5,] 0.020 2.995976e-04
+## [6,] 0.025 3.632115e-04</code></pre>
+</div>
+<div id="total-yield-biomass-and-recruiment-in-equilibrium-byr.eq-function" class="section level3">
+<h3><span style="color:blue">Total Yield, Biomass and Recruiment in Equilibrium (BYR.eq function)</span></h3>
+<p>The BYR.eq function returns total Yield, Biomass and Recruiment in equilibrium for the corresponding fishing efforts and fishing mortalities. For each case the function also returns the corresponding biomass-per-recruit and yield-per-recruit. Furthermore, the function also reports the population size in equilibrium for each age and fishing mortality.</p>
+<p>The arguments of this function have been explained above in the YPR and BPR functions. The argument <em>Bio.years</em> is adjusted according to its use in the BYR.eq function.</p>
+<ul>
+<li><em>Bio.years</em> is the number of recent years to estimate the mean of M, Mat, WC, and W (natural mortality, maturity, stock weight and catches weight, see information about such elements in Population.Modeling function and Sum.Pop.Mod function).</li>
+</ul>
+<p>The result is a list of two elements:</p>
+<ul>
+<li><p><em>N</em> an array whose third dimension is the number of iterations. For each iteration it reports a matrix containing the population size in equilibrium for each age.</p></li>
+<li><p><em>DPM</em> an array whose third dimension is the number of iterations. For each iteration it reports a matrix containing the total biomass in equilibrium, total yield in equilibrium, total recruitment in equilibrium, biomass-per-recruit, and yield-per-recruit for a range of overall fishing mortalities.</p></li>
+</ul>
+<p>The following lines of code show how to use the BYR.eq function.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">RE&lt;-<span class="kw">BYR.eq</span>(Pop.Mod,f.grid,<span class="dv">3</span>,<span class="dv">3</span>,<span class="ot">FALSE</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb18-2" title="2">N_eq&lt;-RE<span class="op">$</span>N</a>
+<a class="sourceLine" id="cb18-3" title="3">DPM&lt;-RE<span class="op">$</span>DPM</a>
+<a class="sourceLine" id="cb18-4" title="4"><span class="co">### First iteration</span></a>
+<a class="sourceLine" id="cb18-5" title="5"><span class="kw">head</span>(DPM[,,<span class="dv">1</span>])</a></code></pre></div>
+<pre><code>##         f     F          YPR         BPR         R         Y         B
+## [1,] 0.00 0.000 0.000000e+00 0.011298306 10574.558 0.0000000 119.47460
+## [2,] 0.01 0.005 5.784571e-05 0.010940730 10429.921 0.6033261 114.11095
+## [3,] 0.02 0.010 1.122286e-04 0.010598479 10282.342 1.1539732 108.97718
+## [4,] 0.03 0.015 1.633667e-04 0.010270714 10131.789 1.6551975 104.06071
+## [5,] 0.04 0.020 2.114623e-04 0.009956652  9978.232 2.1100202  99.34979
+## [6,] 0.05 0.025 2.567033e-04 0.009655563  9821.638 2.5212468  94.83344</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="co">### Second iteration</span></a>
+<a class="sourceLine" id="cb20-2" title="2"><span class="kw">head</span>(DPM[,,<span class="dv">2</span>])</a></code></pre></div>
+<pre><code>##         f     F          YPR        BPR        R         Y        B
+## [1,] 0.00 0.000 0.0000000000 0.01520781 11712.22 0.0000000 178.1172
+## [2,] 0.01 0.005 0.0000771494 0.01472057 11603.39 0.8951947 170.8085
+## [3,] 0.02 0.010 0.0001495913 0.01425436 11492.30 1.7191480 163.8154
+## [4,] 0.03 0.015 0.0002176243 0.01380802 11378.92 2.4763291 157.1203
+## [5,] 0.04 0.020 0.0002815255 0.01338045 11263.20 3.1708792 150.7067
+## [6,] 0.05 0.025 0.0003415516 0.01297064 11145.14 3.8066403 144.5595</code></pre>
+<p>If we want to use <em>Method=“own”</em> the same example explained above is suitable.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">par=<span class="kw">list</span>(); par<span class="op">$</span>W&lt;-W; par<span class="op">$</span>SEL&lt;-SEL; par<span class="op">$</span>Mat&lt;-Mat; par<span class="op">$</span>M&lt;-M; par<span class="op">$</span>WC=WC</a>
+<a class="sourceLine" id="cb22-2" title="2">RE=<span class="kw">BYR.eq</span>(Pop.Mod,f.grid,<span class="dt">plot=</span><span class="ot">FALSE</span>,<span class="dt">Method=</span><span class="st">&quot;own&quot;</span>,<span class="dt">par=</span>par)</a>
+<a class="sourceLine" id="cb22-3" title="3">N_eq&lt;-RE<span class="op">$</span>N</a>
+<a class="sourceLine" id="cb22-4" title="4">DPM&lt;-RE<span class="op">$</span>DPM</a>
+<a class="sourceLine" id="cb22-5" title="5"><span class="co">### First iteration</span></a>
+<a class="sourceLine" id="cb22-6" title="6"><span class="kw">head</span>(DPM[,,<span class="dv">1</span>])</a></code></pre></div>
+<pre><code>##         f     F          YPR         BPR         R         Y         B
+## [1,] 0.00 0.000 0.000000e+00 0.011298306 10574.558 0.0000000 119.47460
+## [2,] 0.01 0.005 5.784571e-05 0.010940730 10429.921 0.6033261 114.11095
+## [3,] 0.02 0.010 1.122286e-04 0.010598479 10282.342 1.1539732 108.97718
+## [4,] 0.03 0.015 1.633667e-04 0.010270714 10131.789 1.6551975 104.06071
+## [5,] 0.04 0.020 2.114623e-04 0.009956652  9978.232 2.1100202  99.34979
+## [6,] 0.05 0.025 2.567033e-04 0.009655563  9821.638 2.5212468  94.83344</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="co">### Second iteration</span></a>
+<a class="sourceLine" id="cb24-2" title="2"><span class="kw">head</span>(DPM[,,<span class="dv">2</span>])</a></code></pre></div>
+<pre><code>##         f     F          YPR        BPR        R         Y        B
+## [1,] 0.00 0.000 0.000000e+00 0.01628834 11930.32 0.0000000 194.3250
+## [2,] 0.01 0.005 8.230775e-05 0.01575203 11825.81 0.9733554 186.2804
+## [3,] 0.02 0.010 1.594510e-04 0.01524018 11719.20 1.8686377 178.6027
+## [4,] 0.03 0.015 2.317750e-04 0.01475130 11610.47 2.6910163 171.2695
+## [5,] 0.04 0.020 2.995976e-04 0.01428400 11499.58 3.4452464 164.2600
+## [6,] 0.05 0.025 3.632115e-04 0.01383701 11386.50 4.1357089 157.5552</code></pre>
+</div>
+<div id="reference-points-rf-function" class="section level3">
+<h3><span style="color:blue">Reference Points (RF function)</span></h3>
+<p>The function <em>RF</em> returns the reference fishery mortality which produces maximum YPR (FM_type=“F_max”), the reference fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin (FM_type=“F_0.1”), the reference fishery mortality at which the MSY is attained (FM_type=“F_msy”), the reference fishery mortality which will drive the stock to extinction (FM_type=“F_Crash”), and the reference fishery mortality at which the BPR is equal to prop multiplied by BPR0 where prop is any proportion that the user can fix and BPR0 is the BPR at virgin biomass (FM_type=“F_BPR”). Furthermore for each of these fishery mortalities the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium is also returned.</p>
+<p>It is important to mention that if the fishing effort is equal to 10 can be that the optimize process had not found the correct value in the default sequence (except for the reference fishery mortality which will drive the stock to extinction, in this case the sequence finishes at 60).</p>
+<p>Some arguments coincide with those of BPR, YPR and BYR.eq functions, to avoid redundancy we focus on the new arguments.</p>
+<ul>
+<li><p><em>FM_type</em> a vector containing which of the five reference fishery mortalities must be computed. The possibilities have been described above: FM_type=“F_max”, FM_type=“F_0.1”, FM_type=“F_msy”, FM_type=“F_Crash” and FM_type=“F_BPR”.</p></li>
+<li><p><em>iters</em> is a vector containing the iterations for which the reference fishery mortalities must be computed.</p></li>
+<li><p><em>plot</em> is a logical parameter equal to TRUE if the user desires to obtain several informative plots (a deep explanation above).</p></li>
+<li><p><em>prop</em> is the proportion of BPR at virgin biomass at which FM_type=“F_BPR” refers. By default is 0.3. If the user desires the result for different proportions a vector containing the different values must be introduced using prop argument.</p></li>
+</ul>
+<p>The function returns a list reporting arrays (third dimension <em>iters</em>) containing the corresponding elements of the following list depending the above selection (<em>FM_type</em> argument).</p>
+<ul>
+<li><p><em>F_max</em> is the value of F that produces maximum YPR with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.</p></li>
+<li><p><em>F_0.1</em> is the value of F at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.</p></li>
+<li><p><em>F_msy</em> is the value of F at which the MSY is attained with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.</p></li>
+<li><p><em>F_Crash</em> is the value of F which will drive the stock to extinction with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium.</p></li>
+<li><p><em>F_BPR</em> is the value of F at which at which the BPR is equal to prop multiplied by BPR0, where prob is any proportion that the user can fix and BPR0 is the BPR at virgin biomass, with the corresponding effort of fishing, YPR, BYR, B, Y and R in equilibrium. To access to this element use F_BPRprop following by symbol of percentage (without spaces and between quotation marks) where prop is the value that the user specifies. If prop vector length is greater than 1 the function will return several slots in the list reporting the corresponding values for each value of prop. The user can access to the elements as we mentioned before replacing prop for any of the value in such vector.</p></li>
+</ul>
+<p>It is worth to mention that if plot=TRUE, the function reports the plots: equilibrium biomass v. fishing mortality, equilibrium yield v. fishing mortality, equilibrium recruitment v. biomass, and equilibrium yield v. biomass. All the plots are done using the information of the first iteration in the vector of parameter <em>iters</em>. The corresponding reference fishery mortalities are also plotted in the previous curves. Note that only the fishery mortalities required by the argument FM_type are plotted. If prop is a vector of length greater than 1 only the values corresponding to the first element of the vector will be represented in the plot for simplicity. On the other hand, note that F_msy and F_max coincide when the recruitment relationship is constant and hence only one of both appears in the plot. The reference fishery mortalities F_max and F_Crash can be overlapped in equilibrium recruitment v. biomass and equilibrium yield v. biomass plots then only one can be shown in the plot.</p>
+<p>Note that F_Crash does not exist when the recruitment model is constant.</p>
+<p>Below, we provide some examples of the use of RF function.</p>
+<ol style="list-style-type: decimal">
+<li>We compute the fishery mortality which produces maximum YPR for the two iterations of the Pop.Mod object and we plot the first iteration in <em>iters</em> parameter.</li>
+</ol>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">RF</span>(Pop.Mod, <span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>,<span class="dt">FM_type=</span><span class="st">&quot;F_max&quot;</span>,<span class="dt">iters=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,<span class="dt">plot=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>## $F_max
+## , , 1
+## 
+##              f         F         YPR         BPR R Y B
+## [1,] 0.5539476 0.2769738 0.000906112 0.002814955 0 0 0
+## 
+## , , 2
+## 
+##              f         F        YPR         BPR        R        Y        B
+## [1,] 0.5177458 0.2588729 0.00116515 0.003976974 2427.628 2.828551 9.654615
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;mean&quot;
+## 
+## $INFO$Fish.years
+## [1] 3
+## 
+## $INFO$Bio.years
+## [1] 3</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>We compute the fishery mortality at which the slope of the YPR curve is reduced to 0.1 of that estimated at the origin for the two iterations of the Pop.Mod object and we plot the first iteration in <em>iters</em> parameter</li>
+</ol>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">RF</span>(Pop.Mod, <span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>,<span class="dt">FM_type=</span><span class="st">&quot;F_0.1&quot;</span>,<span class="dt">iters=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,<span class="dt">plot=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>## $F_0.1
+## , , 1
+## 
+##              f         F          YPR         BPR        R        Y        B
+## [1,] 0.3542246 0.1771123 0.0008562302 0.004324088 3436.869 2.942751 14.86132
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR       R        Y        B
+## [1,] 0.3391682 0.1695841 0.001105067 0.005936007 6576.83 7.267837 39.04011
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;mean&quot;
+## 
+## $INFO$Fish.years
+## [1] 3
+## 
+## $INFO$Bio.years
+## [1] 3</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>We compute the fishery mortality at which the MSY is attained for the two iterations of the Pop.Mod object and we plot the first iteration in <em>iters</em> parameter. Using the second commented line it is possible to compute such information only for the second iteration (note that in such case the plot refers to the second iteration).</li>
+</ol>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">RF</span>(Pop.Mod, <span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>,<span class="dt">FM_type=</span><span class="st">&quot;F_msy&quot;</span>,<span class="dt">iters=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,<span class="dt">plot=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAA0lBMVEUAAAAAADoAAGYAAP8AOjoAOmYAOpAAZmYAZrYA/wA6AAA6ADo6AGY6OmY6OpA6ZmY6ZpA6ZrY6kLY6kNtmAABmADpmAGZmOgBmOjpmZjpmkLZmkNtmtttmtv+QOgCQOjqQOmaQZgCQZjqQkGaQtpCQttuQ2/+lKiq2ZgC2Zjq2kDq2kGa2tpC225C227a22/+2/7a2/9u2///bkDrbkGbbtmbbtpDbtrbb25Db27bb29vb2//b/7bb////tmb/25D/27b/29v//wD//7b//9v///87phpAAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAOYElEQVR4nO2di3bbxhGGl3KlknLjppYSN4ml3mJZVtK4Fe3WbUrIicj3f6XuDeCCmJ2ZvYACpfmPjwwCszPDD3sBQHJXbUSo1EMnMHUJIEICiJAAIiSACAkgQgKIkAAiJIAICSBCAoiQACIkgAgJIEICiJAAIiSACAkgQimA7k6Pbje/vLtgmEat7s/VReCNK13M6jdvEgsy/c6uYhapgNaXigEoblUISOnS0wVkVA9Qknwx7XeeUZr0i2gX0Hfmz8dTpb5c6dKzv50e/WR9NOroVp+6f15q3Ed/P519/0odv7/Tf8zJ/HCqZt/ZaK//akqurZU5cq3O+ri0zbev1OzlylcE7UIdvzH1ybvE38hSnawiBV0u63fK5r75/EddL15vgo1IOomAjIelrXUnK1v/Tv4HAXIdgvlvbsIanXX1db4F1Gg3vTbR2bi9jXv1Wr/yLlFAny91mEjBMJd5G+diu7GJpJMISBfWhUwWsyu9MV/9fB8Ccn2QTmq++qjUH1ZLt/u9jaotT96vr1XQU+lKeKWBb9uFs7nRjd6XmK/0K+PEu4wCUv60bSIFbS735zqXD3a3DWzqm9+IpePPLheQZt0RdmhAQDqO/WN2N233ubXc1mJdqXsd0tan8eZCuVetSxzQzHXSUMHGVtr1j98oS0rNvnyzsjZuI5ZOOiAXqOVNA1pigHSl/hSOOs6nOW68+fekGw4NyHbSNz4NqKAN/M6mog+aPsq+8W4DTie1iW2C8ZcCZLsCA8jV3w0EaH05+yY8P0QNig3g7RsxKcUKuto8+/a/jUvoF12XLPBuI5ZOCiBXO1+uPr9SZ93Znq9079gBOtsBpHuB15uPruAWUJvFsn+RoW10L+G7rl5XwgL0Aei8+ifr+Hb9Fw1Iv3AVq9uIpZM9ipksrC83MPi3ZF7Nvu8lFY5iHpC1cnlofOZ8tinCo1hYKWOAFFUw6A/tKXJ9erexiaSTfR303jexzVpf27z4oQWkm/TRj31A65vuOqgFZKzeW4e+MgUZ2eugtiX/a3s5wwG0vYAaFrSB9SXZ8U8mb5O1vSDqNiLppPdBuH2CFiyrceLzYjPiJwNKsF3UdphgzorNcTgiIDJHe/qYDoMTzipxAIDwFLvKnVGDOEUOG1DY8p8soGiGO/1iTh/EKLN3QKmDTiTBoYOsTpouNPkaBCYI4X2igKD84NqXN8yTpSYOCEgv1jgzr4OoYgcGCOm7ci8UiXLTBtTPDu/Zs6+k8YKTBhQmR4576VfSrJIHAohxVVBwL4YVnTKgLjfWRVPJzSpSdsKA2tSY15SQlX9EBz1JV8grKIus+CnH0+0XaY4Bu2v/+O8a+BRVoS8HWWTFTzqebO8y4z8HGxref+UfGt/9bvh8kXunMllANrGUx4SFgGIJTRWQySvtKSrUxHzTapsabg5Hm+Ld/GJh8yoZlryW3E466mGCNWhhNdrdL3aCoH1TBZT6IQXo0Hy4aL5GAn0ViPtEYHKAFou2CpU7vL7YNObjqiU9zEf3PmZAZhSzIxlrFIvsnhygTSafGKCvb5MADfY/ZkAZTWx4YHKAlMrCU6eT9hmEr6YGSPEzKkuA++xtYoBUQkZlCaDmwcFpASrgUxVQ0MwmBaiET40racjdlACZXaMDYpt7g3EBAU/04mdQFVWg6oBcM+OPqDmAEp7oldafEQBpm5RrsgxA6U/0JgYo6aJ1H4BK+IwBKOm+MKuJ8Z/oFfM5SED8J3rFDewgmxjfvgKfEQHxPNca5iH7GnxGAeSHeZbtmMP8PgFlfQWQYz3iKFaFz0g1qPt8l3vlnXKcCagOn5EB0YjGG+ZHBMT+8kJcQWI4otGG+Up8wEeuKbc6EfUywxDVGuZ3O8lafCIP7a1SHtrvaie1/O9IZg7zCsoiS/sBFEc0zjBfjw/YxJK+vACL/UXkcUaxag0MTjDtywugIt/0H0IaBVDFCjTqhSLsKC1+1jBfsQJBCZjf4dofltbsgwIXw/tJRDnDfE0+sT7InJyRAPURjXE3PzIg18Sbo9vRAIW9UT6gJdDArH1VPvFhvjn5NB4g6yroTxGr4a7tj/iBX7GrGk8RiQR8H7iMxGeJ94trlVeD7k5N7xOtQez4LIGdtCc0NiCOQ/i4SS0CyIr/s31a3HcSxqc19sQC9+dzGFCkIPsVZsgUVAjYxzTLiWbVKAGUWQQqKICIggKIKCiAiIICiCgogIiCAujJSgAREkCEBBAhAURIABESQIQEECEBREgAEcoAZGaRv7Af7w2fGfvP/MBjoQvzeQXmB/DbGvnNWPjtThuE5R1TOqD784tNM7synz0Mv91wfbK6ex45FrrQSaN+Bn63Rn4TDh/stEF43jGlA2pOVvq8XJhPrwaf7PmPtMBjWy3V7/VBzM+uAiO/GQ3f7nRBWN5R5fVB+uzf+fA9+VzAY1v9e9XmHPOzq8DIb0bDtztdEJZ3VHmAlicrMHRzcmNnCafS6k5zxA9knwjIvXogQOZjMxiQ7qF1v8IFFPUD2R8QoOXsKtKMfL/CBBT3A9kfDiD3iTDY/ZkdnI7XHkT87Cqjk97i2ncnbYZxI3icPTPfWyEHV3tyMT8Dv+nDvAPzAMO8+wqsXVUIvlB0C4uQF4qon115I82/3QSLBWYeEMs7JrnVICSACAkgQgKIkAAiJIAIRQHpAdt+g+raLGkYjJTbBYqa2ACauVQoX2W5WcXXDd1RvAY19orm7tQsAjcxQGW51QKkz49dnWvnm3hJgEbT/nJDAOkTdNGobtkvv5hq9+L4B59E+lqq2JKovLRLcqsGaLNUx6/MTGvtynRKtauc+h9zuCTS11JVyJKozLwLcqsHyCRsa8BpsJjqdoXB9nF4+lqq2JKoTBXk5mlWAOT7wo1bt9MpWNyya+fpa6kiS6JyE8/PrSIgf0pNzGWYRNOdPJ9r6lqqyJKo3MSzc6vYxPpJ+BHDnSWzvztL6WupIkuichMvyi1BXEDdYqpdO/+8/UgueS1VZElUrvJzGwcQMlJkrKWKLImaASgxt5EAtYupDq81MtZSRZZEzQGUlltFQCI+oOHvrHbUTtmerErxs3OpBIiyrzlle6n5+JO8Zdi3SSU32REBsVzvBZCpqN2yEexWk5UA+X5Sc9kHILsvrNVlS9eUmLvDKbmMD6jLIGz0fLdVAXVHF+POQJViH+xYYHaVEsDMVSSXvcxAFbMPX7OTKkiA+1bHnYGKb5+XVEECcfP+keEMVJnx48fRmRfKkmLZcOLHDwwvgiIlMwBRc3eUJ4Wb8OMj+8ecogucuwO6MuckRYQHLbjxMS/wFF3MffRxZO4OpCy4AjYRHzbgxcf2wvcZQOnMPig6d4cCN5Gk8hLgxEd3Rte758VnHI/M3aGALTypzCtZMj6+Lz7JGzM+93jcnguIe/GbGh/fF7+Vxy5UmM5Z9vxqjccoBwR6wGbBS4qfC6ioWhckANwLgnbYwyDsUoXpnrRPPGsF90KkeTogdCjmuSfty6p1QQLcUQh/nIiNxTz/hH1htS5IgDsIUfMosuM/UUDoYMMKMLDrXeoXtvuMBCK3GtHS5BN7bLRhRcDsS9t9QQKPGBD7NirBSbww/ZkPNtywQsTtizvGggTqAUK7U06IuH1xx1iQAPcij/OpIdYaODFi9uXtviCBmoDQs82IEbPPB8S+k+J5wIqyP3ce725+qMMDxIgPHc+dU57dMRIOmfHRtzbuKpmZc8qzO0bCITP+gwEC55TnfJ2G3THiCXDjPzCgjDnlqwIi4+PvbPQmtsmYUz7rG0uRJkbHf0BAuXPK1wLEik+8sSktht0pa+HO3GH+EQNiXw2jZQUQXpYqdtCA2JfDSFEBhBclSx02IPb1cLTkYwfEvpyJFZweoGq3GrthmQlwPjTIymWiNYg9XMPlngAg9nAEFhNAeDFGmcMHxO5ugVJPAxC7tQwLCSC8EKfIYwDErg27ZQQQUebhAdGrhZclFTqDHBLxHxwQvVp4YVKhM8AhEZ9V5/bw0L7/uVTlW41t9KFDKv40AXH8ZS2+ygTEiZ+VS1YTw1YLR5S3+mq9+Hm5ZADCVguPFGS/wgyZ8aFCwD6mGaWMIlDBuoBSIkf3CSBinwAi9gkgYp8AIvYJIGKfACL2PTSgpyIBREgAERJAhAQQIQFESAAREkCEBBAhAURIABHKACQL0eKShWgJyUK0DMlCtIRkIVpcshAtLlmIFpcsRItLFqIlJAvRikIJIEICiJAAIiSACAkgQgKIkAAiJIAICSBCAoiQACIkgAgJIEICiJAAIiSACAkgQgKIkAAiJIAICSBCAoiQACIkgAgJIEICiJAAIiSACAkgQgKIkAAiJIAICSBCAoiQACIkgAgJIEICiJAAIiSACAkgQgKIkAAiJIAICSBCAoiQACIkgAgJIEKJgMx8G900xo39+aXR/dfZP3vseayjnkv/I9FdkxfDqaphIYCeBYIc+x9nb9ppMmgtQiWnCuptKMDl+vIM+l04FvXXQBigZ88AQqFjvb3+kwm9/vM/WDVosQAI9Tx+8Uq9vFRnbg4Z89PchvjF8tu3AKGdJDeb//ysPR/dLpWa+/lpTKSI6197Sgaka287kbpJ/trVXl4TgwEFHu+eX5l/Lz7OjUddPdeXw9bREwxoJ0nn2bDSXhvn+/lVLOdCQMHJqQSof7rtv0+n5vSaKRyo9kfWoBaQ2aXBza7urO+u9g/FBkT2QUEQZidN9UEtoJV5Lxf6zS3J3pvqg/y2+a85svM1WN8IIHYfBArupItGMQDQzdxODnD/1RdZbged9PmZBTQ3E68srW8MUF8FgNwwb9lUBrS6dp3IMm9SiV6S9+e2U9a79NZvzy821vdogPYq5lsYVzmA7IWYmlXMHvTYxAbifJcZmnINmoQEECEBREgAERJAhAQQof8DvQjLNT6aSXQAAAAASUVORK5CYII=" /><!-- --></p>
+<pre><code>## $F_msy
+## , , 1
+## 
+##              f          F          YPR         BPR        R        Y        B
+## [1,] 0.1894689 0.09473445 0.0006686766 0.006496303 7303.314 4.883555 47.44454
+## 
+## , , 2
+## 
+##              f        F          YPR         BPR        R        Y        B
+## [1,] 0.2288179 0.114409 0.0009650817 0.007815872 8602.762 8.302368 67.23809
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;mean&quot;
+## 
+## $INFO$Fish.years
+## [1] 3
+## 
+## $INFO$Bio.years
+## [1] 3</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">RF</span>(Pop.Mod, <span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>,<span class="dt">FM_type=</span><span class="st">&quot;F_msy&quot;</span>,<span class="dt">iters=</span><span class="dv">2</span>,<span class="dt">plot=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>## $F_msy
+## , , 2
+## 
+##              f        F          YPR         BPR        R        Y        B
+## [1,] 0.2288179 0.114409 0.0009650817 0.007815872 8602.762 8.302368 67.23809
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;mean&quot;
+## 
+## $INFO$Fish.years
+## [1] 3
+## 
+## $INFO$Bio.years
+## [1] 3</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>We compute the reference fishery mortality which will drive the stock to extinction for the two iterations of the Pop.Mod object and we plot the first iteration in <em>iters</em> parameter.</li>
+</ol>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1"><span class="kw">RF</span>(Pop.Mod, <span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>,<span class="dt">FM_type=</span><span class="st">&quot;F_Crash&quot;</span>,<span class="dt">iters=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,<span class="dt">plot=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>## $F_Crash
+## , , 1
+## 
+##              f         F          YPR         BPR R Y B
+## [1,] 0.4736287 0.2368144 0.0008995768 0.003321581 0 0 0
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR R Y B
+## [1,] 0.6040109 0.3020055 0.001156698 0.003330711 0 0 0
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;mean&quot;
+## 
+## $INFO$Fish.years
+## [1] 3
+## 
+## $INFO$Bio.years
+## [1] 3</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>We compute the reference fishery mortality at which the BPR is equal to prop=0.4 multiplied by BPR0 where BPR0 is the BPR at virgin biomass for the two iterations of the Pop.Mod object and we plot the first iteration in <em>iters</em> parameter.</li>
+</ol>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1"><span class="kw">RF</span>(Pop.Mod, <span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>,<span class="dt">FM_type=</span><span class="st">&quot;F_BPR&quot;</span>,<span class="dt">iters=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,<span class="dt">plot=</span><span class="ot">TRUE</span>,<span class="dt">prop=</span><span class="fl">0.4</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>## $`F_BPR40%`
+## , , 1
+## 
+##              f         F          YPR         BPR        R        Y       B
+## [1,] 0.3340466 0.1670233 0.0008431576 0.004531887 3967.068 3.344863 17.9783
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR        R        Y        B
+## [1,] 0.3297008 0.1648504 0.001097203 0.006072198 6765.749 7.423402 41.08297
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;mean&quot;
+## 
+## $INFO$Fish.years
+## [1] 3
+## 
+## $INFO$Bio.years
+## [1] 3</code></pre>
+<p>Below, we provide some examples where several fishery mortalities are computed at the same time.</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1"><span class="kw">RF</span>(Pop.Mod, <span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>,<span class="dt">FM_type=</span><span class="kw">c</span>(<span class="st">&quot;F_Crash&quot;</span>,<span class="st">&quot;F_msy&quot;</span>),<span class="dt">iters=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,<span class="dt">plot=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>## $F_Crash
+## , , 1
+## 
+##              f         F          YPR         BPR R Y B
+## [1,] 0.4736287 0.2368144 0.0008995768 0.003321581 0 0 0
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR R Y B
+## [1,] 0.6040109 0.3020055 0.001156698 0.003330711 0 0 0
+## 
+## 
+## $F_msy
+## , , 1
+## 
+##              f          F          YPR         BPR        R        Y        B
+## [1,] 0.1894689 0.09473445 0.0006686766 0.006496303 7303.314 4.883555 47.44454
+## 
+## , , 2
+## 
+##              f        F          YPR         BPR        R        Y        B
+## [1,] 0.2288179 0.114409 0.0009650817 0.007815872 8602.762 8.302368 67.23809
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;mean&quot;
+## 
+## $INFO$Fish.years
+## [1] 3
+## 
+## $INFO$Bio.years
+## [1] 3</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1"><span class="kw">RF</span>(Pop.Mod, <span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>,<span class="dt">FM_type=</span><span class="kw">c</span>(<span class="st">&quot;F_Crash&quot;</span>,<span class="st">&quot;F_msy&quot;</span>,<span class="st">&quot;F_0.1&quot;</span>,<span class="st">&quot;F_max&quot;</span>,<span class="st">&quot;F_BPR&quot;</span>),<span class="dt">iters=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,<span class="dt">plot=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>## $F_Crash
+## , , 1
+## 
+##              f         F          YPR         BPR R Y B
+## [1,] 0.4736287 0.2368144 0.0008995768 0.003321581 0 0 0
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR R Y B
+## [1,] 0.6040109 0.3020055 0.001156698 0.003330711 0 0 0
+## 
+## 
+## $F_msy
+## , , 1
+## 
+##              f          F          YPR         BPR        R        Y        B
+## [1,] 0.1894689 0.09473445 0.0006686766 0.006496303 7303.314 4.883555 47.44454
+## 
+## , , 2
+## 
+##              f        F          YPR         BPR        R        Y        B
+## [1,] 0.2288179 0.114409 0.0009650817 0.007815872 8602.762 8.302368 67.23809
+## 
+## 
+## $F_0.1
+## , , 1
+## 
+##              f         F          YPR         BPR        R        Y        B
+## [1,] 0.3542246 0.1771123 0.0008562302 0.004324088 3436.869 2.942751 14.86132
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR       R        Y        B
+## [1,] 0.3391682 0.1695841 0.001105067 0.005936007 6576.83 7.267837 39.04011
+## 
+## 
+## $F_max
+## , , 1
+## 
+##              f         F         YPR         BPR R Y B
+## [1,] 0.5539476 0.2769738 0.000906112 0.002814955 0 0 0
+## 
+## , , 2
+## 
+##              f         F        YPR         BPR        R        Y        B
+## [1,] 0.5177458 0.2588729 0.00116515 0.003976974 2427.628 2.828551 9.654615
+## 
+## 
+## $`F_BPR30%`
+## , , 1
+## 
+##              f         F          YPR         BPR        R         Y        B
+## [1,] 0.4648409 0.2324205 0.0008979648 0.003384125 225.1309 0.2021596 0.761871
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR        R        Y        B
+## [1,] 0.4543937 0.2271969 0.001159107 0.004558779 4032.151 4.673696 18.38169
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;mean&quot;
+## 
+## $INFO$Fish.years
+## [1] 3
+## 
+## $INFO$Bio.years
+## [1] 3</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1"><span class="kw">RF</span>(Pop.Mod, <span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>,<span class="dt">FM_type=</span><span class="kw">c</span>(<span class="st">&quot;F_Crash&quot;</span>,<span class="st">&quot;F_BPR&quot;</span>),<span class="dt">iters=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,<span class="dt">plot=</span><span class="ot">TRUE</span>,<span class="dt">prop =</span> <span class="kw">c</span>(<span class="fl">0.2</span>,<span class="fl">0.4</span>))</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>## $F_Crash
+## , , 1
+## 
+##              f         F          YPR         BPR R Y B
+## [1,] 0.4736287 0.2368144 0.0008995768 0.003321581 0 0 0
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR R Y B
+## [1,] 0.6040109 0.3020055 0.001156698 0.003330711 0 0 0
+## 
+## 
+## $`F_BPR20%`
+## , , 1
+## 
+##              f         F          YPR        BPR R Y B
+## [1,] 0.6684489 0.3342245 0.0008971799 0.00225492 0 0 0
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR R Y B
+## [1,] 0.6514695 0.3257347 0.001146354 0.003032749 0 0 0
+## 
+## 
+## $`F_BPR40%`
+## , , 1
+## 
+##              f         F          YPR         BPR        R        Y       B
+## [1,] 0.3340466 0.1670233 0.0008431576 0.004531887 3967.068 3.344863 17.9783
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR        R        Y        B
+## [1,] 0.3297008 0.1648504 0.001097203 0.006072198 6765.749 7.423402 41.08297
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;mean&quot;
+## 
+## $INFO$Fish.years
+## [1] 3
+## 
+## $INFO$Bio.years
+## [1] 3</code></pre>
+<p>NOTE (remember) that if we want to use <em>Method=“own”</em> we need to specify argument <em>par</em>, the following example is similar to the explained previously for the other functions.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1">par=<span class="kw">list</span>(); par<span class="op">$</span>W&lt;-W; par<span class="op">$</span>SEL&lt;-SEL; par<span class="op">$</span>Mat&lt;-Mat; par<span class="op">$</span>M&lt;-M; par<span class="op">$</span>WC=WC</a>
+<a class="sourceLine" id="cb44-2" title="2">RF.Result=<span class="kw">RF</span>(Pop.Mod,<span class="dt">Method=</span><span class="st">&quot;own&quot;</span>,<span class="dt">par=</span>par,<span class="dt">FM_type=</span><span class="kw">c</span>(<span class="st">&quot;F_Crash&quot;</span>,<span class="st">&quot;F_BPR&quot;</span>),<span class="dt">iters=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,<span class="dt">plot=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" title="1">RF.Result</a></code></pre></div>
+<pre><code>## $F_Crash
+## , , 1
+## 
+##              f         F          YPR         BPR R Y B
+## [1,] 0.4736287 0.2368144 0.0008995768 0.003321581 0 0 0
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR        R          Y          B
+## [1,] 0.6283837 0.3141918 0.001203762 0.003338799 24.55413 0.02955732 0.08198129
+## 
+## 
+## $`F_BPR30%`
+## , , 1
+## 
+##              f         F          YPR         BPR        R         Y        B
+## [1,] 0.4648409 0.2324205 0.0008979648 0.003384125 225.1309 0.2021596 0.761871
+## 
+## , , 2
+## 
+##              f         F         YPR         BPR        R        Y       B
+## [1,] 0.4476406 0.2238203 0.001214389 0.004880773 4755.721 5.775296 23.2116
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;own&quot;
+## 
+## $INFO$par
+## $INFO$par$W
+##               1            2
+## 0  1.810807e-05 1.810807e-05
+## 1  1.467809e-03 1.467809e-03
+## 2  5.676368e-03 5.676368e-03
+## 3  1.159586e-02 1.159586e-02
+## 4  1.795842e-02 1.795842e-02
+## 5  2.393582e-02 2.393582e-02
+## 6  2.913033e-02 2.913033e-02
+## 7  3.342862e-02 3.342862e-02
+## 8  3.687192e-02 3.687192e-02
+## 9  3.956983e-02 3.956983e-02
+## 10 4.165118e-02 4.165118e-02
+## 11 4.323927e-02 4.323927e-02
+## 12 4.444144e-02 4.444144e-02
+## 13 4.534625e-02 4.534625e-02
+## 14 4.602441e-02 4.602441e-02
+## 15 4.653114e-02 4.653114e-02
+## 
+## $INFO$par$SEL
+##      1   2
+## 0  0.5 0.5
+## 1  0.5 0.5
+## 2  0.5 0.5
+## 3  0.5 0.5
+## 4  0.5 0.5
+## 5  0.5 0.5
+## 6  0.5 0.5
+## 7  0.5 0.5
+## 8  0.5 0.5
+## 9  0.5 0.5
+## 10 0.5 0.5
+## 11 0.5 0.5
+## 12 0.5 0.5
+## 13 0.5 0.5
+## 14 0.5 0.5
+## 15 0.5 0.5
+## 
+## $INFO$par$Mat
+##            1         2
+## 0  0.0000000 0.0000000
+## 1  0.5000000 0.5000000
+## 2  0.8807971 0.8807971
+## 3  0.9820138 0.9820138
+## 4  0.9975274 0.9975274
+## 5  0.9996646 0.9996646
+## 6  0.9999546 0.9999546
+## 7  0.9999939 0.9999939
+## 8  0.9999992 0.9999992
+## 9  0.9999999 0.9999999
+## 10 1.0000000 1.0000000
+## 11 1.0000000 1.0000000
+## 12 1.0000000 1.0000000
+## 13 1.0000000 1.0000000
+## 14 1.0000000 1.0000000
+## 15 1.0000000 1.0000000
+## 
+## $INFO$par$M
+##       1         2
+## 0  1.00 0.8796205
+## 1  0.60 0.4463100
+## 2  0.50 0.5385096
+## 3  0.40 0.2410352
+## 4  0.35 0.3678943
+## 5  0.35 0.2981891
+## 6  0.30 0.2390313
+## 7  0.30 0.3742368
+## 8  0.30 0.4402916
+## 9  0.30 0.2791142
+## 10 0.30 0.2523032
+## 11 0.30 0.3140490
+## 12 0.30 0.2582869
+## 13 0.30 0.4101653
+## 14 0.30 0.2180292
+## 15 0.30 0.2216291
+## 
+## $INFO$par$WC
+##               1            2
+## 0  0.0003926101 0.0003926101
+## 1  0.0032707009 0.0032707009
+## 2  0.0085095244 0.0085095244
+## 3  0.0147850634 0.0147850634
+## 4  0.0210285852 0.0210285852
+## 5  0.0266429538 0.0266429538
+## 6  0.0313913255 0.0313913255
+## 7  0.0352511763 0.0352511763
+## 8  0.0383060714 0.0383060714
+## 9  0.0406795715 0.0406795715
+## 10 0.0424997466 0.0424997466
+## 11 0.0438826204 0.0438826204
+## 12 0.0449261971 0.0449261971
+## 13 0.0457098753 0.0457098753
+## 14 0.0462962781 0.0462962781
+## 15 0.0467339150 0.0467339150</code></pre>
+<ul>
+<li><span style="color:red"> This function is time demanding due to the necessary complex optimization process. We are working in it. While it is possible to use it for relatively small populations.</span></li>
+</ul>
+</div>
+<div id="reference-points-plots-plotrf-function" class="section level3">
+<h3><span style="color:blue">Reference Points plots (plotRF function)</span></h3>
+<p>All the plots provided by the previous function RF are done using the information of the first iteration in the vector of parameter <em>iters</em>. For this reason the following function is useful, since it allows to plot the information of any of the <em>iters</em>.</p>
+<p>The arguments of the function are the following.</p>
+<ul>
+<li><p><em>Pop.Mod</em> is a list containing the components returned by Population.Modeling function (main function).</p></li>
+<li><p><em>RF.result</em> is a list containing the components returned by RF function (Reference Points).</p></li>
+<li><p><em>iter</em> is the iteration for which the plot must be carried out.</p></li>
+</ul>
+<p>Below, we can see an example of the use of this simple function.</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" title="1"><span class="kw">plotRF</span>(Pop.Mod,<span class="dt">RF.result=</span>RF.Result, <span class="dt">iter=</span><span class="dv">2</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="distribution-length-distribution.length-function" class="section level3">
+<h3><span style="color:blue">Distribution length (Distribution.length function)</span></h3>
+<p>The <em>Distribution.length</em> function allow us to explore our population providing stock or length catches distribution for each year and iteration.</p>
+<p>The arguments of this function are:</p>
+<ul>
+<li><p><em>Pop.Mod</em> is the object returned by Population.Modeling function.</p></li>
+<li><p><em>CV</em> is the coefficient of variation associated to the log-normal distribution (see explanation above)</p></li>
+<li><p><em>Type</em> is an indicator of which distribution length must be computed, length stock distribution (Type=“LengthS”) or length catches distribution (Type=“LengthC”).</p></li>
+<li><p><em>RF.value</em> is the number of values generated for each age (given a year and an iteration) from the log-normal distribution (see the explanation above). By default RF.value=1000.</p></li>
+</ul>
+<p>The function returns the stochastic length distribution of the stock (Type=“LengthS”) or length catches distribution (Type=“LengthC”) for each year and iteration. In the case of the stock length distribution it is computed generating for each age, year and iteration RF.value random values from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. For the catches length distribution the mean of the log-normal distribution is given by the corresponding catch length. For the stock length distribution the distribution obtain for each age (given a year and an iteration) is scaled using the corresponding stock number (N matrix), whereas in the catch distribution this role is for the catch matrix C.</p>
+<p>The result is an array whose third dimension is the number of iterations, and the second one is the different years. Hence each column contains the distribution length (stock or catches) for each year.</p>
+<p>We obtain the stock distribution length as follows.</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1">L.D&lt;-<span class="kw">Distribution.length</span>(Pop.Mod,<span class="dt">CV=</span><span class="fl">0.2</span>,<span class="dt">Type=</span><span class="st">&quot;LengthS&quot;</span>)</a></code></pre></div>
+<pre><code>## It is working, please give us a while :)</code></pre>
+<p>We can check the distribution length for each iteration and year. For example, below we explore iteration 1 and year 1980.</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" title="1">L.D[,,<span class="dv">1</span>][,<span class="dv">1</span>]</a></code></pre></div>
+<pre><code>##           0           1           2           3           4           5 
+##  240.219923 6660.643306  378.528363   55.868435  570.953191 1345.349016 
+##           6           7           8           9          10          11 
+## 1377.060121  914.259952  693.645276  572.236934  460.230826  406.041575 
+##          12          13          14          15          16          17 
+##  364.725072  310.834181  237.270201  200.938749  153.348414  100.654799 
+##          18          19          20          21          22          23 
+##   74.762511   58.275168   43.521963   32.324383   18.115301   12.596533 
+##          24          25          26          27          28 
+##    8.348480    5.324104    3.211627    2.358304    3.868251</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" title="1"><span class="kw">plot</span>(L.D[,,<span class="dv">1</span>][,<span class="dv">1</span>], <span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;&quot;</span>,<span class="dt">main =</span> <span class="st">&quot;Distribution of stock length year 1980 iteration 1&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb53-1" title="1">LS&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;LS&quot;</span>))</a></code></pre></div>
+<p>Using the above lines of code only changing Type=“LengthS” by Type=“LengthC” we obtain the distribution of capture length.</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" title="1">L.D&lt;-<span class="kw">Distribution.length</span>(Pop.Mod,<span class="dt">CV=</span><span class="fl">0.2</span>,<span class="dt">Type=</span><span class="st">&quot;LengthC&quot;</span>)</a></code></pre></div>
+<pre><code>## It is working, please give us a while :)</code></pre>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" title="1">L.D[,,<span class="dv">1</span>][,<span class="dv">1</span>]</a></code></pre></div>
+<pre><code>##           0           1           2           3           4           5 
+##   0.0000000   0.0000000  93.4885977 431.0863115 387.4243919 162.5752425 
+##           6           7           8           9          10          11 
+## 148.9304993 191.5197524 213.9501818 160.1026162 125.9677701 109.6917199 
+##          12          13          14          15          16          17 
+##  90.7980911  80.4308635  59.7145383  48.7960290  35.9025336  27.3754430 
+##          18          19          20          21          22          23 
+##  22.9219917  15.4064269  10.0411762   7.2323078   5.1936512   3.4821293 
+##          24          25          26          27          28 
+##   2.1703426   2.1926866   0.8284879   0.7292632   1.0154705</code></pre>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" title="1"><span class="kw">plot</span>(L.D[,,<span class="dv">1</span>][,<span class="dv">1</span>], <span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;&quot;</span>,<span class="dt">main =</span> <span class="st">&quot;Distribution of capture length year 1980 iteration 1&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" title="1">LC&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;LC&quot;</span>))</a></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

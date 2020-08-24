@@ -1,0 +1,646 @@
+---
+title: "Rfishpop (Third tutorial)"
+author: "Marta Cousido Rocha, Santiago Cerviño López, Maria Grazia Pennino"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Rfishpop (Third tutorial)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Population dynamic tools in support of fisheries managment
+
+
+In the first tutorial, we have explained  how to simulate the real dynamics of the fishery system using the **generic operating model (OM)** implemented in Population.Modeling function. Keeping in mind that the aim of the package is to implement a full **Management Strategy Evaluation (MSE)** cycle the next step is to **sampling** data from the operating model to mimic collection of fishery dependent data and research surveys. 
+
+
+Rfishpop package contains relevant functions at this point:
+
+
+- <span style="color:blue">Sampling_Survey</span> 
+
+- <span style="color:blue">Sampling_Catch</span> 
+
+
+Through this tutorial explanations of the performance and use of both functions are provided.
+
+### <span style="color:blue">Sampling_Survey</span> 
+
+This function returns the indices of abundance for each year, age and iteration, the indices of biomass for each year and iteration, and a sample of the stock length for each year and iteration derived from the corresponding length distribution.
+
+
+The **arguments** of this function are described above:
+
+* *Pop.Mod*	is a list containing the components returned by Population.Modeling function (main function).
+
+* *type* is an indicator of which index/sample must be computed: index of biomass (type="biomass"), index of abundance (type="abundance"), or  stock length sample (type="LengthS").
+
+* *q_A*	is the matrix of annual and age specific catchability coefficients.
+
+* *gamma* is the density dependent parameter.
+
+* *CV_A*	is the coefficient of variation associated to the abundance index. Default value 0.
+
+* *par*	is a vector containing the required parameters if type="LengthS".
+
+  + *CV* is the coefficient of variation associated to the log-normal distribution used to compute the stock length distribution from which the length sample is obtained (below a deep explanation is given).
+
+  + *RF.value* is the number of values generated for each age (given a year and an iteration) from the log-normal distribution used to obtain the stock length distribution from which the length sample is obtained (below a deep explanation is given). By default RF.value=1000.
+
+  + *sample.size* is the size of the desired sample.
+
+* *tsampling* is the 	time of the year at which the sampling is carried out. This parameter takes a value between 0 and 1, since the year is considered as a unit. By default tsampling=0.
+
+
+The **result** of the function is: an array containing the indices of abundance for each year, age, and iteration. If type="biomass" an array containing the indices of biomass for each year and iteration is also reported. If type="LengthS" an array containing in each column (year) the corresponding length sample for each iteration (third dimension) is also provided.
+
+
+
+
+The important point is: **How the indices and samples are obtained?** Below the corresponding details are provided.
+
+Let's start explaining the abundance index.
+
+**ABUNDANCE INDEX**
+
+
+The abundance index for year t and age i is
+
+$${IA}_{it}={q_A}_{it}*N_{it}^{\gamma},$$
+
+where ${q_A}_{it}$ is the catchability coefficient, $\gamma=gamma$ is the density dependent parameter, and $N_{it}$ is the abundance for year t and age i (stock numbers matrix) when ${CV}_A=0$. If ${CV}_A$ is different than 0 the abundance index for year t and age i is generated from a log normal distribution center in ${IA}_{it}$ (defined above) and variability determined from the corresponding coefficient of variation  ${CV}_A$. Note that the **matrix N (stock numbers)** in this function is computed **at the time instant tsampling**, i.e., it is not the matrix N computed in the main function Population.Modeling function, instead we update such matrix to time instant tsampling.
+
+**BIOMASS INDEX**
+
+Once the abundance index (IA) is computed, we can continue computing the biomass index.
+
+Firstly, we compute the W (third dimensional array containing the weight corresponding to the stock length for each age, year and iteration) at time tsampling. Then, we define WS (third dimensional array containing the weight for each age, year and iteration) multiplying the abundance index IA by the weight W. Finally, the index of biomass for each year is the sum by columns of matrix WS.
+
+
+**SAMPLE LENGTH**
+
+
+The procedure to obtain a stock sample length needs a detailed explanation.
+
+
+A stock length sample is obtained generating random values from the computed **stock length distribution**.
+
+Hence, the question is: **How the stock distribution length is computed?**
+
+The stock distribution length from which the sampling procedure is carried out is computed as follows. For each age, year and iteration *RF.value* random values are generating from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. The distribution obtained for each age (given a year and an iteration) is scaled using the corresponding abundance index matrix (IA).
+
+Remember that the matrix LS (stock length) is computed at the time instant tsampling.
+
+
+
+After the above description of the function, the next step is to use it in an example to fix some ideas. Hence, we need to use the main function (Population.Modeling) to simulate a population.
+
+
+
+Taking into account that in previous tutorials we have explained the functions **BYR.eq**	(Total Yield, Biomass and Recruitment in Equilibrium) and **RF** (Reference Points) we have used such functions to define a population corresponding to a short life species at certain level of explotation.
+
+
+First point is to create the population, as we explained in the first tutorial, using the values of the parameters for a short life species. The recruitment model is Beverton-Holt and the selectivity type is constant.
+
+
+```{r}
+library(Rfishpop)
+ctrPop<-list(years=seq(1980,2020,by=1),niter=1,N0=15000,ages=0:15,minFage=2,
+maxFage=5,tc=0.5,seed=NULL)
+number_ages<-length(ctrPop$ages);number_years<-length(ctrPop$years)
+
+Mvec=c(1,0.6,0.5,0.4,0.35,0.35,0.3,rep(0.3,9))
+M<-matrix(rep(Mvec,number_years),ncol = number_years)
+colnames(M)<-ctrPop$years
+rownames(M)<-ctrPop$ages
+
+ctrBio<-list(M=M,CV_M=0, L_inf=20, t0=-0.25, k=0.3, CV_L=0, CV_LC=0, a=6*10^(-6), b=3,
+           a50_Mat=1, ad_Mat=-0.5,CV_Mat=0)
+
+ctrSEL<-list(type="cte", par=list(cte=0.5),CV_SEL=0)
+
+f=matrix(rep(0.5,number_years),ncol=number_years,nrow=1,byrow=TRUE)
+
+ctrFish<-list(f=f,ctrSEL=ctrSEL)
+
+a_BH=15000; b_BH=50; CV_REC_BH=0
+
+SR<-list(type="BH",par=c(a_BH,b_BH,CV_REC_BH))
+
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+```
+
+
+
+Now, applying the **BYR.eq** function to the above Pop.Mod object we can obtain the **population size in equilibrium for each age**.
+
+
+```{r}
+RE<-BYR.eq(Pop.Mod,0,3,3,c(FALSE,1),Method="mean",par=NULL)
+N_eq<-RE$N
+N_eq
+```
+
+
+Below, we use this vector **N_eq** as a value for the parameter *N0* in the main function for starting the population at the equilibrium stock numbers.
+
+
+On the other hand, we can use the function **RF** to  obtain the reference fishery mortality at which the MSY is attained. This point allows to control the level of explotation that we want to introduce in the population.
+
+
+```{r}
+rf=RF(Pop.Mod, 3,3,Method="mean",par=NULL,FM_type="F_msy",iters=1,plot=FALSE)
+rf
+fmsy=rf$F_msy[,1,1];fmsy
+```
+
+Then, now we are going to exploit the population at two times the MSY level during the first 25 years, and then the population has the chance to recover being exploited at MSY level.
+
+
+```{r}
+ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=N_eq,ages=0:15,minFage=2,
+maxFage=5,tc=0.5,tseed=NULL)
+
+f=matrix(c(rep(fmsy*2,25),rep(fmsy,number_years-25)),ncol=number_years,nrow=2,byrow=TRUE)
+
+ctrFish<-list(f=f,ctrSEL=ctrSEL)
+
+ctrBio<-list(M=M,CV_M=0.2, L_inf=20, t0=-0.25, k=0.3, CV_L=0, CV_LC=0, a=6*10^(-6), b=3,
+           a50_Mat=1, ad_Mat=-0.5,CV_Mat=0)
+
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+```
+
+
+THE PROCEDURE TO CREATE THIS EXAMPLE IS ALSO A TUTORIAL OF HOW TO USE THE RF AND BYR.eq FUNCTIONS TO CREATE A POPULATION UNDER A CERTAIN SITUATION.
+
+
+
+### PRACTICAL USE OF Sampling_Survey
+
+#### ABUNDANCE
+
+
+The first checking is to verify, as an example, that the abundance index matches the N matrix when $q_A=1$, $\gamma=1$, ${CV}_A=0$ and tsampling=0. Remember that in Population.Modeling function the stock is always simulated at time 0.
+
+```{r}
+q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0
+IA=Sampling_Survey(Pop.Mod=Pop.Mod,type="abundance",q_A=q_A,gamma=gamma,CV_A=CV_A,tsampling=0)
+```
+
+
+We check the correspondence between N and IA at last year and first iteration, as an example.
+```{r}
+cbind(Pop.Mod$Matrices$N[,41,1],IA[,41,1])
+```
+
+
+Now, taking ${CV}_A=0.2$ we can compare using the following code the abundance index for the first iteration and last year obtained above using ${CV}_A=0$ (black color) with 100 indices computed using ${CV}_A=0.2$ (red color).
+
+```{r}
+q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0.2
+
+IA=list()
+
+for (i in 1:100){
+IA[[i]]=Sampling_Survey(Pop.Mod=Pop.Mod,type="abundance",q_A=q_A,gamma=gamma,CV_A=CV_A,tsampling=0)
+}
+
+
+plot(1:16,Pop.Mod$Matrices$N[,41,1],type="l",xlab = "Ages",ylab="Abundance index")
+
+for (i in 1:100){
+lines(1:16,IA[[i]][,41,1],col="red")
+}
+
+lines(1:16,Pop.Mod$Matrices$N[,41,1])
+
+```
+
+
+We can also compare the abundance index using ${CV}_A=0$ (black color) with the mean of the above 100 indices using ${CV}_A=0.2$ (red color).
+
+```{r}
+a=matrix(0,ncol=100,nrow=16)
+
+for (i in 1:100){
+  a[,i]=IA[[i]][,41,1]
+}
+
+amean=rowMeans(a)
+
+plot(1:16,Pop.Mod$Matrices$N[,41,1],type="l",xlab = "Ages",ylab="Abundance index")
+
+lines(1:16,amean,col="red")
+```
+
+The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).
+
+```{r}
+plot(1:16,Pop.Mod$Matrices$N[,41,2],type="l",xlab = "Ages",ylab="Abundance index")
+
+for (i in 1:100){
+  lines(1:16,IA[[i]][,41,2],col="red")
+}
+
+lines(1:16,Pop.Mod$Matrices$N[,41,2])
+```
+
+
+All the abundance indices obtained above can be computed at other time of the year changing tsampling=0 by other value between 0 and 1, for example, at tsampling=0.4.
+
+```{r}
+q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0
+IA=Sampling_Survey(Pop.Mod=Pop.Mod,type="abundance",q_A=q_A,gamma=gamma,CV_A=CV_A,tsampling=0.4)
+#IA
+```
+
+The same comment applies to $q_A$ and $\gamma$, the user easily can define this arguments taking other values.
+
+#### BIOMASS
+
+
+The first checking is to verify, as an example, that the biomass index matches the biomass of the stock when $q_A=1$, $\gamma=1$, ${CV}_A=0$ and tsampling=0. 
+
+
+```{r}
+q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0
+IA=Sampling_Survey(Pop.Mod=Pop.Mod,type="biomass",q_A=q_A,gamma=gamma,CV_A=CV_A,tsampling=0)
+```
+
+The above comparison is done for the first iteration, as you can see both biomass coincide.
+
+```{r}
+cbind(IA$biomass[,,1],Sum.Pop.Mod(Pop.Mod,c("BIO"))$BIO[,,1])
+bio0=IA$biomass
+```
+
+
+
+Now, taking ${CV}_A=0.2$ we can compare using the following code the biomass index for the first iteration obtained above using ${CV}_A=0$ (black color) with 100 indices computed using ${CV}_A=0.2$ (red color).
+
+
+```{r}
+q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0.2
+
+IA=list()
+
+for (i in 1:100){
+  IA[[i]]=Sampling_Survey(Pop.Mod=Pop.Mod,type="biomass",q_A=q_A,gamma=gamma,CV_A=CV_A,tsampling=0)
+}
+
+plot(1:41,bio0[,,1],type="l",xlab = "Years",ylab="Biomass index")
+
+for (i in 1:100){
+  lines(1:41,IA[[i]]$biomass[,,1],col="red")
+}
+
+lines(1:41,bio0[,,1])
+```
+
+We can also compare the biomass index using ${CV}_A=0$ (black color) with the mean of the above 100 indices using ${CV}_A=0.2$ (red color).
+
+
+
+```{r}
+a=matrix(0,ncol=100,nrow=41)
+
+for (i in 1:100){
+  a[,i]=IA[[i]]$biomass[,,1]
+}
+
+amean=rowMeans(a)
+
+plot(1:41,bio0[,,1],type="l",xlab = "Years",ylab="Biomass index")
+
+lines(1:41,amean,col="red")
+```
+
+
+The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).
+
+
+```{r}
+plot(1:41,bio0[,,2],type="l",xlab = "Years",ylab="Biomass index")
+
+for (i in 1:100){
+  lines(1:41,IA[[i]]$biomass[,,2],col="red")
+}
+
+lines(1:41,bio0[,,2])
+```
+
+
+All the biomass indices obtained above can be computed at other time of the year changing tsampling=0 by other value between 0 and 1. For example,
+we can obtain the biomass index at other time of the year changing the tsampling parameter by 0.3.
+
+```{r}
+q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0
+IA=Sampling_Survey(Pop.Mod=Pop.Mod,type="biomass",q_A=q_A,gamma=gamma,CV_A=CV_A,tsampling=0.3)
+
+IA$biomass
+```
+
+Note that when type="biomass" the abundance index is also reported, and you can access it as follows.
+
+```{r}
+#IA$abundance
+```
+
+#### Length sample
+
+First of all we need to specify the values of the parameter *par* not required for the previous indices but important for obtaining the length sample. In this case we fix it as follows.
+
+```{r}
+q_A<-matrix(1,ncol=41,nrow=16);gamma<-1;CV_A<-0
+par=c(0.2,1000,3000)
+```
+
+First we compute a stock sample length at tsampling=0.
+
+```{r}
+our.sample1<-Sampling_Survey(Pop.Mod=Pop.Mod,type="LengthS",q_A=q_A,gamma=gamma,CV_A=CV_A,par=par,tsampling=0)
+```
+
+Second we compute the stock sample length at tsampling=0.4.
+
+```{r}
+our.sample2<-Sampling_Survey(Pop.Mod=Pop.Mod,type="LengthS",q_A=q_A,gamma=gamma,CV_A=CV_A,par=par,tsampling=0.4)
+```
+
+Now, we plot the density of both samples (in black for tsampling=0 and red for tsampling=0.4) and we verify that the performance is the expected one. Note that the plot refers to the first iteration and last year.
+
+```{r}
+plot(density(our.sample1$length[,41,1]), xlab="Length", main="Densities of length samples")
+lines(density(our.sample2$length[,41,1]),col="red")
+```
+
+The same plot can be done also for the stochastic iteration. 
+
+```{r}
+plot(density(our.sample1$length[,41,2]), xlab="Length", main="Densities of length samples")
+lines(density(our.sample2$length[,41,2]),col="red")
+```
+
+
+As you can see above, the stock length sample can be access using: 
+
+```{r}
+#our.sample2$length
+```
+
+Note that when type="LengthS", the abundance index is also reported and can be access using:
+
+```{r}
+#our.sample2$abundance
+```
+
+
+
+
+### <span style="color:blue">Sampling_Catch</span> 
+
+The function **Sampling_Catch** which are going to describe has a similar structure as the previous one but instead of focus on the stock the aim are the catches.
+
+The function returns the catch numbers for each year, age and iteration, the catch weight for each year and iteration, and a sample of the catch length (for each year and iteration) derived from the corresponding length distribution.
+
+
+The arguments of this function are described above:
+
+- *Pop.Mod*	is a list containing the components returned by Population.Modeling function (main function).
+- *type*	is an indicator of which element must be computed: catch weight (type="catch weight"), catch numbers (type="catch numbers"), or length catch sample (type="LengthC").
+- *CV_CN* is the coefficient of variation associated to the catch numbers. Default value 0.
+- *par*	is a vector containing the required parameters if type="LengthC".
+  + *CV* is the coefficient of variation associated to the log-normal distribution used to compute the catch length distribution from which the length sample is obtained (a deep explanation below).
+
+  + *RF.value* is the number of values generated for each age (given a year and an iteration) from the log-normal distribution used to obtain the catch length distribution from which the length sample is obtained (a deep explanation below). By default RF.value=1000.
+
+  + *sample.size* is the size of the desired sample.
+
+
+
+The **result** is an array containing the catch numbers for each year, age, and iteration. If type="catch weight" an array containing the catch weight for each year and iteration is also reported. If type="LengthC" an array containing in each column (year) the corresponding length sample for each iteration (third dimension) is also provided.
+
+
+
+The important point is: **How such results are obtained?** Below the corresponding details are provided.
+
+Let’s start explaining the catch numbers.
+
+**CATCH NUMBERS**
+
+
+When ${CV}_{CN}=0$, the catch numbers are equal to the matrix $C_N$ reported by the Population.Modeling function (main function). Whereas if ${CV}_{CN}$>0, then the catch number for year t and age i (${C_{N,S}}_{it}$) is generated from a log normal distribution center in ${C_N}_{it}$ and variability determined for the corresponding ${CV}_{CN}$.
+
+
+**CATCH WEIGHT**
+
+Once the matrix of catch numbers ${C_{N,S}}$ is computed, we can continue computing the catch weight. 
+
+Firstly, we compute the WC (third dimensional array containing the weight corresponding to the catch length for each age, year and iteration) at time tc (see Population.Modeling function). Then, we define $C_W$ (third dimensional array containing the catch weight for each age, year and iteration) multiplying the catch numbers ($C_{N,S}$) by the weight WC. Finally, the catch weight for each year is the sum by columns of matrix $C_W$.
+
+
+**SAMPLE LENGTH**
+
+The procedure to obtain a catch sample length needs a detailed explanation.
+
+A catch length sample is obtained generating random values from the computed **catch length distribution**.
+
+Hence, the question is: **How the catch distribution length is computed?** 
+
+The catch distribution length from which the sampling procedure is carried out is computed as follows. It is computed generating for each age, year and iteration RF.value random values from a log-normal distribution centered in the corresponding catch length (LC matrix) and whose variability comes from the given CV. The distribution obtained for each age (given a year and an iteration) is scaled using the corresponding catch numbers ($C_{N,S}$).
+
+Remember that the matrix LC (catch length) is computed at the time instant tc (see Population.Modeling function).
+
+
+### PRACTICAL USE OF Sampling_Catch
+
+
+#### CATCH NUMBERS 
+
+First, we check that if ${CV}_{CN}=0$ then the catch numbers reported by Sampling_Catch function are equal to the matrix $C_N$ reported by the main function (Population.Modeling function).
+
+
+```{r}
+IC=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch numbers",CV_CN=0)
+```
+
+We check such correspondence at last year and first iteration, as an example.
+```{r}
+cbind(Pop.Mod$Matrices$C_N[,41,1],IC[,41,1])
+```
+
+Now, taking ${CV}_{CN}$=0.2 we can compare using the following code the catch numbers for the first iteration and last year obtained above using ${CV}_{CN}$=0 (black color) with 100 replications computed using ${CV}_{CN}$=0.2 (red color).
+
+
+```{r}
+IC=list()
+
+for (i in 1:100){
+IC[[i]]=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch numbers",CV_CN=0.2)
+}
+
+plot(1:16,Pop.Mod$Matrices$C_N[,41,1],type="l",xlab = "Ages",ylab="Catch numbers")
+
+for (i in 1:100){
+lines(1:16,IC[[i]][,41,1],col="red")
+}
+
+lines(1:16,Pop.Mod$Matrices$C_N[,41,1])
+```
+
+
+We can also compare the catch numbers using ${CV}_{CN}$=0 (black color) with the mean of the above 100 replications using ${CV}_{CN}$=0.2 (red color).
+
+```{r}
+a=matrix(0,ncol=100,nrow=16)
+
+for (i in 1:100){
+  a[,i]=IC[[i]][,41,1]
+}
+
+amean=rowMeans(a)
+
+plot(1:16,Pop.Mod$Matrices$C_N[,41,1],type="l",xlab = "Ages",ylab="Catch numbers")
+
+lines(1:16,amean,col="red")
+```
+
+The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).
+
+```{r}
+plot(1:16,Pop.Mod$Matrices$C_N[,41,2],type="l",xlab = "Ages",ylab="Catch numbers")
+
+for (i in 1:100){
+  lines(1:16,IC[[i]][,41,2],col="red")
+}
+
+lines(1:16,Pop.Mod$Matrices$C_N[,41,2])
+```
+
+#### CATCH WEIGHT
+
+The first checking is to verify, as an example, that the catch weight when ${CV}_{CN}$=0 matches the weight of the catches reported by Sum.Pop.Mod function.
+
+
+```{r}
+IC=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch weight",CV_CN=0)
+```
+
+The above comparison is done for the first iteration.
+
+```{r}
+cbind(IC$weight[,,1],Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1])
+```
+
+
+Now, taking ${CV}_{CN}$=0.2 we can compare using the following code the catch weight for the first iteration obtained above using ${CV}_{CN}$=0 (black color) with 100 replications computed using ${CV}_{CN}$=0.2 (red color).
+
+
+```{r}
+IC=list()
+
+for (i in 1:100){
+  IC[[i]]=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch weight",CV_CN=0.2)
+}
+
+plot(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1],type="l",xlab = "years", ylab="Catch weight")
+
+for (i in 1:100){
+  lines(1:41,IC[[i]]$weight[,,1],col="red")
+}
+
+lines(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1])
+```
+
+
+We can also compare the catch weight using ${CV}_{CN}$=0 (black color) with the mean of the above 100 replications using ${CV}_{CN}$=0.2 (red color).
+
+
+```{r}
+a=matrix(0,ncol=100,nrow=41)
+
+for (i in 1:100){
+  a[,i]=IC[[i]]$weight[,,1]
+}
+
+amean=rowMeans(a)
+
+plot(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,1],type="l",xlab = "years", ylab="Catch weight")
+
+lines(1:41,amean,col="red")
+```
+
+
+The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).
+
+
+
+```{r}
+plot(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,2],type="l",xlab = "years", ylab="Catch weight")
+
+for (i in 1:100){
+  lines(1:41,IC[[i]]$weight[,,2],col="red")
+}
+
+lines(1:41,Sum.Pop.Mod(Pop.Mod,c("C"))$C[,,2])
+```
+
+
+Note that if type="catch weight" the catch numbers are also reported and you can access as follows.
+
+```{r}
+IC=Sampling_Catch(Pop.Mod=Pop.Mod,type="catch weight",CV_CN=0)
+#IC$weight
+#IC$numbers
+```
+
+#### Length sample
+
+First of all we need to specify the values of the parameter par not required for catch weight or numbers but important for obtaining the length sample. In this case we fix it as follows.
+
+
+```{r}
+par=c(0.2,1000,3000)
+```
+
+
+Below, we compute a stock length sample and a catch length sample for ${CV}_{CN}$=0 and ${CV}_{A}$=0. Then we plot the density of both samples for the first iteration and last year. Note that stock sample density is in black and the catch sample density is in red.
+
+```{r}
+
+IC=Sampling_Catch(Pop.Mod=Pop.Mod,type="LengthC",CV_CN=0,par=par)
+
+q_A<-matrix(1,ncol=41,nrow=16);gamma<-1
+IAS=Sampling_Survey(Pop.Mod=Pop.Mod,type="LengthS",q_A=q_A,gamma=gamma,CV_A=0,par=par,tsampling=0)
+
+plot(density(IAS$length[,41,1]),xlab="Length", main="Densities of length samples")
+lines(density(IC$length[,41,1]),col="red")
+```
+
+
+The same plot is carried out in the above code but for ${CV}_{CN}$=0.2 and ${CV}_{A}$=0.2.
+
+```{r}
+par=c(0.2,1000,3000)
+IC=Sampling_Catch(Pop.Mod=Pop.Mod,type="LengthC",CV_CN=0.2,par=par)
+
+IAS=Sampling_Survey(Pop.Mod=Pop.Mod,type="LengthS",q_A=q_A,gamma=gamma,CV_A=0.2,par=par,tsampling=0)
+
+plot(density(IAS$length[,41,1]),xlab="Length", main="Densities of length samples")
+lines(density(IC$length[,41,1]),col="red")
+```
+
+
+As you can see above, the catch length sample can be access using:
+
+```{r}
+#IC$length
+```
+
+Note that when type=“LengthC”, the catch numbers also reported and can be access using:
+
+```{r}
+#IC$numbers
+```

@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Marta Cousido Rocha, Santiago Cerviño López, Maria Grazia Pennino" />
+
+<meta name="date" content="2020-08-24" />
+
+<title>Rfishpop (First tutorial)</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Rfishpop (First tutorial)</h1>
+<h4 class="author">Marta Cousido Rocha, Santiago Cerviño López, Maria Grazia Pennino</h4>
+<h4 class="date">2020-08-24</h4>
+
+
+
+<div id="population-dynamic-tools-in-support-of-fisheries-managment" class="section level2">
+<h2>Population dynamic tools in support of fisheries managment</h2>
+<p>In this tutorial we explain how to simulate the real dynamics of the fishery system using a <strong>generic operating model (OM)</strong> implemented in Population.Modeling function which is the main function of our Rfishpop package.</p>
+<p><span style="color:red">NOTE:</span> The aim of this tutorial is to learn all the possibilities that the Population.Modeling function offers, then the values used here for the different parameters required by the OM does not tried to generate a population in a particular situation or corresponding to a particular type of species. The values are more or less realistic values but the idea is to illustrate how to use the function. Next tutorials show examples corresponding to long life species, short life species and so on.</p>
+<div id="population.modeling-function" class="section level3">
+<h3><span style="color:blue">Population.Modeling function</span></h3>
+</div>
+<div id="arguments-of-population.modeling-function" class="section level3">
+<h3>Arguments of Population.Modeling function</h3>
+<p>The first step is to learn which are the arguments of this function. The arguments are divided in 4 blocks:</p>
+<ol style="list-style-type: decimal">
+<li><p>General information about the population that we desire to simulate and some control arguments.</p></li>
+<li><p>Biological parameters of the population.</p></li>
+<li><p>Fishing parameters of the population.</p></li>
+<li><p>Parameters of spawning stock recruitment relationship.</p></li>
+</ol>
+<p>Let’s start with <strong>(1)</strong>.</p>
+<p>Argument <em>years</em> is a vector containing the years for which the dynamics of the fishery system is simulated. In this case we consider the period from 1980 to 2020.</p>
+<p>Argument <em>ages</em> is a vector containing the different ages presented in the stock. Note that the oldest age defines a plus group. <span style="color:red">The first age must be 0, in the current version the OM is not adapted to treat with populations started in other ages.</span> In this case we consider a stock where the ages goes from 0 years to 15 years.</p>
+<p>Argument <em>niter</em> is number of iterations of the simulation process. In this case is fixed in 2 (just to make this example faster!)</p>
+<p>Argument <em>N0</em> is a number corresponding to the population size at first age and year, or a vector containing the population size at first year for all ages. In this case we decide to establish only the value at first age and year in 10000 individuals. Note that it is important to take care of the units when we introduce the different parameters since N0 can be measured in individuals or in thousands of individuals.</p>
+<p>Arguments <em>minFage</em> and <em>maxFage</em> are the minimum and maximum age (respectively) for which the corresponding fishing mortality is considered to compute the mean fishing mortality. In this case we fix it in 4 and 7 years, respectively.</p>
+<p>Argument <em>tc</em> is the time of the year at which the catches are simulated. This parameter takes a value between 0 and 1, since the year is considered as a unit. In this case, we fix <em>tc=0.5</em> assuming that the catches occurs at mid of the year (this is an approximation since the catches occurs during all the year).</p>
+<p>Argument <em>seed</em> is a numeric value to introduce into set.seed() function for having a reproducible result. In this case is NULL which means that the results are not reproducible, that is, each run returns different results.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(Rfishpop)</a>
+<a class="sourceLine" id="cb1-2" title="2">ctrPop&lt;-<span class="kw">list</span>(<span class="dt">years=</span><span class="kw">seq</span>(<span class="dv">1980</span>,<span class="dv">2020</span>,<span class="dt">by=</span><span class="dv">1</span>),<span class="dt">ages=</span><span class="dv">0</span><span class="op">:</span><span class="dv">15</span>,<span class="dt">niter=</span><span class="dv">2</span>,<span class="dt">N0=</span><span class="dv">10000</span>,<span class="dt">minFage=</span><span class="dv">4</span>,</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="dt">maxFage=</span><span class="dv">7</span>,<span class="dt">tc=</span><span class="fl">0.5</span>,<span class="dt">seed=</span><span class="ot">NULL</span>)</a></code></pre></div>
+<p>Now, we continue explaining block <strong>(2)</strong> which contains the biological information.</p>
+<p>Argument <em>M</em> is a matrix containing the rates of instantaneous natural mortality for each year and age. As we show below in this case is constant equal to 0.4 for all the years and ages. Associated to <em>M</em> we also have the parameter <em>CV_M</em> which is the corresponding coefficient of variation. In each stochastic iteration the rates of instantaneous natural mortality come from a log-normal distribution centered on the corresponding value of M and variability determined by CV_M. In this case CV_M=0.2. NOTE THAT the associated coefficient of variation can be equal to 0 and then the instantaneous natural mortality in the stochastic iterations are equal to the ones in the deterministic one.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">number_ages&lt;-<span class="kw">length</span>(ctrPop<span class="op">$</span>ages);number_years&lt;-<span class="kw">length</span>(ctrPop<span class="op">$</span>years)</a>
+<a class="sourceLine" id="cb2-2" title="2">M&lt;-<span class="kw">matrix</span>(<span class="kw">rep</span>(<span class="fl">0.4</span>,number_ages<span class="op">*</span>number_years),<span class="dt">ncol =</span> number_years)</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="kw">colnames</span>(M)&lt;-ctrPop<span class="op">$</span>years</a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="kw">rownames</span>(M)&lt;-ctrPop<span class="op">$</span>ages</a></code></pre></div>
+<p>Arguments <em>L_inf</em>, <em>t0</em> and <em>k</em> are parameters of Von Bertalanffy Growth Model whose equation is</p>
+<p><span class="math display">\[L(x)=L_{inf}(1-e^{(-k(x-t0))})\]</span></p>
+<p>where <em>L_inf</em> is the asymptotic average maximum body size, <em>t0</em> is hypothetical age at which the species has zero length, and <em>k</em> is growth rate coefficient and x is the vector of ages where the function must be computed. In this case we take <span class="math inline">\(L_{inf}=124.5\)</span>, <span class="math inline">\(t0=0\)</span>, <span class="math inline">\(k=0.164\)</span>. Associated to the length of the stock and catch length we have the coefficients of variation <em>CV_L</em> and <em>CV_LC</em>, respectively. In each stochastic iteration the length comes from a normal distribution centered on the corresponding length obtained from Von Bertalanffy Growth Model and the corresponding variability is determined by CV_L or CV_LC depending if we focus on stock or catch length. In this case CV_L=0.2 and CV_LC=0.2. <span style="color:red">NOTE: In the section of ISSUES of the GITHUB repository of the package it is possible to learn about the need of modifications of the current process of generating stochastic lengths.</span></p>
+<p>Arguments <em>a</em> and <em>b</em> are the parameters of the Length-Weight relationship whose equation is <span class="math display">\[W=aL^b\]</span> where L is the vector of lengths by age, <em>a</em> is the allometric growth parameter, <em>b</em> scaling constant, and W is the age weight vector. In this case a=4.5*10^(-6) and b=3.1049, whose units are according to the units used to measure the length and weight which are cm and kg.</p>
+<p>Arguments <em>a50_Mat</em> and <em>ad_Mat</em> are parameters of the logistic function used to generate the maturity matrix. More precisily, <span class="math display">\[L(x)=1/(1+e^{(x-a50_{Mat})/ad_{Mat}})\]</span></p>
+<p>where <em>a50_Mat</em> is the x-value of the sigmoid’s midpoint of the logistic function, and <em>ad_Mat</em> is minus the inverse of the logistic growth rate (steepness of the curve). In this case a50_Mat=3 and ad_Mat=-0.5. Associated to the maturity matrix we have the coefficient of variation <em>CV_Mat</em>. In each stochastic iteration the maturity matrix values comes from a logistic function whose a50_Mat parameter is generated from a log-normal distribution centered on the given value of a50_Mat and variability determined by CV_Mat. In this case CV_Mat=0.2.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">ctrBio&lt;-<span class="kw">list</span>(<span class="dt">M=</span>M,<span class="dt">CV_M=</span><span class="fl">0.2</span>, <span class="dt">L_inf=</span><span class="fl">124.5</span>, <span class="dt">t0=</span><span class="dv">0</span>, <span class="dt">k=</span><span class="fl">0.164</span>, <span class="dt">CV_L=</span><span class="fl">0.2</span>, <span class="dt">CV_LC=</span><span class="fl">0.2</span>, <span class="dt">a=</span><span class="fl">4.5</span><span class="op">*</span><span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">6</span>), <span class="dt">b=</span><span class="fl">3.1049</span>,</a>
+<a class="sourceLine" id="cb3-2" title="2">           <span class="dt">a50_Mat=</span><span class="dv">3</span>, <span class="dt">ad_Mat=</span><span class="op">-</span><span class="fl">0.5</span>,<span class="dt">CV_Mat=</span><span class="fl">0.2</span>)</a></code></pre></div>
+<p>The block <strong>(3)</strong> contains the fishing information. Below we describe each of the arguments in this block.</p>
+<p>Argument <em>f</em> is the annual component of fishing mortality <span class="math inline">\(F = f * SEL\)</span>. Can be different for each of the iterations, hence we introduce a matrix whose rows contain the annual vector for each iteration. In this case a constant vector equal to 0.5.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">f=<span class="kw">matrix</span>(<span class="kw">rep</span>(<span class="fl">0.5</span>,number_years),<span class="dt">ncol=</span>number_years,<span class="dt">nrow=</span><span class="dv">2</span>,<span class="dt">byrow=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p>Argument <em>ctrSEL</em> specifies the selectivity function considered and the corresponding parameters. The different selectivity functions are:</p>
+<ul>
+<li>Constant selectivity function. In <em>ctrSEL</em> we must specify it using <em>type=“cte”</em> argument, and then in argument <em>par</em> we must introduce the constant value, in this case 0.5. Furthermore, we also need to introduce the corresponding coefficient of variation <em>CV_SEL</em>. The values of the selectivity matrix comes from a uniform distribution with mean equal to “cte” and whose variability is determined by CV_SEL. In this case CV_SEL=0.2</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">ctrSEL&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;cte&quot;</span>, <span class="dt">par=</span><span class="kw">list</span>(<span class="dt">cte=</span><span class="fl">0.5</span>),<span class="dt">CV_SEL=</span><span class="fl">0.2</span>)</a></code></pre></div>
+<ul>
+<li>Andersen selectivity function. In <em>ctrSEL</em> we must specify it using <em>type=“Andersen”</em> argument, and then in argument <em>par</em> we must introduce the values of its parameters.</li>
+</ul>
+<p><span class="math display">\[SA(x) = \begin{cases} p0+p2e^{-(ln(p5/x)-p1)^2/p4}, &amp; \mbox{if } {ln(p5/x)\leq p1} \\ p0+p2e^{-(ln(p5/x)-p1)^2/p3}, &amp; \mbox{if } {ln(p5/x)&gt;p1} \end{cases}.\]</span></p>
+<p>We fixed p0=0, which is the beginning size for the plateau, and p2=1, which is the maximum value attainable by the function. Remember that p3 and p4 are the ascending and descending slope parameters, respectively, whereas p1 and p5 define the value of x at which the transition between the two gaussian functions happens; that is, x=p5/exp(p1). In this case, p1=2,p3=0.2,p4=0.2,p5=40.</p>
+<p>Furthermore, we also need to introduce the corresponding coefficient of variation <em>CV_SEL</em>. The value of the parameter p1 in each stochastic iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL. In this case CV_SEL=0.05.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">ctrSEL&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;Andersen&quot;</span>, <span class="dt">par=</span><span class="kw">list</span>(<span class="dt">p1=</span><span class="dv">2</span>,<span class="dt">p3=</span><span class="fl">0.2</span>,<span class="dt">p4=</span><span class="fl">0.2</span>,<span class="dt">p5=</span><span class="dv">40</span>),<span class="dt">CV_SEL=</span><span class="fl">0.05</span>)</a></code></pre></div>
+<ul>
+<li>Gamma selectivity function. In <em>ctrSEL</em> we must specify it using <em>type=“Gamma”</em> argument, and then in argument <em>par</em> we must introduce the values of its parameters.</li>
+</ul>
+<p><span class="math display">\[SG(x)=((x/((\alpha-1) \beta\;\gamma))^{(\alpha-1))}e^{\alpha-1-(1/\beta\;\gamma)},\]</span></p>
+<p>where <em>gamma=<span class="math inline">\(\gamma\)</span></em> is the size of the mesh, <em>alpha=<span class="math inline">\(\alpha\)</span></em> is the shape parameter and <em>beta=<span class="math inline">\(\beta\)</span></em> is the scale parameter. In this case gamma=10, alpha=15, beta=0.03.</p>
+<p>Furthermore, we also need to introduce the corresponding coefficient of variation <em>CV_SEL</em>. The value of the parameter alpha in each stochastic iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL. In this case CV_SEL=0.05.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">ctrSEL&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;Gamma&quot;</span>, <span class="dt">par=</span><span class="kw">list</span>(<span class="dt">gamma=</span><span class="dv">10</span>,<span class="dt">alpha=</span><span class="dv">15</span>, <span class="dt">beta=</span><span class="fl">0.03</span>),<span class="dt">CV_SEL=</span><span class="fl">0.05</span>)</a></code></pre></div>
+<ul>
+<li>Logistic selectivity function. In <em>ctrSEL</em> we must specify it using <em>type=“Logistic”</em> argument, and then in argument <em>par</em> we must introduce the values of its parameters.</li>
+</ul>
+<p><span class="math display">\[L(x)=1/(1+e^{(x-a50_{Sel})/ad_{Sel}})\]</span></p>
+<p>where a50_Sel is the x-value of the sigmoid’s midpoint of the logistic function, and ad_Sel is minus the inverse of the logistic growth rate (steepness of the curve). In this case a50_Sel=1.5 and ad_Sel=-1.</p>
+<p>Furthermore, we also need to introduce the corresponding coefficient of variation <em>CV_SEL</em>. The value of the parameter a50_SEL in each stochastic iteration comes from a normal distribution centered on the given value of such parameter, and whose variability is determined by CV_SEL. In this case CV_SEL=0.2.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">ctrSEL&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;Logistic&quot;</span>, <span class="dt">par=</span><span class="kw">list</span>(<span class="dt">a50_Sel=</span><span class="fl">1.5</span>, <span class="dt">ad_Sel=</span><span class="op">-</span><span class="dv">1</span>),<span class="dt">CV_SEL=</span><span class="fl">0.2</span>)</a></code></pre></div>
+<p>Finally, we save in the same object all the fishing information.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">ctrFish&lt;-<span class="kw">list</span>(<span class="dt">f=</span>f,<span class="dt">ctrSEL=</span>ctrSEL)</a></code></pre></div>
+<p>To finish the description of the arguments, we focus on block <strong>(4)</strong> which contains the stock-recruitment relationship information.</p>
+<p>Argument <em>type</em> specifies the selected stock recruitment model.</p>
+<ul>
+<li><em>type=“cte”</em> means that a constant recruitment is used. Then, argument <em>par</em> contains the values of the parameters of the stock recruitment model specified previously. If type=“cte” then recruitment is equal to the population size at first age and year introduced previously in N0 parameter then par contains only <em>CV_REC_C</em> which is the associated coefficient of variation. For the stochastic iterations the recruitment is generated from a log-normal distribution centered on N0 and whose variability is determined by CV_REC_C.</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">CV_REC_C=<span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb10-2" title="2">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;cte&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(CV_REC_C))</a></code></pre></div>
+<ul>
+<li><em>type=“BH”</em> corresponds to Beverton-Holt Recruitment Model. Then, argument <em>par</em> contains the values of the parameters of the stock recruitment model specified previously.</li>
+</ul>
+<p><span class="math display">\[R=a_{BH}SSB/(b_{BH}+SSB)\]</span></p>
+<p>where SSB is the maturity biomass (spawning stock), a_BH is the maximum number of recruitments produced and b_BH is the spawning stock needed to produce recruitment equal to half maximum. In this case a_BH=1000 and b_BH=400. Furthermore, we have a coefficient of variation associated, in each stochastic iteration the deterministic equation of the model is multipled by log-normal residuals centered on 0 and whose variability is determined by <em>CV_REC_BH</em>. In this case is CV_REC_BH=0.2.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">a_BH=<span class="dv">10000</span>; b_BH=<span class="dv">400</span>; CV_REC_BH=<span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb11-2" title="2">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;BH&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(a_BH,b_BH,CV_REC_BH))</a></code></pre></div>
+<ul>
+<li><em>type=“RK”</em> refers to Ricker Recruitment Model. Then, argument <em>par</em> contains the values of the parameters of the stock recruitment model specified previously.</li>
+</ul>
+<p><span class="math display">\[R=a_{RK}SSBe^{-b_{RK}*SSB}\]</span></p>
+<p>where SSB is the maturity biomass (spawning stock), a_RK is the recruits-per-spawner at low stock levels and b_RK relates to the rate of decreasing of recruits-per-spawner as SSB increases. In this case, a_RK=10 and b_RK=0.0002. Furthermore, we have a coefficient of variation associated, in each stochastic iteration the deterministic equation of the model is multipled by log-normal residuals centered on 0 and whose variability is determined by CV_REC_RK. In this case CV_REC_RK=0.2.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">a_RK=<span class="dv">10</span>; b_RK=<span class="fl">0.0002</span>; CV_REC_RK=<span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb12-2" title="2">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;RK&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(a_RK,b_RK,CV_REC_RK))</a></code></pre></div>
+</div>
+<div id="use-of-population.modeling" class="section level3">
+<h3>Use of Population.Modeling</h3>
+<p>Now, that we are defined correctly the FOUR blocks of arguments we introduce them in the main function using the following line of code.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a></code></pre></div>
+</div>
+<div id="results-of-population.modeling" class="section level3">
+<h3>Results of Population.Modeling</h3>
+<p>Now, the object Pop.Mod contains two blocks of results.</p>
+<ul>
+<li>Matrices. Arrays of matrices containing the population values.</li>
+</ul>
+<p>N: Third dimensional array containing the population size for each age, year and iteration.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">N=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>N</a></code></pre></div>
+<p>F: Third dimensional array containing the instantaneous fishing mortality for each age, year and iteration.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">F=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>F</a></code></pre></div>
+<p>M: Third dimensional array containing the instantaneous natural mortality for each age, year and iteration.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">M=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>M</a></code></pre></div>
+<p>W: Third dimensional array containing the weight corresponding to the stock length for each age, year and iteration (at ts time of the year at which the stock is simulated. It has been fixed in 0 by default. No possibility of changing such default value is provided).</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">W=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>W</a></code></pre></div>
+<p>Mat: Third dimensional array containing the proportion of mature at each age, year and iteration.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">Mat=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>Mat</a></code></pre></div>
+<p>C_N: Third dimensional array containing the number of catches for each age, year and iteration.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">C_N=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>C_N</a></code></pre></div>
+<p>C_W: Third dimensional array containing the weight of catches for each age, year and iteration (at tc).</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">C_W=Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>C_W</a></code></pre></div>
+<ul>
+<li>Info. In this block we save useful information employed to create the population and which will be used by other functions of Rfishpop package. We can check this information using the next line of code.</li>
+</ul>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">Pop.Mod<span class="op">$</span>Info</a></code></pre></div>
+<pre><code>## $ctrBio
+## $ctrBio$CV_M
+## [1] 0.2
+## 
+## $ctrBio$L_inf
+## [1] 124.5
+## 
+## $ctrBio$t0
+## [1] 0
+## 
+## $ctrBio$k
+## [1] 0.164
+## 
+## $ctrBio$CV_L
+## [1] 0.2
+## 
+## $ctrBio$CV_LC
+## [1] 0.2
+## 
+## $ctrBio$a
+## [1] 4.5e-06
+## 
+## $ctrBio$b
+## [1] 3.1049
+## 
+## $ctrBio$a50_Mat
+## [1] 3
+## 
+## $ctrBio$ad_Mat
+## [1] -0.5
+## 
+## $ctrBio$CV_Mat
+## [1] 0.2
+## 
+## 
+## $ctrFish
+## $ctrFish$f
+##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14]
+## [1,]  0.5  0.5  0.5  0.5  0.5  0.5  0.5  0.5  0.5   0.5   0.5   0.5   0.5   0.5
+## [2,]  0.5  0.5  0.5  0.5  0.5  0.5  0.5  0.5  0.5   0.5   0.5   0.5   0.5   0.5
+##      [,15] [,16] [,17] [,18] [,19] [,20] [,21] [,22] [,23] [,24] [,25] [,26]
+## [1,]   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5
+## [2,]   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5
+##      [,27] [,28] [,29] [,30] [,31] [,32] [,33] [,34] [,35] [,36] [,37] [,38]
+## [1,]   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5
+## [2,]   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5
+##      [,39] [,40] [,41]
+## [1,]   0.5   0.5   0.5
+## [2,]   0.5   0.5   0.5
+## 
+## $ctrFish$ctrSEL
+## $ctrFish$ctrSEL$type
+## [1] &quot;Logistic&quot;
+## 
+## $ctrFish$ctrSEL$par
+## $ctrFish$ctrSEL$par$a50_Sel
+## [1] 1.5
+## 
+## $ctrFish$ctrSEL$par$ad_Sel
+## [1] -1
+## 
+## 
+## $ctrFish$ctrSEL$CV_SEL
+## [1] 0.2
+## 
+## 
+## 
+## $SR
+## $SR$type
+## [1] &quot;RK&quot;
+## 
+## $SR$par
+## [1] 1e+01 2e-04 2e-01
+## 
+## 
+## $minFage
+## [1] 4
+## 
+## $maxFage
+## [1] 7
+## 
+## $seed
+## NULL
+## 
+## $ts
+## [1] 0
+## 
+## $tc
+## [1] 0.5</code></pre>
+</div>
+<div id="comments-about-the-performance-of-population.modeling-function" class="section level3">
+<h3>Comments about the performance of Population.Modeling function</h3>
+</div>
+<div id="n0-argument" class="section level3">
+<h3>N0 argument</h3>
+<p>Argument <em>N0</em> is a number corresponding to the population size at first age and year, or a vector containing the population size at first year for all ages. If we introduce only the population size at first age and year the remaining values of the first year are computed as follows.</p>
+<p><span class="math display">\[ N_{i1}=e^{(-Z_{i-1,1})}*N_{i-1,1}, \]</span> for <span class="math inline">\(i \in {2:15}\)</span> in our example, to wit, all ages except the first one and the plus group which is defined as:</p>
+<p><span class="math display">\[ N_{i1}=e^{(-Z_{i-1,1})}*N_{i-1,1}/(1-e^{(-Z_{i,1})}),\; i=16.\]</span></p>
+<p>Note that index <span class="math inline">\(i\)</span> corresponds to age <span class="math inline">\(i\)</span> plus 1 since we can not use i=0 which is the first age.</p>
+<p>Furthermore, if N0 is a number then its is updated using the recruitment model evaluated at the SSB (spawning stock biomass) of the first year (such SSB assume negligible the contribution of age 0). More precisely, the maturity at first age (age 0 years) is assumed 0. Whereas if N0 is a vector such procedure of updated is not carried out.</p>
+<p>On the other hand it is important to note that the time of the year (<span class="math inline">\(t_s\)</span>) at which the stock is simulated has been fixed in 0 by default, which means that the stock numbers correspond to 1st of January. No possibility of changing such value is provided.</p>
+<div id="deterministic-and-stochastic-performance" class="section level4">
+<h4>Deterministic and stochastic performance</h4>
+<p>The first iteration (niter=1) contains the results corresponding to the deterministic case, to wit, all the coefficients of variation (CV’s) associated to the different biological and fishery components are zero.</p>
+<p>We can access to the first iteration of the population size matrix N (for example) as follows.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1">N_D&lt;-N [,,<span class="dv">1</span>]</a></code></pre></div>
+<p>The next iterations contain the stochastic results. In this case iteration 2, since niter=2.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">N_D&lt;-N [,,<span class="dv">2</span>]</a></code></pre></div>
+<p>Hence, if niter=1 (CV’s=0), we only obtain the deterministic performance. If niter=1 and the CV’s are different than 0, the function returns ERROR because the first iteration is the deterministic one and hence the CV’s can not be used.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1">ctrPop&lt;-<span class="kw">list</span>(<span class="dt">years=</span><span class="kw">seq</span>(<span class="dv">1980</span>,<span class="dv">2020</span>,<span class="dt">by=</span><span class="dv">1</span>),<span class="dt">niter=</span><span class="dv">1</span>,<span class="dt">N0=</span><span class="dv">10000</span>,<span class="dt">ages=</span><span class="dv">0</span><span class="op">:</span><span class="dv">15</span>,<span class="dt">minFage=</span><span class="dv">4</span>,</a>
+<a class="sourceLine" id="cb25-2" title="2"><span class="dt">maxFage=</span><span class="dv">7</span>,<span class="dt">tc=</span><span class="fl">0.5</span>,<span class="dt">seed=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb25-3" title="3"></a>
+<a class="sourceLine" id="cb25-4" title="4">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a></code></pre></div>
+<p><strong>Error in Population.Modeling(ctrPop = ctrPop, ctrBio = ctrBio, ctrFish = ctrFish, : niter is equal to 1 whereas the coefficients of variation are not zero. Note that the first iteration is the deterministic one, hence you need al least one iteration more to use the coefficients of variation.</strong></p>
+<p>If niter&gt;1, the CV’s are 0 and the matrix of the annual component of fishing mortality has constant rows, the function returns ERROR because it does has sense to repeat a deterministic process (a process without variability).</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1">ctrPop&lt;-<span class="kw">list</span>(<span class="dt">years=</span><span class="kw">seq</span>(<span class="dv">1980</span>,<span class="dv">2020</span>,<span class="dt">by=</span><span class="dv">1</span>),<span class="dt">niter=</span><span class="dv">2</span>,<span class="dt">N0=</span><span class="dv">10000</span>,<span class="dt">ages=</span><span class="dv">0</span><span class="op">:</span><span class="dv">15</span>,<span class="dt">minFage=</span><span class="dv">4</span>,</a>
+<a class="sourceLine" id="cb26-2" title="2"><span class="dt">maxFage=</span><span class="dv">7</span>,<span class="dt">tc=</span><span class="fl">0.5</span>,<span class="dt">seed=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb26-3" title="3">ctrBio&lt;-<span class="kw">list</span>(<span class="dt">M=</span>M,<span class="dt">CV_M=</span><span class="dv">0</span>, <span class="dt">L_inf=</span><span class="fl">124.5</span>, <span class="dt">t0=</span><span class="dv">0</span>, <span class="dt">k=</span><span class="fl">0.164</span>, <span class="dt">CV_L=</span><span class="dv">0</span>, <span class="dt">CV_LC=</span><span class="dv">0</span>, <span class="dt">a=</span><span class="fl">4.5</span><span class="op">*</span><span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">6</span>), <span class="dt">b=</span><span class="fl">3.1049</span>,</a>
+<a class="sourceLine" id="cb26-4" title="4">             <span class="dt">a50_Mat=</span><span class="dv">3</span>, <span class="dt">ad_Mat=</span><span class="op">-</span><span class="fl">0.5</span>,<span class="dt">CV_Mat=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb26-5" title="5"></a>
+<a class="sourceLine" id="cb26-6" title="6">ctrSEL&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;Logistic&quot;</span>, <span class="dt">par=</span><span class="kw">list</span>(<span class="dt">a50_Sel=</span><span class="fl">1.5</span>, <span class="dt">ad_Sel=</span><span class="op">-</span><span class="dv">1</span>),<span class="dt">CV_SEL=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb26-7" title="7"></a>
+<a class="sourceLine" id="cb26-8" title="8">f=<span class="kw">matrix</span>(<span class="kw">rep</span>(<span class="fl">0.5</span>,number_years),<span class="dt">ncol=</span>number_years,<span class="dt">nrow=</span><span class="dv">2</span>,<span class="dt">byrow=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb26-9" title="9">ctrFish&lt;-<span class="kw">list</span>(<span class="dt">f=</span>f,<span class="dt">ctrSEL=</span>ctrSEL)</a>
+<a class="sourceLine" id="cb26-10" title="10"></a>
+<a class="sourceLine" id="cb26-11" title="11">CV_REC_C=<span class="dv">0</span></a>
+<a class="sourceLine" id="cb26-12" title="12">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;cte&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(CV_REC_C))</a>
+<a class="sourceLine" id="cb26-13" title="13">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a></code></pre></div>
+<p><strong>Error in Population.Modeling(ctrPop = ctrPop, ctrBio = ctrBio, ctrFish = ctrFish, : The coefficients of variation are zero whereas the number of iterations (niter) is greater than 1, and the matrix of the annual component of fishing mortality has constant rows</strong></p>
+<p>If the number of iterations does not match with the number of rows of the matrix of the annual component of fishing mortality an error is reported.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1">ctrPop&lt;-<span class="kw">list</span>(<span class="dt">years=</span><span class="kw">seq</span>(<span class="dv">1980</span>,<span class="dv">2020</span>,<span class="dt">by=</span><span class="dv">1</span>),<span class="dt">niter=</span><span class="dv">2</span>,<span class="dt">N0=</span><span class="dv">10000</span>,<span class="dt">ages=</span><span class="dv">0</span><span class="op">:</span><span class="dv">15</span>,<span class="dt">minFage=</span><span class="dv">4</span>,</a>
+<a class="sourceLine" id="cb27-2" title="2"><span class="dt">maxFage=</span><span class="dv">7</span>,<span class="dt">tc=</span><span class="fl">0.5</span>,<span class="dt">seed=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb27-3" title="3">ctrBio&lt;-<span class="kw">list</span>(<span class="dt">M=</span>M,<span class="dt">CV_M=</span><span class="dv">0</span>, <span class="dt">L_inf=</span><span class="fl">124.5</span>, <span class="dt">t0=</span><span class="dv">0</span>, <span class="dt">k=</span><span class="fl">0.164</span>, <span class="dt">CV_L=</span><span class="dv">0</span>, <span class="dt">CV_LC=</span><span class="dv">0</span>, <span class="dt">a=</span><span class="fl">4.5</span><span class="op">*</span><span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">6</span>), <span class="dt">b=</span><span class="fl">3.1049</span>,</a>
+<a class="sourceLine" id="cb27-4" title="4">             <span class="dt">a50_Mat=</span><span class="dv">3</span>, <span class="dt">ad_Mat=</span><span class="op">-</span><span class="fl">0.5</span>,<span class="dt">CV_Mat=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb27-5" title="5"></a>
+<a class="sourceLine" id="cb27-6" title="6">ctrSEL&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;Logistic&quot;</span>, <span class="dt">par=</span><span class="kw">list</span>(<span class="dt">a50_Sel=</span><span class="fl">1.5</span>, <span class="dt">ad_Sel=</span><span class="op">-</span><span class="dv">1</span>),<span class="dt">CV_SEL=</span><span class="fl">0.2</span>)</a>
+<a class="sourceLine" id="cb27-7" title="7"></a>
+<a class="sourceLine" id="cb27-8" title="8">f=<span class="kw">matrix</span>(<span class="kw">rep</span>(<span class="fl">0.5</span>,number_years),<span class="dt">ncol=</span>number_years,<span class="dt">nrow=</span><span class="dv">1</span>,<span class="dt">byrow=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb27-9" title="9">ctrFish&lt;-<span class="kw">list</span>(<span class="dt">f=</span>f,<span class="dt">ctrSEL=</span>ctrSEL)</a>
+<a class="sourceLine" id="cb27-10" title="10"></a>
+<a class="sourceLine" id="cb27-11" title="11">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;cte&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(CV_REC_C))</a>
+<a class="sourceLine" id="cb27-12" title="12">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a></code></pre></div>
+<p><strong>Error in Population.Modeling(ctrPop = ctrPop, ctrBio = ctrBio, ctrFish = ctrFish, : The annual component of fishing mortality must be a matrix whose rows contain the annual vector for each iteration</strong></p>
+</div>
+</div>
+<div id="units-of-the-different-parameters" class="section level3">
+<h3>Units of the different parameters</h3>
+<p>The value of N0 in our example is the number of individuals. The L_inf value is suitable to measure the length in cm. The values of a and b are corrected to relate length in cm with the weight in Kg. The values of the parameters of the stock recruitment relationship have been introduced also taken into account that we are working with individuals, Kg and cm.</p>
+</div>
+<div id="function-sum.pop.mod" class="section level3">
+<h3><span style="color:blue">Function Sum.Pop.Mod</span></h3>
+<p>Furthermore than the information accessible by <em>Pop.Mod$Matrices</em> we can extract more information using the function Sum.Pop.Mod. This function allows us to extract additional information obtained in the simulation process of Population.Modeling (main function).</p>
+</div>
+<div id="arguments-of-sum.pop.mod-function" class="section level3">
+<h3>Arguments of Sum.Pop.Mod function</h3>
+<p>This function is applied on the object Pop.Mod returned by Population.Modeling function (main function). The second argument is <em>Elements</em> in which we specify the information that we desire to extract from Pop.Mod object.</p>
+</div>
+<div id="results-of-the-main-function-sum.pop.mod" class="section level3">
+<h3>Results of the main function Sum.Pop.Mod</h3>
+<p>The information that can be extracted is:</p>
+<p>-“Z”: Third dimensional array containing the instantaneous mortality for each age, year and iteration.</p>
+<p>-“LS”:Third dimensional array containing the (stock) length for each age, year and iteration (at ts=0, 1st of January).</p>
+<p>-“LC”:Third dimensional array containing the length of the catches for each age, year and iteration (at tc).</p>
+<p>-“WS”:Third dimensional array containing the population weight for each age, year and iteration.</p>
+<p>-“WSSB”:Third dimensional array containing the weight of the mature population for each age, year and iteration.</p>
+<p>-“C”:Weight of the catches for each year and iteration.</p>
+<p>-“SEL”:Selectivity by age, for each iteration.</p>
+<p>-“BIO”:Total biomass for each year and iteration.</p>
+<p>-“SSB”:Maturity biomass for each year (spawning stock) and iteration.</p>
+<p>-“REC”:Population numbers at first age.</p>
+<p>-“F”:Mean fishing mortality (only takes the values between the minFage and maxFage).</p>
+<p>-“WC”:Third dimensional array containing the weight corresponding to the catch length for each age (at tc), year and iteration.</p>
+<p>Below we have some examples extracting different elements.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1">Z&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;Z&quot;</span>))</a>
+<a class="sourceLine" id="cb28-2" title="2">LS&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;LS&quot;</span>))</a>
+<a class="sourceLine" id="cb28-3" title="3"></a>
+<a class="sourceLine" id="cb28-4" title="4">LC&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;LC&quot;</span>))</a>
+<a class="sourceLine" id="cb28-5" title="5">WS&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;WS&quot;</span>))</a>
+<a class="sourceLine" id="cb28-6" title="6"></a>
+<a class="sourceLine" id="cb28-7" title="7">WSSB&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;WSSB&quot;</span>))</a>
+<a class="sourceLine" id="cb28-8" title="8">C&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;C&quot;</span>))</a>
+<a class="sourceLine" id="cb28-9" title="9"></a>
+<a class="sourceLine" id="cb28-10" title="10">SEL&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;SEL&quot;</span>))</a>
+<a class="sourceLine" id="cb28-11" title="11">BIO&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;BIO&quot;</span>))</a>
+<a class="sourceLine" id="cb28-12" title="12"></a>
+<a class="sourceLine" id="cb28-13" title="13"></a>
+<a class="sourceLine" id="cb28-14" title="14">SSB&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;SSB&quot;</span>))</a>
+<a class="sourceLine" id="cb28-15" title="15">REC&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;REC&quot;</span>))</a>
+<a class="sourceLine" id="cb28-16" title="16"></a>
+<a class="sourceLine" id="cb28-17" title="17">F&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;F&quot;</span>))</a>
+<a class="sourceLine" id="cb28-18" title="18">WC&lt;-<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;WC&quot;</span>))</a></code></pre></div>
+</div>
+<div id="selecting_units-function" class="section level3">
+<h3>Selecting_units function</h3>
+<p>This function returns the following matrices provided by Sum.Pop.Mod function but in tonnes instead on Kg:</p>
+<ul>
+<li><p>“C”:Weight of the catches for each year and iteration.</p></li>
+<li><p>“BIO”:Total biomass for each year and iteration.</p></li>
+<li><p>“SSB”:Maturity biomass for each year (spawning stock biomass) and iteration.</p></li>
+</ul>
+<p>Below, we can see the easy use of this function.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1">E&lt;-<span class="kw">selecting_units</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;C&quot;</span>,<span class="st">&quot;BIO&quot;</span>,<span class="st">&quot;SSB&quot;</span>))</a></code></pre></div>
+</div>
+<div id="internal-calls" class="section level3">
+<h3>Internal calls</h3>
+<p>The function Population.Modeling uses some functions that are also available to use independently.</p>
+<p>Previously, we mentioned that several selectivity functions are available.</p>
+<ul>
+<li>Andersen Selectivity function. The function <em>andersen</em> computes this function, and the arguments are the ones decribed above in Population.Modeling section.</li>
+</ul>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1">p1=<span class="dv">2</span>;p3=<span class="fl">0.2</span>;p4=<span class="fl">0.2</span>;p5=<span class="dv">40</span></a>
+<a class="sourceLine" id="cb30-2" title="2">ages&lt;-<span class="dv">0</span><span class="op">:</span><span class="dv">15</span></a>
+<a class="sourceLine" id="cb30-3" title="3">SA&lt;-<span class="kw">andersen</span>(<span class="dt">x=</span>ages,<span class="dt">p1=</span>p1,<span class="dt">p3=</span>p3,<span class="dt">p4=</span>p4,<span class="dt">p5=</span>p5)</a>
+<a class="sourceLine" id="cb30-4" title="4"><span class="kw">plot</span>(ages,SA,<span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Andersen Selectivity function&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<ul>
+<li>Gamma selectivity function. The function <em>gamma_SEL</em> computes this function, and the arguments are the ones decribed above in Population.Modeling section.</li>
+</ul>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">gamma=<span class="dv">10</span>;alpha=<span class="dv">15</span>; beta=<span class="fl">0.03</span></a>
+<a class="sourceLine" id="cb31-2" title="2">ages&lt;-<span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">15</span>, <span class="dt">by=</span><span class="fl">0.1</span>)</a>
+<a class="sourceLine" id="cb31-3" title="3">SG&lt;-<span class="kw">gamma_SEL</span>(<span class="dt">x=</span>ages,<span class="dt">alpha=</span>alpha,<span class="dt">gamma=</span>gamma,<span class="dt">beta=</span>beta)</a>
+<a class="sourceLine" id="cb31-4" title="4"><span class="kw">plot</span>(ages,SG,<span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Gamma Selectivity function&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAsVBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrY6AAA6ADo6AGY6OgA6Ojo6OmY6ZpA6ZrY6kLY6kNtmAABmADpmOgBmOjpmkLZmkNtmtttmtv+QOgCQZjqQkDqQkGaQkLaQttuQ29uQ2/+2ZgC2Zjq2ZpC2kGa2tma225C227a229u22/+2/9u2///bkDrbkGbbtmbbtpDb27bb2//b////AAD/tmb/25D/27b//7b//9v////psFuiAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAK1ElEQVR4nO2de5+bNhaG8WSydjtt0vGmTZy2m46zt6TjJtnBc+H7f7DVDRA28EqAQDDv+8f8Biwd6Tw+uoEMSUa1Kpm6ArGLgIAICIiAgAgIiICACAiIgIAICIiAgAgIiICACAiIgIAICIiAgAgIiICACAiIgIAICIiAgAgIiICACAiIgIAICIiAgAgIiICACAiIgIDcAX39OUmSF6//17/Mp39dJcnq1eeTs++Tl3eNWf55e5bAHMuPztN/3CTJa6fK1Fi25QpI2NBa7RxzQFMnltpq+fDmogmQ+uhMR1nAtUNlai3bcgRU8EmSuvp46VBvqa2W++ZS6z86JKsbp8q0WNZyBCS+kdU7Uf0vG/3FfH0jHPxR1OFxm6y/XokPs782yWXdCStxXifxYfYgkMsQevooTL++K1tMfiz0RTTFF+9kDonzT5nAOCTqs3vSxzIWr5K1qeXOFCHP3ujEokbXCtkfwrSuUZ3lTPciL365y+zUboBEXcw3cv+D5HQ0jeRGlq51ZWLi7ISVOAekfLzfyHqb5Jd5nJfHpvbyC7HcMAz24t8S0MVv2mQRDrWArGrUWS6SWP+K1G6AZFhUef3tTnsoHbrOvghb76TVmhNWYi1xdvXLp5LWZ/2hBlQeS7A/3T1spZPKU5VA/Fkbn4sMtzLDrlJL3cROAF1+1jWqtyyNiL86RZnaDZDlXq5vcihay9L19/6yJFY9YSUu8Kog+XCXV17U5OJW1dI6Nu4dXn3KbDfUR8p/C5DGVrSwBkA75cg6a7C8t8KwTO0F6JiH4NOvOgLX5lvTf3NA1RNW4lxfrvJ2JFLksaxqeXpcxpn1Pevep+KWIVpkqAO0Mj1kVm85P6sSlqm9mlgOSMbA5T++bZ0AWYlLPX37fSORHZMqkOpxkcMCJE8b8BYgic1E3xkgnboKqMZy3kBVHPoCMp10DqjoX10AWYntaNR1051HXoayXDk+BySD5TdVGxuQ9Nke2hGgoSOoGOafvr0phpJ6HmcnrMRK4qPVW2Hq60bUzepXK19jUffs+OOHKiDVCl/eVQFJj66seZR28JB/rVVADZarfZAnIGuiKGbwqr+XExnHCMoT55XPtTaToodt8Q2Wx9Kx16o17+xOWY/RuyLETNwobOVAkgMSp2TRJ4DqLVdHMU9A1lLjnXXg2gdVOunihOlBzeykMg+yZyvao3I6dzRzcJ3hqA1Jo9acWDtYdPkngBosV+ZBvoDEUP3zJp9nqoHp8sOhaCNwFNOJc0JqFDOmHn4VZuXC1QRIcZyZ+e7bTE+vLz8ZQHkzNJ32RzVlkZ5ao0AeV2IO/+q/p6NYo2U1k35b5vcDFLmsSdCgWgqghzf9V9G1WgYg1XO5XN3w12IArX4KY3oZgAKKgIAICIiAgAgIiICACAiIgIAICIiAgAgIiICACAiIgIAICIiAgAgIiICACAiIgIAICIiAgAgIiICACAiIgIAICGhgQMlsNBUg3wxpmg5bA0fNBVCaTkRoJoDSdCpCIwPyb9pKaToZoVlEUJpOR4iAgOYAKE0nJERAQLMDNDahGQDKwRBQgwgIqAAzCaHZAMoIqEHpIgHtk2Stfu7V9MOaLoAmIRQG0EH9JFD9HKzhlyOdAE1BKAigp/fyR/nql2qHhsds+AKy/58/oMetaFlH/eyMhh9nOZtLlwhoyAiqMlkIoLIPUqh6masDNCahmYxilYMlABrQXAUIAZ3pBMjiAB16jmKnITN6CMV+0f65AfI2R0BIpzwW0gflzyVpfMiBVwSBM0EVaKKYP93g2PSYA0dz5y1q7DYWbqmh1XOpsVBAarGq1XOxulBAw0VQUx80c0CiDzIh1LcPqtkXNHIIBRrF8ueQ9n648DmKZQAaylwNCwKyVAtjCX3QUObqo4URVKg5gkYjFDeg2mAhIEt1JAioVD0J9kG5mmKFEWTUAGjUNkZAQFEDauuD4gW0X+unC6/bUjda8bxoX88hZkCPW/XE6V12/53bG016lduAYcwQ8gW01w9D32VP7zuFkFe5TRgiBqQvhUlAjbcEhyu3kUPEgPTFVAWo6WLqcOU2c4i3D7K21E0YQWMS8u6Dypc1TNcHjdnGfAGp1iV1dHwvV69ymyBEDCg76gnQoeeT810jqPGDaAGZd000v2VwuHJbIEQNyF1Fe+xkri1MxguhQHdWyyVF9zurMwV0v9Fvbmvto839wucYQXqOKHroFuczs2TrCah1shNtH6RmP3vZbsA8aC9CbABArR9GGEFqJq3XqWipcUiuB2hirR+OQajLWkyvN+Ba7H7zog+gdgRRA9KB0bSxpdTT++bZ5FIBqZ7noF8cGHgtBhDECkgswfQItXdbzPfYSN5OYKwQ6rAW06/567bW8Lom3ep/tIDGK7fdfQJC/s8bUP+N5DBCRgqhaDeSLxrQENuAFw1okI3k0P1xCEUbQe1L1TzBTAENsZEcOz9nQP03krt4P2dAvc25AwpMiICAYgXkcsWQgFzShCYUKyAnz58xIDfXCQhZGYEQAQFFCsjxttfzBeTqd3hCcQJy9ntxgBwv2vsCCkho5hEUPoRiBuRiJ3gIRQnIx2kCAgodQrMHFDqEYgTk53LgEIoQkK/DYQktCFAYQgsAFJZQfPfm/Z2dIaA+9+Y7OBuSUHx3Vrv4moZDFN29+W6OhiMUXQR19DMNhSi2e/OdvUwDIYrs3nwPF9MTdTBRp0nnQac+9fOu2VpXFRV19mg4Ja0edbMZhFBoQC0byYfmkwVANOk16eH5DE9o0iYWgE82NKIY+6DepgflM+1iNQgfraH4RLhYjUyTLTVmoxCAHBar/kZ7ZRohz8AR1KkO3TNFBshhsdqpDt0zxQYIL1Y71aF7pugAhTRKQAEyEdD0eQgoQBFhjD4nQEsSAQEREBABAREQEAEBERAQAQEREBABAREQEAEBERDQ8IDQE3PrpC/lej2g8P77W+/SdB6/wgYHJJ/57v3cd//XnTxu1Y0nr9JMHr/Chgakbw35vjnA+10VR33726s0k8ezsKEBmeedejp88AWaXCs3fUrL83gWNjggFb++EbH/QfQKrbfazqQB+ZWmE/oVNjQg3SF4dkLmKalehJSznqWpPJ6FRQHIZPUKu86APAuLo4nprK1Piz9V9ybmV1gcnbTO6jX8enfSWRWQa2FRDPPazw5NzLM0C+pkTazbRFG/c8C/k/YszYxiXoUNv9Q4dFhqqPfm+L1VyISAV2kmj1dhXKwCERAQAQEREBABAREQEAEBERAQAQEREBABAREQEAEBERAQAQEREBABAREQEAEBERAQAQEREBABAREQEAEBERAQAQEREBABAREQUIyAiu0p4p/V73J3y8HsS73feG+T6asIAckNTgeJZX9xmx3l9h95dL+51pvDjuMSig/Q499v9D45vVduv7p53MroOV7cdtob2lPxAZI6yoZUbLLTe+wEL/Nji1EVISDR4Vz8R0TPoQBknsu2048pfO59kGpZ8s9JBOXad9mk3l3xAdJb6JO8DzrIPsgOmupRcMUHSHJ53MpRvTKKychRodTpZw7dFR8gvbNXNSQxD7r4twwoOQ/SgdVlj3EvRQioqimGdlsRA1J9kJ4DTaiIAakGNfKgfq6YAUUhAgIiICACAiIgIAICIiAgAgIiICACAiIgIAICIiAgAgIiICACAiIgIAICIiAgAgIiIKD/Ax+R4RXtdjMbAAAAAElFTkSuQmCC" /><!-- --></p>
+<ul>
+<li>Logistic selectivity function. The function <em>Logistic</em> computes this function, and the arguments are the ones decribed above in Population.Modeling section.</li>
+</ul>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1">a50_Sel=<span class="fl">1.5</span>; ad_Sel=<span class="op">-</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb32-2" title="2">ages&lt;-<span class="dv">0</span><span class="op">:</span><span class="dv">15</span></a>
+<a class="sourceLine" id="cb32-3" title="3">LO&lt;-<span class="kw">Logistic</span>(<span class="dt">x=</span>ages,<span class="dt">x50=</span>a50_Sel,<span class="dt">xd=</span>ad_Sel)</a>
+<a class="sourceLine" id="cb32-4" title="4"><span class="kw">plot</span>(ages,LO,<span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Logistic Selectivity function&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The logistic function is also used to determine the maturity.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1">a50_Mat=<span class="dv">3</span>; ad_Mat=<span class="op">-</span><span class="fl">0.5</span></a>
+<a class="sourceLine" id="cb33-2" title="2">ages&lt;-<span class="dv">0</span><span class="op">:</span><span class="dv">15</span></a>
+<a class="sourceLine" id="cb33-3" title="3">Mat&lt;-<span class="kw">Logistic</span>(<span class="dt">x=</span>ages,<span class="dt">x50=</span>a50_Mat,<span class="dt">xd=</span>ad_Mat)</a>
+<a class="sourceLine" id="cb33-4" title="4"><span class="kw">plot</span>(ages,Mat,<span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Maturity function&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>On the other hand, we have two functions useful to define the length and to obtain then the weight.</p>
+<p>The function <em>Length_VB</em> computes the length using Von Bertalanffy Growth Model, and the arguments are the ones decribed above in Population.Modeling section.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1">L_inf=<span class="fl">124.5</span>; t0=<span class="dv">0</span>; k=<span class="fl">0.164</span>;ts=<span class="dv">0</span> <span class="co"># (ts=0 is fixed by default)</span></a>
+<a class="sourceLine" id="cb34-2" title="2">ages&lt;-<span class="dv">0</span><span class="op">:</span><span class="dv">15</span></a>
+<a class="sourceLine" id="cb34-3" title="3">LS&lt;-<span class="kw">Length_VB</span>(L_inf,k,ages<span class="op">+</span>ts,t0)</a>
+<a class="sourceLine" id="cb34-4" title="4"><span class="kw">plot</span>(ages,LS,<span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Stock Length&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Once we have the stock length we can obtain the weigth using the function <em>Weight</em> which computes the weight from the length using the relationship explained in Population.Modeling section.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">a=<span class="fl">4.5</span><span class="op">*</span><span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">6</span>); b=<span class="fl">3.1049</span></a>
+<a class="sourceLine" id="cb35-2" title="2">WS&lt;-<span class="kw">Weight</span>(LS,a,b)</a></code></pre></div>
+<p>There are two insteresting plots that we can provide. The first one gives the weight of the stock for the different ages.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1"><span class="kw">plot</span>(ages,WS,<span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Stock Weight&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The second one shows the length-weight relationship plotting the corresponding weight for each length.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1"><span class="kw">plot</span>(LS,WS,<span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Length-Weight&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Finally, we have several functions related with stock-recruitment relationship.</p>
+<ul>
+<li><em>RBH</em> which computes the recruitment using Beverton-Holt Recruitment Model.</li>
+</ul>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1">years=<span class="kw">seq</span>(<span class="dv">1980</span>,<span class="dv">2020</span>,<span class="dt">by=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb38-2" title="2">a_BH=<span class="dv">10000</span>; b_BH=<span class="dv">400</span></a>
+<a class="sourceLine" id="cb38-3" title="3">R&lt;-<span class="kw">RBH</span>(SSB<span class="op">$</span>SSB[,,<span class="dv">1</span>],a_BH,b_BH)</a>
+<a class="sourceLine" id="cb38-4" title="4"><span class="kw">plot</span>(years,R,<span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Beverton-Holt Recruitment&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<ul>
+<li><em>RRK</em> which computes the recruitment using Ricker Model.</li>
+</ul>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1">a_RK=<span class="dv">10</span>; b_RK=<span class="fl">0.0002</span></a>
+<a class="sourceLine" id="cb39-2" title="2">R&lt;-<span class="kw">RRK</span>(SSB<span class="op">$</span>SSB[,,<span class="dv">1</span>],a_RK,b_RK)</a>
+<a class="sourceLine" id="cb39-3" title="3"><span class="kw">plot</span>(years,R,<span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Ricker Model&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Note that we have used the SSB of the first iteration as an example.</p>
+<p>Related to the stock recruitment relationship the following function is useful.</p>
+<div id="steepness-of-the-stock-recruitment-relationship" class="section level4">
+<h4><span style="color:blue">Steepness of the Stock Recruitment Relationship</span></h4>
+<p>This function returns the steepness of a stock recruitment relationship. Remember that the steepness is commonly defined as the fraction of recruitment from an unfished population obtained when the spawning stock biomass is 20 percentage of its unfished level. The other point of view and possibility of this function is to compute the parameters of a stock recruitment model for which the corresponding steepness is equal to a desired value.</p>
+<p>The <strong>arguments</strong> of this function are:</p>
+<ul>
+<li><strong>Pop.Mod</strong> is the object returned by Population.Modeling function (main function).</li>
+<li><strong>Fish.years</strong> is the number of recent years to estimate the mean of SEL (selectivity).</li>
+<li><strong>Bio.years</strong> is the number of recent years to estimate the mean of M, Mat, WC, and W (natural mortality, maturity, stock weight and catch weight).</li>
+<li><strong>type</strong> is the desired approach which has two possibilities, type=“steepness” or type=“parameters”.</li>
+<li><strong>h</strong> is the desired value of the steepness when type=“parameters”. In other case (type=“steepness”) this parameter is equal to NULL.</li>
+<li><strong>Method</strong> is the procedure to obtain the age vector of weight (stock and catches), natural mortality, selectivity and maturity. By default is “mean” which means that the mean of the last “Bio.years” is used. The alternative option is “own”, the user can introduce these elements.</li>
+<li><strong>par</strong> If Method=“own” it is a list containing the matrices whose columns report for each iteration the age vector of weight (stock and catches), natural mortality, selectivity and maturity. In other case is equal to NULL.</li>
+</ul>
+<p>The results of this function are:</p>
+<ul>
+<li><p>if type=“steepness” an array <strong>h</strong> whose third dimension is the number of iterations. For each iteration the value of the steepness is reported.</p></li>
+<li><p>if type=“parameters” an array <strong>parameters</strong> whose third dimension is the number of iterations. For each iteration the value of the parameters of the stock-recruitment relationship.</p></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>We focus on type=“steepness” first.</li>
+</ol>
+<ul>
+<li>We consider the Beverton-Holt Recruitment Model:</li>
+</ul>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1">a_BH=<span class="dv">10000</span>; b_BH=<span class="dv">400</span>; CV_REC_BH=<span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb40-2" title="2">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;BH&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(a_BH,b_BH,CV_REC_BH))</a>
+<a class="sourceLine" id="cb40-3" title="3">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a>
+<a class="sourceLine" id="cb40-4" title="4">steepness_value&lt;-<span class="kw">steepness</span>(Pop.Mod,<span class="dt">Fish.years=</span><span class="dv">3</span>,<span class="dt">Bio.years=</span><span class="dv">3</span>,<span class="dt">type=</span><span class="st">&quot;steepness&quot;</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb40-5" title="5">steepness_value</a></code></pre></div>
+<pre><code>## , , 1
+## 
+##           [,1]
+## [1,] 0.9311782
+## 
+## , , 2
+## 
+##           [,1]
+## [1,] 0.9413668</code></pre>
+<ul>
+<li>We consider the Ricker Recruitment Model:</li>
+</ul>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1">a_RK=<span class="dv">10</span>; b_RK=<span class="fl">0.0002</span>; CV_REC_RK=<span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb42-2" title="2">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;RK&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(a_RK,b_RK,CV_REC_RK))</a>
+<a class="sourceLine" id="cb42-3" title="3">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a>
+<a class="sourceLine" id="cb42-4" title="4">steepness_value&lt;-<span class="kw">steepness</span>(Pop.Mod,<span class="dt">Fish.years=</span><span class="dv">3</span>,<span class="dt">Bio.years=</span><span class="dv">3</span>,<span class="dt">type=</span><span class="st">&quot;steepness&quot;</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb42-5" title="5">steepness_value</a></code></pre></div>
+<pre><code>## , , 1
+## 
+##          [,1]
+## [1,] 2.340839
+## 
+## , , 2
+## 
+##          [,1]
+## [1,] 2.730837</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Now, we focus on type=“parameters”:</li>
+</ol>
+<ul>
+<li>We consider the Beverton-Holt Recruitment Model:</li>
+</ul>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1">a_BH=<span class="dv">10000</span>; b_BH=<span class="dv">400</span>; CV_REC_BH=<span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb44-2" title="2">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;BH&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(a_BH,b_BH,CV_REC_BH))</a>
+<a class="sourceLine" id="cb44-3" title="3">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a>
+<a class="sourceLine" id="cb44-4" title="4">parameters_value&lt;-<span class="kw">steepness</span>(Pop.Mod,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">type=</span><span class="st">&quot;parameters&quot;</span>,<span class="dt">h=</span><span class="fl">0.93</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb44-5" title="5">parameters_value</a></code></pre></div>
+<pre><code>## $a_BH
+## , , 1
+## 
+##          [,1]
+## [1,] 10003.47
+## 
+## , , 2
+## 
+##         [,1]
+## [1,] 10004.9
+## 
+## 
+## $b_BH
+## , , 1
+## 
+##          [,1]
+## [1,] 407.5046
+## 
+## , , 2
+## 
+##          [,1]
+## [1,] 410.6989</code></pre>
+<ul>
+<li>We consider the Ricker Recruitment Model:</li>
+</ul>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" title="1">a_RK=<span class="dv">10</span>; b_RK=<span class="fl">0.0002</span>; CV_REC_RK=<span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb46-2" title="2">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;RK&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(a_RK,b_RK,CV_REC_RK))</a>
+<a class="sourceLine" id="cb46-3" title="3">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a>
+<a class="sourceLine" id="cb46-4" title="4">parameters_value&lt;-<span class="kw">steepness</span>(Pop.Mod,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">type=</span><span class="st">&quot;parameters&quot;</span>,<span class="dt">h=</span><span class="fl">2.34</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb46-5" title="5">parameters_value</a></code></pre></div>
+<pre><code>## $a_RK
+## , , 1
+## 
+##         [,1]
+## [1,] 9.99552
+## 
+## , , 2
+## 
+##         [,1]
+## [1,] 8.74484
+## 
+## 
+## $b_RK
+## , , 1
+## 
+##              [,1]
+## [1,] 0.0001999709
+## 
+## , , 2
+## 
+##              [,1]
+## [1,] 0.0001916399</code></pre>
+<p>Note that if we want to use <em>Method=“own”</em> we need to specify in argument <em>par</em> the required vectors. This must be something like (assuming that W, WC, M, Mat and SEL are defined previously).</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1">par=<span class="kw">list</span>(); par<span class="op">$</span>W&lt;-W; par<span class="op">$</span>SEL&lt;-SEL; par<span class="op">$</span>Mat&lt;-Mat; par<span class="op">$</span>M&lt;-M</a>
+<a class="sourceLine" id="cb48-2" title="2"><span class="kw">steepness</span>(Pop.Mod,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">type=</span><span class="st">&quot;parameters&quot;</span>,<span class="dt">h=</span><span class="fl">2.34</span>,<span class="dt">Method=</span><span class="st">&quot;own&quot;</span>,<span class="dt">par=</span>par)</a></code></pre></div>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

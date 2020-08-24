@@ -9,10 +9,11 @@ Description: Modeling of an exploited population (structured by age).
 License: GPL-2
 LazyData: FALSE
 Imports: FLCore
-Suggests:
+Suggests: knitr, rmarkdown, FLAssess, FLBRP, FLash, LBSPR, ggplot2, ggplotFL, reshape2, tidyr
 Encoding: UTF-8
 RoxygenNote: 7.1.0
 Author: Marta Cousido Rocha [aut, cre],
   Santiago Cerviño López [aut, ths]
 NeedsCompilation: no
 Packaged: 2020-03-03 11:13:42 UTC; mcousido
+VignetteBuilder: knitr

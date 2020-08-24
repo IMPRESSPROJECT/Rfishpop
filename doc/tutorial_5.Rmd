@@ -1,0 +1,176 @@
+---
+title: "Rfishpop (Fifth tutorial)"
+author: "Marta Cousido Rocha, Santiago Cerviño López, Maria Grazia Pennino"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Rfishpop (Fifth tutorial)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Population dynamic tools in support of fisheries managment
+
+As we mentioned in the previous tutorials the aim of the package is to implement a completed MSE (management strategy evaluation) cycle.
+
+The firsts steps of this cycle have been explained in the previous tutorials:
+
+- The operating model  used to generate "true" ecosystem dynamics including the
+natural variations in the system.
+
+- The sampling procedure from the operating model to mimic collection of fishery dependent data and research surveys (and their inherent variability).
+
+- These data are passed to the assessment model. 
+
+After these steps the next point is based on this assessment and the HCR (Haverst Control Rule), determine a
+management action (e.g., a change in the TAC). Fleet effort and catch are then modelled,
+and **resulting catches are fed back into the operating model**.
+
+<span style="color:red">NOTE: Our package does not implement a generic function implementing a HCR yet but is coming.</span> 
+
+
+In this tutorial we focus on explaining the use of the <span style="color:blue">function to fed back into the operating model the resulting catches or fleet effort.</span> 
+
+
+### <span style="color:blue"> Projecting our Exploited Population on based of desired catches or efforts</span> 
+
+This function allows us to extend our simulated Population through the years on based of the desired catches for such years (strategy="catch") or on based of the desired effort f (component of fishing mortality F = f * SEL) for such years (strategy="effort").
+
+The arguments of this function are described above:
+
+- *Pop.Mod*	 A list containing the components returned by Population.Modeling function (main function).
+- *new.years*	The years for which our Population must be projected.
+- *my.catch*	Weight of the catches for each of the years for which the projections are carried out.
+- *tol*	The level of tolerence in the optimization process. If tol=NULL the default value of 0.01 is used.
+
+- *limit.f*	Maximum value of effort f (component of fishing mortality F = f * SEL) considered in the optimization process. If limit.f=NULL the default value of 4 is used.
+
+- *strategy*	The strategy for the next years, this can be "catch" if we want to fix the catches for the next years (argument my.catch must be used) or "effort" if we want to fix the value of effort f, component of fishing mortality F = f * SEL (argument my.effort must be used).
+
+- *my.effort*	 A vector containing for the projecting years the value for which the effort of the last year must be multiplied to obtain the desired effort f (component of fishing mortality F = f * SEL) for the new years.
+
+- *M.new.years*	A matrix containing the rates of instantaneous natural mortality for each of the new.years and age. If it is null the M corresponding to the last year in Pop.Mod object is used.
+
+
+<span style="color:red">NOTE: This package is an open and developing project, for this reason this function must still be optimized for good execution times.</span> 
+
+The function **returns** the object Pop.Mod updated containing the information for the new years for which the population has been projected.
+
+The first point to illustrate the use of this function is to create a population. In this case as we can see below logistic selectivity and Ricker recruitment model are used.
+
+```{r}
+library(Rfishpop)
+ctrPop<-list(years=seq(1980,2020,by=1),niter=2,N0=10000,ages=0:15,minFage=4,
+maxFage=7,ts=0.2,tc=0.5,tseed=NULL)
+
+number_ages<-length(ctrPop$ages);number_years<-length(ctrPop$years)
+M<-matrix(rep(0.4,number_ages*number_years),ncol = number_years)
+colnames(M)<-ctrPop$years
+rownames(M)<-ctrPop$ages
+ctrBio<-list(M=M,CV_M=0.2, L_inf=124.5, t0=0, k=0.164, CV_L=0.2, CV_LC=0.2, a=4.5*10^(-6), b=3.1049,
+           a50_Mat=3, ad_Mat=-0.5,CV_Mat=0.2)
+
+
+ctrSEL<-list(type="Logistic", par=list(a50_Sel=1.5, ad_Sel=-1),CV_SEL=0.2)
+
+f=matrix(rep(0.5,number_years),ncol=number_years,nrow=2,byrow=TRUE)
+ctrFish<-list(f=f,ctrSEL=ctrSEL)
+
+a_BH=10000; b_BH=400; CV_REC_BH=0.2; a_RK=10; b_RK=0.0002; CV_REC_RK=0.2
+
+SR<-list(type="RK",par=c(a_RK,b_RK,CV_REC_RK))
+
+Pop.Mod<-Population.Modeling(ctrPop=ctrPop,ctrBio=ctrBio,ctrFish=ctrFish,SR=SR)
+```
+
+Assume that the resulting catches are 1500 then to extend our simulated Population through 2021 on based of such catches we only need to use the following line of code.
+
+```{r}
+Pop.Mod1=Population.Modeling.Projections(Pop.Mod,new.years=2021,my.catch=1500,limit.f=NULL,tol=NULL,strategy="catch")
+```
+
+Using Sum.Pop.Mod we can check if effectively the catches for 2021 are 1500.
+
+
+```{r}
+Sum.Pop.Mod(Pop.Mod1,c("C"))
+```
+
+Below, we can check the effort corresponding to such catches.
+
+```{r}
+EF=Pop.Mod1$Info$ctrFish$f
+colnames(EF)<-c(ctrPop$years,2021)
+rownames(EF)<-c("Iter 1","Iter 2")
+EF
+```
+
+
+As we mentioned before we can check also the effect of reducing the effort to any percentage of the effort in the previous year. For example, the next line extends the Pop.Mod object reducing the effort to a 60% of the effort in the previous year 2020.
+
+```{r}
+Pop.Mod2=Population.Modeling.Projections(Pop.Mod,new.years=2021,my.effort=0.6,limit.f=NULL,tol=NULL,strategy="effort")
+```
+
+We can check the decrease in catches below.
+
+```{r}
+Sum.Pop.Mod(Pop.Mod2,c("C"))
+```
+
+We can also access to the effort.
+
+```{r}
+EF=Pop.Mod2$Info$ctrFish$f
+colnames(EF)<-c(ctrPop$years,2021)
+rownames(EF)<-c("Iter 1","Iter 2")
+EF
+```
+
+
+We can project our population through several years directly as follows. As you can see the population is extended two years, 2021 and 2022, and the corresponding catches for such years are 1500 and 1600, respectively.
+
+```{r}
+Pop.Mod3=Population.Modeling.Projections(Pop.Mod,new.years=c(2021,2022),my.catch=c(1500,1600),limit.f=NULL,tol=NULL,strategy="catch")
+```
+
+Again we can check that the resulting catches for such years are closed to the desired values 1500 and 1600, respectively.
+
+```{r}
+Sum.Pop.Mod(Pop.Mod3,c("C"))
+```
+
+We can also use tol	argument to increase the level of tolerance in the optimization process obtaining more accurate numbers. Note increasing the level of tolerance we also increase the time of computation. Although this function, as we mentioned previously, will be faster than now soon after an optimization process.
+
+```{r}
+Pop.Mod3b=Population.Modeling.Projections(Pop.Mod,new.years=c(2021,2022),my.catch=c(1500,1600),limit.f=NULL,tol=0.001,strategy="catch")
+```
+
+```{r}
+Sum.Pop.Mod(Pop.Mod3b,c("C"))
+```
+
+
+We can also use the argument M.new.years to change the instantaneous natural mortality for each of the new.years and age. In this example, we increase it from 0.4 to 0.7.
+
+```{r}
+M<-matrix(rep(0.7,number_ages*number_years),ncol = number_years)
+colnames(M)<-ctrPop$years
+rownames(M)<-ctrPop$ages
+
+Pop.Mod4=Population.Modeling.Projections(Pop.Mod,new.years=2021,my.catch=1500,limit.f=NULL,tol=NULL,strategy="catch",M.new.years=M)
+```
+
+```{r}
+Sum.Pop.Mod(Pop.Mod4,c("C"))
+```
+
+We can see that the increase in natural mortality implies an increase in the effort required to obtain the same catches.
+
+```{r}
+EF=Pop.Mod4$Info$ctrFish$f
+colnames(EF)<-c(ctrPop$years,2021)
+rownames(EF)<-c("Iter 1","Iter 2")
+EF
+```
+

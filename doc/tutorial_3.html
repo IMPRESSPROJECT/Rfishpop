@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Marta Cousido Rocha, Santiago Cerviño López, Maria Grazia Pennino" />
+
+<meta name="date" content="2020-08-24" />
+
+<title>Rfishpop (Third tutorial)</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Rfishpop (Third tutorial)</h1>
+<h4 class="author">Marta Cousido Rocha, Santiago Cerviño López, Maria Grazia Pennino</h4>
+<h4 class="date">2020-08-24</h4>
+
+
+
+<div id="population-dynamic-tools-in-support-of-fisheries-managment" class="section level2">
+<h2>Population dynamic tools in support of fisheries managment</h2>
+<p>In the first tutorial, we have explained how to simulate the real dynamics of the fishery system using the <strong>generic operating model (OM)</strong> implemented in Population.Modeling function. Keeping in mind that the aim of the package is to implement a full <strong>Management Strategy Evaluation (MSE)</strong> cycle the next step is to <strong>sampling</strong> data from the operating model to mimic collection of fishery dependent data and research surveys.</p>
+<p>Rfishpop package contains relevant functions at this point:</p>
+<ul>
+<li><p><span style="color:blue">Sampling_Survey</span></p></li>
+<li><p><span style="color:blue">Sampling_Catch</span></p></li>
+</ul>
+<p>Through this tutorial explanations of the performance and use of both functions are provided.</p>
+<div id="sampling_survey" class="section level3">
+<h3><span style="color:blue">Sampling_Survey</span></h3>
+<p>This function returns the indices of abundance for each year, age and iteration, the indices of biomass for each year and iteration, and a sample of the stock length for each year and iteration derived from the corresponding length distribution.</p>
+<p>The <strong>arguments</strong> of this function are described above:</p>
+<ul>
+<li><p><em>Pop.Mod</em> is a list containing the components returned by Population.Modeling function (main function).</p></li>
+<li><p><em>type</em> is an indicator of which index/sample must be computed: index of biomass (type=“biomass”), index of abundance (type=“abundance”), or stock length sample (type=“LengthS”).</p></li>
+<li><p><em>q_A</em> is the matrix of annual and age specific catchability coefficients.</p></li>
+<li><p><em>gamma</em> is the density dependent parameter.</p></li>
+<li><p><em>CV_A</em> is the coefficient of variation associated to the abundance index. Default value 0.</p></li>
+<li><p><em>par</em> is a vector containing the required parameters if type=“LengthS”.</p>
+<ul>
+<li><p><em>CV</em> is the coefficient of variation associated to the log-normal distribution used to compute the stock length distribution from which the length sample is obtained (below a deep explanation is given).</p></li>
+<li><p><em>RF.value</em> is the number of values generated for each age (given a year and an iteration) from the log-normal distribution used to obtain the stock length distribution from which the length sample is obtained (below a deep explanation is given). By default RF.value=1000.</p></li>
+<li><p><em>sample.size</em> is the size of the desired sample.</p></li>
+</ul></li>
+<li><p><em>tsampling</em> is the time of the year at which the sampling is carried out. This parameter takes a value between 0 and 1, since the year is considered as a unit. By default tsampling=0.</p></li>
+</ul>
+<p>The <strong>result</strong> of the function is: an array containing the indices of abundance for each year, age, and iteration. If type=“biomass” an array containing the indices of biomass for each year and iteration is also reported. If type=“LengthS” an array containing in each column (year) the corresponding length sample for each iteration (third dimension) is also provided.</p>
+<p>The important point is: <strong>How the indices and samples are obtained?</strong> Below the corresponding details are provided.</p>
+<p>Let’s start explaining the abundance index.</p>
+<p><strong>ABUNDANCE INDEX</strong></p>
+<p>The abundance index for year t and age i is</p>
+<p><span class="math display">\[{IA}_{it}={q_A}_{it}*N_{it}^{\gamma},\]</span></p>
+<p>where <span class="math inline">\({q_A}_{it}\)</span> is the catchability coefficient, <span class="math inline">\(\gamma=gamma\)</span> is the density dependent parameter, and <span class="math inline">\(N_{it}\)</span> is the abundance for year t and age i (stock numbers matrix) when <span class="math inline">\({CV}_A=0\)</span>. If <span class="math inline">\({CV}_A\)</span> is different than 0 the abundance index for year t and age i is generated from a log normal distribution center in <span class="math inline">\({IA}_{it}\)</span> (defined above) and variability determined from the corresponding coefficient of variation <span class="math inline">\({CV}_A\)</span>. Note that the <strong>matrix N (stock numbers)</strong> in this function is computed <strong>at the time instant tsampling</strong>, i.e., it is not the matrix N computed in the main function Population.Modeling function, instead we update such matrix to time instant tsampling.</p>
+<p><strong>BIOMASS INDEX</strong></p>
+<p>Once the abundance index (IA) is computed, we can continue computing the biomass index.</p>
+<p>Firstly, we compute the W (third dimensional array containing the weight corresponding to the stock length for each age, year and iteration) at time tsampling. Then, we define WS (third dimensional array containing the weight for each age, year and iteration) multiplying the abundance index IA by the weight W. Finally, the index of biomass for each year is the sum by columns of matrix WS.</p>
+<p><strong>SAMPLE LENGTH</strong></p>
+<p>The procedure to obtain a stock sample length needs a detailed explanation.</p>
+<p>A stock length sample is obtained generating random values from the computed <strong>stock length distribution</strong>.</p>
+<p>Hence, the question is: <strong>How the stock distribution length is computed?</strong></p>
+<p>The stock distribution length from which the sampling procedure is carried out is computed as follows. For each age, year and iteration <em>RF.value</em> random values are generating from a log-normal distribution centered in the corresponding stock length and whose variability comes from the given CV. The distribution obtained for each age (given a year and an iteration) is scaled using the corresponding abundance index matrix (IA).</p>
+<p>Remember that the matrix LS (stock length) is computed at the time instant tsampling.</p>
+<p>After the above description of the function, the next step is to use it in an example to fix some ideas. Hence, we need to use the main function (Population.Modeling) to simulate a population.</p>
+<p>Taking into account that in previous tutorials we have explained the functions <strong>BYR.eq</strong> (Total Yield, Biomass and Recruitment in Equilibrium) and <strong>RF</strong> (Reference Points) we have used such functions to define a population corresponding to a short life species at certain level of explotation.</p>
+<p>First point is to create the population, as we explained in the first tutorial, using the values of the parameters for a short life species. The recruitment model is Beverton-Holt and the selectivity type is constant.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(Rfishpop)</a>
+<a class="sourceLine" id="cb1-2" title="2">ctrPop&lt;-<span class="kw">list</span>(<span class="dt">years=</span><span class="kw">seq</span>(<span class="dv">1980</span>,<span class="dv">2020</span>,<span class="dt">by=</span><span class="dv">1</span>),<span class="dt">niter=</span><span class="dv">1</span>,<span class="dt">N0=</span><span class="dv">15000</span>,<span class="dt">ages=</span><span class="dv">0</span><span class="op">:</span><span class="dv">15</span>,<span class="dt">minFage=</span><span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="dt">maxFage=</span><span class="dv">5</span>,<span class="dt">tc=</span><span class="fl">0.5</span>,<span class="dt">seed=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb1-4" title="4">number_ages&lt;-<span class="kw">length</span>(ctrPop<span class="op">$</span>ages);number_years&lt;-<span class="kw">length</span>(ctrPop<span class="op">$</span>years)</a>
+<a class="sourceLine" id="cb1-5" title="5"></a>
+<a class="sourceLine" id="cb1-6" title="6">Mvec=<span class="kw">c</span>(<span class="dv">1</span>,<span class="fl">0.6</span>,<span class="fl">0.5</span>,<span class="fl">0.4</span>,<span class="fl">0.35</span>,<span class="fl">0.35</span>,<span class="fl">0.3</span>,<span class="kw">rep</span>(<span class="fl">0.3</span>,<span class="dv">9</span>))</a>
+<a class="sourceLine" id="cb1-7" title="7">M&lt;-<span class="kw">matrix</span>(<span class="kw">rep</span>(Mvec,number_years),<span class="dt">ncol =</span> number_years)</a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="kw">colnames</span>(M)&lt;-ctrPop<span class="op">$</span>years</a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="kw">rownames</span>(M)&lt;-ctrPop<span class="op">$</span>ages</a>
+<a class="sourceLine" id="cb1-10" title="10"></a>
+<a class="sourceLine" id="cb1-11" title="11">ctrBio&lt;-<span class="kw">list</span>(<span class="dt">M=</span>M,<span class="dt">CV_M=</span><span class="dv">0</span>, <span class="dt">L_inf=</span><span class="dv">20</span>, <span class="dt">t0=</span><span class="op">-</span><span class="fl">0.25</span>, <span class="dt">k=</span><span class="fl">0.3</span>, <span class="dt">CV_L=</span><span class="dv">0</span>, <span class="dt">CV_LC=</span><span class="dv">0</span>, <span class="dt">a=</span><span class="dv">6</span><span class="op">*</span><span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">6</span>), <span class="dt">b=</span><span class="dv">3</span>,</a>
+<a class="sourceLine" id="cb1-12" title="12">           <span class="dt">a50_Mat=</span><span class="dv">1</span>, <span class="dt">ad_Mat=</span><span class="op">-</span><span class="fl">0.5</span>,<span class="dt">CV_Mat=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb1-13" title="13"></a>
+<a class="sourceLine" id="cb1-14" title="14">ctrSEL&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;cte&quot;</span>, <span class="dt">par=</span><span class="kw">list</span>(<span class="dt">cte=</span><span class="fl">0.5</span>),<span class="dt">CV_SEL=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb1-15" title="15"></a>
+<a class="sourceLine" id="cb1-16" title="16">f=<span class="kw">matrix</span>(<span class="kw">rep</span>(<span class="fl">0.5</span>,number_years),<span class="dt">ncol=</span>number_years,<span class="dt">nrow=</span><span class="dv">1</span>,<span class="dt">byrow=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb1-17" title="17"></a>
+<a class="sourceLine" id="cb1-18" title="18">ctrFish&lt;-<span class="kw">list</span>(<span class="dt">f=</span>f,<span class="dt">ctrSEL=</span>ctrSEL)</a>
+<a class="sourceLine" id="cb1-19" title="19"></a>
+<a class="sourceLine" id="cb1-20" title="20">a_BH=<span class="dv">15000</span>; b_BH=<span class="dv">50</span>; CV_REC_BH=<span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-21" title="21"></a>
+<a class="sourceLine" id="cb1-22" title="22">SR&lt;-<span class="kw">list</span>(<span class="dt">type=</span><span class="st">&quot;BH&quot;</span>,<span class="dt">par=</span><span class="kw">c</span>(a_BH,b_BH,CV_REC_BH))</a>
+<a class="sourceLine" id="cb1-23" title="23"></a>
+<a class="sourceLine" id="cb1-24" title="24">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a></code></pre></div>
+<p>Now, applying the <strong>BYR.eq</strong> function to the above Pop.Mod object we can obtain the <strong>population size in equilibrium for each age</strong>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">RE&lt;-<span class="kw">BYR.eq</span>(Pop.Mod,<span class="dv">0</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="kw">c</span>(<span class="ot">FALSE</span>,<span class="dv">1</span>),<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb2-2" title="2">N_eq&lt;-RE<span class="op">$</span>N</a>
+<a class="sourceLine" id="cb2-3" title="3">N_eq</a></code></pre></div>
+<pre><code>## , , 1
+## 
+##           [,1]
+## 0  10574.55798
+## 1   3890.16248
+## 2   2134.96644
+## 3   1294.92260
+## 4    868.01258
+## 5    611.67812
+## 6    431.04229
+## 7    319.32398
+## 8    236.56102
+## 9    175.24872
+## 10   129.82744
+## 11    96.17854
+## 12    71.25081
+## 13    52.78390
+## 14    39.10327
+## 15   111.76873</code></pre>
+<p>Below, we use this vector <strong>N_eq</strong> as a value for the parameter <em>N0</em> in the main function for starting the population at the equilibrium stock numbers.</p>
+<p>On the other hand, we can use the function <strong>RF</strong> to obtain the reference fishery mortality at which the MSY is attained. This point allows to control the level of explotation that we want to introduce in the population.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">rf=<span class="kw">RF</span>(Pop.Mod, <span class="dv">3</span>,<span class="dv">3</span>,<span class="dt">Method=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">par=</span><span class="ot">NULL</span>,<span class="dt">FM_type=</span><span class="st">&quot;F_msy&quot;</span>,<span class="dt">iters=</span><span class="dv">1</span>,<span class="dt">plot=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb4-2" title="2">rf</a></code></pre></div>
+<pre><code>## $F_msy
+## , , 1
+## 
+##              f          F          YPR         BPR        R        Y        B
+## [1,] 0.1894689 0.09473445 0.0006686766 0.006496303 7303.314 4.883555 47.44454
+## 
+## 
+## $INFO
+## $INFO$Method
+## [1] &quot;mean&quot;
+## 
+## $INFO$Fish.years
+## [1] 3
+## 
+## $INFO$Bio.years
+## [1] 3</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">fmsy=rf<span class="op">$</span>F_msy[,<span class="dv">1</span>,<span class="dv">1</span>];fmsy</a></code></pre></div>
+<pre><code>## [1] 0.1894689</code></pre>
+<p>Then, now we are going to exploit the population at two times the MSY level during the first 25 years, and then the population has the chance to recover being exploited at MSY level.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">ctrPop&lt;-<span class="kw">list</span>(<span class="dt">years=</span><span class="kw">seq</span>(<span class="dv">1980</span>,<span class="dv">2020</span>,<span class="dt">by=</span><span class="dv">1</span>),<span class="dt">niter=</span><span class="dv">2</span>,<span class="dt">N0=</span>N_eq,<span class="dt">ages=</span><span class="dv">0</span><span class="op">:</span><span class="dv">15</span>,<span class="dt">minFage=</span><span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="dt">maxFage=</span><span class="dv">5</span>,<span class="dt">tc=</span><span class="fl">0.5</span>,<span class="dt">tseed=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb8-3" title="3"></a>
+<a class="sourceLine" id="cb8-4" title="4">f=<span class="kw">matrix</span>(<span class="kw">c</span>(<span class="kw">rep</span>(fmsy<span class="op">*</span><span class="dv">2</span>,<span class="dv">25</span>),<span class="kw">rep</span>(fmsy,number_years<span class="dv">-25</span>)),<span class="dt">ncol=</span>number_years,<span class="dt">nrow=</span><span class="dv">2</span>,<span class="dt">byrow=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb8-5" title="5"></a>
+<a class="sourceLine" id="cb8-6" title="6">ctrFish&lt;-<span class="kw">list</span>(<span class="dt">f=</span>f,<span class="dt">ctrSEL=</span>ctrSEL)</a>
+<a class="sourceLine" id="cb8-7" title="7"></a>
+<a class="sourceLine" id="cb8-8" title="8">ctrBio&lt;-<span class="kw">list</span>(<span class="dt">M=</span>M,<span class="dt">CV_M=</span><span class="fl">0.2</span>, <span class="dt">L_inf=</span><span class="dv">20</span>, <span class="dt">t0=</span><span class="op">-</span><span class="fl">0.25</span>, <span class="dt">k=</span><span class="fl">0.3</span>, <span class="dt">CV_L=</span><span class="dv">0</span>, <span class="dt">CV_LC=</span><span class="dv">0</span>, <span class="dt">a=</span><span class="dv">6</span><span class="op">*</span><span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">6</span>), <span class="dt">b=</span><span class="dv">3</span>,</a>
+<a class="sourceLine" id="cb8-9" title="9">           <span class="dt">a50_Mat=</span><span class="dv">1</span>, <span class="dt">ad_Mat=</span><span class="op">-</span><span class="fl">0.5</span>,<span class="dt">CV_Mat=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb8-10" title="10"></a>
+<a class="sourceLine" id="cb8-11" title="11">Pop.Mod&lt;-<span class="kw">Population.Modeling</span>(<span class="dt">ctrPop=</span>ctrPop,<span class="dt">ctrBio=</span>ctrBio,<span class="dt">ctrFish=</span>ctrFish,<span class="dt">SR=</span>SR)</a></code></pre></div>
+<p>THE PROCEDURE TO CREATE THIS EXAMPLE IS ALSO A TUTORIAL OF HOW TO USE THE RF AND BYR.eq FUNCTIONS TO CREATE A POPULATION UNDER A CERTAIN SITUATION.</p>
+</div>
+<div id="practical-use-of-sampling_survey" class="section level3">
+<h3>PRACTICAL USE OF Sampling_Survey</h3>
+<div id="abundance" class="section level4">
+<h4>ABUNDANCE</h4>
+<p>The first checking is to verify, as an example, that the abundance index matches the N matrix when <span class="math inline">\(q_A=1\)</span>, <span class="math inline">\(\gamma=1\)</span>, <span class="math inline">\({CV}_A=0\)</span> and tsampling=0. Remember that in Population.Modeling function the stock is always simulated at time 0.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">q_A&lt;-<span class="kw">matrix</span>(<span class="dv">1</span>,<span class="dt">ncol=</span><span class="dv">41</span>,<span class="dt">nrow=</span><span class="dv">16</span>);gamma&lt;-<span class="dv">1</span>;CV_A&lt;-<span class="dv">0</span></a>
+<a class="sourceLine" id="cb9-2" title="2">IA=<span class="kw">Sampling_Survey</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;abundance&quot;</span>,<span class="dt">q_A=</span>q_A,<span class="dt">gamma=</span>gamma,<span class="dt">CV_A=</span>CV_A,<span class="dt">tsampling=</span><span class="dv">0</span>)</a></code></pre></div>
+<p>We check the correspondence between N and IA at last year and first iteration, as an example.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">cbind</span>(Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>N[,<span class="dv">41</span>,<span class="dv">1</span>],IA[,<span class="dv">41</span>,<span class="dv">1</span>])</a></code></pre></div>
+<pre><code>##           [,1]        [,2]
+## 0  6373.862308 6373.862308
+## 1  2099.719272 2099.719272
+## 2  1030.111293 1030.111293
+## 3   557.452366  557.452366
+## 4   332.698929  332.698929
+## 5   208.264151  208.264151
+## 6   130.044401  130.044401
+## 7    85.133873   85.133873
+## 8    55.569094   55.569094
+## 9    36.156412   36.156412
+## 10   23.446032   23.446032
+## 11   15.148753   15.148753
+## 12    9.750857    9.750857
+## 13    6.252871    6.252871
+## 14    3.997420    3.997420
+## 15    6.803958    6.803958</code></pre>
+<p>Now, taking <span class="math inline">\({CV}_A=0.2\)</span> we can compare using the following code the abundance index for the first iteration and last year obtained above using <span class="math inline">\({CV}_A=0\)</span> (black color) with 100 indices computed using <span class="math inline">\({CV}_A=0.2\)</span> (red color).</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">q_A&lt;-<span class="kw">matrix</span>(<span class="dv">1</span>,<span class="dt">ncol=</span><span class="dv">41</span>,<span class="dt">nrow=</span><span class="dv">16</span>);gamma&lt;-<span class="dv">1</span>;CV_A&lt;-<span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb12-2" title="2"></a>
+<a class="sourceLine" id="cb12-3" title="3">IA=<span class="kw">list</span>()</a>
+<a class="sourceLine" id="cb12-4" title="4"></a>
+<a class="sourceLine" id="cb12-5" title="5"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb12-6" title="6">IA[[i]]=<span class="kw">Sampling_Survey</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;abundance&quot;</span>,<span class="dt">q_A=</span>q_A,<span class="dt">gamma=</span>gamma,<span class="dt">CV_A=</span>CV_A,<span class="dt">tsampling=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb12-7" title="7">}</a>
+<a class="sourceLine" id="cb12-8" title="8"></a>
+<a class="sourceLine" id="cb12-9" title="9"></a>
+<a class="sourceLine" id="cb12-10" title="10"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>N[,<span class="dv">41</span>,<span class="dv">1</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;Ages&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;Abundance index&quot;</span>)</a>
+<a class="sourceLine" id="cb12-11" title="11"></a>
+<a class="sourceLine" id="cb12-12" title="12"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb12-13" title="13"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,IA[[i]][,<span class="dv">41</span>,<span class="dv">1</span>],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb12-14" title="14">}</a>
+<a class="sourceLine" id="cb12-15" title="15"></a>
+<a class="sourceLine" id="cb12-16" title="16"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>N[,<span class="dv">41</span>,<span class="dv">1</span>])</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>We can also compare the abundance index using <span class="math inline">\({CV}_A=0\)</span> (black color) with the mean of the above 100 indices using <span class="math inline">\({CV}_A=0.2\)</span> (red color).</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">a=<span class="kw">matrix</span>(<span class="dv">0</span>,<span class="dt">ncol=</span><span class="dv">100</span>,<span class="dt">nrow=</span><span class="dv">16</span>)</a>
+<a class="sourceLine" id="cb13-2" title="2"></a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb13-4" title="4">  a[,i]=IA[[i]][,<span class="dv">41</span>,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb13-5" title="5">}</a>
+<a class="sourceLine" id="cb13-6" title="6"></a>
+<a class="sourceLine" id="cb13-7" title="7">amean=<span class="kw">rowMeans</span>(a)</a>
+<a class="sourceLine" id="cb13-8" title="8"></a>
+<a class="sourceLine" id="cb13-9" title="9"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>N[,<span class="dv">41</span>,<span class="dv">1</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;Ages&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;Abundance index&quot;</span>)</a>
+<a class="sourceLine" id="cb13-10" title="10"></a>
+<a class="sourceLine" id="cb13-11" title="11"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,amean,<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAaVBMVEUAAAAAADoAAGYAOpAAZrY6AAA6ADo6AGY6Ojo6OpA6kNtmAABmADpmOpBmZjpmtttmtv+QOgCQOmaQkGaQ2/+2ZgC2Zma2tma225C2///bkDrb2//b////AAD/tmb/25D//7b//9v///+rnT3qAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAHp0lEQVR4nO2diZKrNhBFme0lsbPMJEOSITZe/v8jgyTw4AUuWkDt9j1Vyau8GGSfklpCaoniSEYpcn8B6VAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhwEnT4L+fXkMtJ0H79av88/PmV7ctI5LuJ1cXT5/FYFc8U1KcXgw4fRcMq33cRST9IG0Pv2b6JUHqCyqL446N42eT7MhLpBWnbuuq4GFTcDf6CfnNVJ64Xu5thlb+ghcvNTYigppG9bMq4XkyzoPrps3rZ7NdRhgq/0vPhL+jwsTo2go5VXJC2/95G3GEhAoL0+t0Kqino9ge7GlRGDYQUC2pjUBU3lm4FyQ9Cgb1YYR9Y48uVX4UWHgddDlApCNxOnSDbuloS9GL6BBlq97AaF4QUCzp8uCnXKkE3fwfdWNhA0ZBioHgHVShsoGhIMVBUKaiJQaYKVUlikEpBriuLnHFVLShluRQEbie+GwsQ5JbF0gwU5VehAEFliiVVxYIi51ovb6dRUIpFVcWCukeNROXqE9QOFFOVq0/QacYjJFbfWNEVbij3OIiC4O0oCNxOl6BmEBQVg26Uq0vQDOVSELid8MfV/IKEVyEKAlAQgIIAAlLw1AlKmIJn0SYoZQqeQ7ShvCl4DmWCJqXgwYl9xYKmpOBV3V6g+mJT0M0Mf22CcApet3x/HM4BUS0I0pvXH4pUjy3IswaJNhQiyITny+ByzilADX5MsyDXfXV7e2/TzaoN9nSKBaXNMLPoEtQFmHQjaWWC2gCzexsLQl4DRW2CGjdoK8LgQPF2uZJnXUV085KrkISBojZBOMPswWvQhAwzz4GiLkGTphL9BoraBCXNMLOoEhSVYTZ04oNcQzNlmPkNFHUJmpLd4TlQ1CVoAt7d/KMJ8h4o6hLUtbGEA0VdgsqXTfXaPLGOrmr4DRQFGwobKNZmZXVsXcxzoKhM0Ptx99OX/SdduYoEmQCz//WTggY/aOZay9WEbeH1yLSaZkHH8tXEmNFn+rIoVrtfNsMPbqoFYczKUGlrz8RuXq6h+QaKux9G0MSBohpB0w43cVNG9lzlR6xBEw43Oa2ZDc6uKRY06XCT9lyGq5mRkRNAhRoSsfRsUSMo7eEmPWQaCp5RTHS4SQ81gpIebtJHpKF5BoqBt5NoiIIAsyw9B5cr0NA8S8+h5RbyDM209Bxarg5B6Zeev/9anKGFl55huQoEJT7c5BJphuZZeo4oV1ojEzUOslAQuJ2wKrRwExuZD/r+zFaSouAaFDcdNFpuIakShTexMqq3Hy9XkKFwQalnFM//t5hmFi4o4WaWmx8QYihY0Ph+sRTlyjAU3ovFTSlOKVdEM5M3DuojQJFsQQIUSZq0v802ryNByz7D5FQkaOFwjG22eiRn6Rmy3ebQNFPyQrpyL9ku7Gme9BfvzSzebE9E3ggxSwKV/2aWCLbzupplHOS/FSEN27T4fdGrD468ynh4M8uUCTNZhAqq0m5mkUuQoBqfvOC7mUUsoU/zYPnZezOLWHwFlc2vfk2wPl/cDX6C2vCbJoHBh5Aat9Q1Z1ea8JOiBgUWL/KayytNK0MxKDn3JMiF4MhXGccUL+2am1fWkckLkcWLumboyr8pKM2VSaCgGYqnICHXxF75IFAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCBARkFukc0r67g9P2zsDKyBawIKc2QU5E4i8mG/tvPBJkVnPE3n+hr/wloyCvLOZWsnzF2KwMQ9Jd0ke3DiXEZBlWeFr4uV/ZnuLMxpWya6a7wLO5FRUPmz90KcEzR6SNjta0IKc+QTtF+bFAi/t3LaH+vCz+QgZK8JKcyRu5v3iw3BgkIKc+QWNHq47hXhTSygMEd2QV7dr3eQPp4LCujr8wlyvzOgiXl182dS76yJ2Z8YEKT9BopdL+ZfmCNnEzMJN35Boa0Clc+jRnuNf2GO3DFIPBQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCCASEHl4kdkDCNR0O7H74se/zCKREHV878BqWAzIVDQ4eO1O/WyLIqnv0ymS9XmqO7eArNYghEoyORGuTN3zRu96qL9z93byiWKJXnHzmQECjLH7dqjnlzeXPn06Q5+qp+/Il9qEYI8QaamtJWnS7hz+XaNr3bjxZLIE1S1p7C9t4msRtDpr+xhso8dg9r4bN7OcFGDOspFT8kSJ6iT0cTlNiHaxKB+pUnzLr2piBPUnYhuQtFZL2ZqjrU3PQM4BdIEfe8WMHaacdDzP6ahmcBk92kUS59DJ03QNRm69j6SBdnatPzhl+dIFmQb1LKd+jWiBUmAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQH+B/CWQqOOObZQAAAAAElFTkSuQmCC" /><!-- --></p>
+<p>The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>N[,<span class="dv">41</span>,<span class="dv">2</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;Ages&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;Abundance index&quot;</span>)</a>
+<a class="sourceLine" id="cb14-2" title="2"></a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb14-4" title="4">  <span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,IA[[i]][,<span class="dv">41</span>,<span class="dv">2</span>],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb14-5" title="5">}</a>
+<a class="sourceLine" id="cb14-6" title="6"></a>
+<a class="sourceLine" id="cb14-7" title="7"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>N[,<span class="dv">41</span>,<span class="dv">2</span>])</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>All the abundance indices obtained above can be computed at other time of the year changing tsampling=0 by other value between 0 and 1, for example, at tsampling=0.4.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">q_A&lt;-<span class="kw">matrix</span>(<span class="dv">1</span>,<span class="dt">ncol=</span><span class="dv">41</span>,<span class="dt">nrow=</span><span class="dv">16</span>);gamma&lt;-<span class="dv">1</span>;CV_A&lt;-<span class="dv">0</span></a>
+<a class="sourceLine" id="cb15-2" title="2">IA=<span class="kw">Sampling_Survey</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;abundance&quot;</span>,<span class="dt">q_A=</span>q_A,<span class="dt">gamma=</span>gamma,<span class="dt">CV_A=</span>CV_A,<span class="dt">tsampling=</span><span class="fl">0.4</span>)</a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="co">#IA</span></a></code></pre></div>
+<p>The same comment applies to <span class="math inline">\(q_A\)</span> and <span class="math inline">\(\gamma\)</span>, the user easily can define this arguments taking other values.</p>
+</div>
+<div id="biomass" class="section level4">
+<h4>BIOMASS</h4>
+<p>The first checking is to verify, as an example, that the biomass index matches the biomass of the stock when <span class="math inline">\(q_A=1\)</span>, <span class="math inline">\(\gamma=1\)</span>, <span class="math inline">\({CV}_A=0\)</span> and tsampling=0.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">q_A&lt;-<span class="kw">matrix</span>(<span class="dv">1</span>,<span class="dt">ncol=</span><span class="dv">41</span>,<span class="dt">nrow=</span><span class="dv">16</span>);gamma&lt;-<span class="dv">1</span>;CV_A&lt;-<span class="dv">0</span></a>
+<a class="sourceLine" id="cb16-2" title="2">IA=<span class="kw">Sampling_Survey</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;biomass&quot;</span>,<span class="dt">q_A=</span>q_A,<span class="dt">gamma=</span>gamma,<span class="dt">CV_A=</span>CV_A,<span class="dt">tsampling=</span><span class="dv">0</span>)</a></code></pre></div>
+<p>The above comparison is done for the first iteration, as you can see both biomass coincide.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">cbind</span>(IA<span class="op">$</span>biomass[,,<span class="dv">1</span>],<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;BIO&quot;</span>))<span class="op">$</span>BIO[,,<span class="dv">1</span>])</a></code></pre></div>
+<pre><code>##           [,1]      [,2]
+## 1980 124.27987 124.27987
+## 1981 102.85092 102.85092
+## 1982  85.65976  85.65976
+## 1983  72.32550  72.32550
+## 1984  62.11968  62.11968
+## 1985  54.30359  54.30359
+## 1986  48.25385  48.25385
+## 1987  43.48176  43.48176
+## 1988  39.65245  39.65245
+## 1989  36.52494  36.52494
+## 1990  33.92870  33.92870
+## 1991  31.74265  31.74265
+## 1992  29.87942  29.87942
+## 1993  28.27474  28.27474
+## 1994  26.88023  26.88023
+## 1995  25.65882  25.65882
+## 1996  24.58156  24.58156
+## 1997  23.62551  23.62551
+## 1998  22.77233  22.77233
+## 1999  22.00715  22.00715
+## 2000  21.31780  21.31780
+## 2001  20.69423  20.69423
+## 2002  20.12805  20.12805
+## 2003  19.61223  19.61223
+## 2004  19.14083  19.14083
+## 2005  18.70878  18.70878
+## 2006  20.12947  20.12947
+## 2007  21.63525  21.63525
+## 2008  23.18049  23.18049
+## 2009  24.73916  24.73916
+## 2010  26.29304  26.29304
+## 2011  27.82802  27.82802
+## 2012  29.33418  29.33418
+## 2013  30.80096  30.80096
+## 2014  32.21986  32.21986
+## 2015  33.58390  33.58390
+## 2016  34.88748  34.88748
+## 2017  36.12635  36.12635
+## 2018  37.29758  37.29758
+## 2019  38.39946  38.39946
+## 2020  39.43138  39.43138</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">bio0=IA<span class="op">$</span>biomass</a></code></pre></div>
+<p>Now, taking <span class="math inline">\({CV}_A=0.2\)</span> we can compare using the following code the biomass index for the first iteration obtained above using <span class="math inline">\({CV}_A=0\)</span> (black color) with 100 indices computed using <span class="math inline">\({CV}_A=0.2\)</span> (red color).</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">q_A&lt;-<span class="kw">matrix</span>(<span class="dv">1</span>,<span class="dt">ncol=</span><span class="dv">41</span>,<span class="dt">nrow=</span><span class="dv">16</span>);gamma&lt;-<span class="dv">1</span>;CV_A&lt;-<span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb20-2" title="2"></a>
+<a class="sourceLine" id="cb20-3" title="3">IA=<span class="kw">list</span>()</a>
+<a class="sourceLine" id="cb20-4" title="4"></a>
+<a class="sourceLine" id="cb20-5" title="5"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb20-6" title="6">  IA[[i]]=<span class="kw">Sampling_Survey</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;biomass&quot;</span>,<span class="dt">q_A=</span>q_A,<span class="dt">gamma=</span>gamma,<span class="dt">CV_A=</span>CV_A,<span class="dt">tsampling=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb20-7" title="7">}</a>
+<a class="sourceLine" id="cb20-8" title="8"></a>
+<a class="sourceLine" id="cb20-9" title="9"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,bio0[,,<span class="dv">1</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;Years&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;Biomass index&quot;</span>)</a>
+<a class="sourceLine" id="cb20-10" title="10"></a>
+<a class="sourceLine" id="cb20-11" title="11"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb20-12" title="12">  <span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,IA[[i]]<span class="op">$</span>biomass[,,<span class="dv">1</span>],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb20-13" title="13">}</a>
+<a class="sourceLine" id="cb20-14" title="14"></a>
+<a class="sourceLine" id="cb20-15" title="15"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,bio0[,,<span class="dv">1</span>])</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>We can also compare the biomass index using <span class="math inline">\({CV}_A=0\)</span> (black color) with the mean of the above 100 indices using <span class="math inline">\({CV}_A=0.2\)</span> (red color).</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">a=<span class="kw">matrix</span>(<span class="dv">0</span>,<span class="dt">ncol=</span><span class="dv">100</span>,<span class="dt">nrow=</span><span class="dv">41</span>)</a>
+<a class="sourceLine" id="cb21-2" title="2"></a>
+<a class="sourceLine" id="cb21-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb21-4" title="4">  a[,i]=IA[[i]]<span class="op">$</span>biomass[,,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb21-5" title="5">}</a>
+<a class="sourceLine" id="cb21-6" title="6"></a>
+<a class="sourceLine" id="cb21-7" title="7">amean=<span class="kw">rowMeans</span>(a)</a>
+<a class="sourceLine" id="cb21-8" title="8"></a>
+<a class="sourceLine" id="cb21-9" title="9"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,bio0[,,<span class="dv">1</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;Years&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;Biomass index&quot;</span>)</a>
+<a class="sourceLine" id="cb21-10" title="10"></a>
+<a class="sourceLine" id="cb21-11" title="11"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,amean,<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,bio0[,,<span class="dv">2</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;Years&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;Biomass index&quot;</span>)</a>
+<a class="sourceLine" id="cb22-2" title="2"></a>
+<a class="sourceLine" id="cb22-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb22-4" title="4">  <span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,IA[[i]]<span class="op">$</span>biomass[,,<span class="dv">2</span>],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb22-5" title="5">}</a>
+<a class="sourceLine" id="cb22-6" title="6"></a>
+<a class="sourceLine" id="cb22-7" title="7"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,bio0[,,<span class="dv">2</span>])</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>All the biomass indices obtained above can be computed at other time of the year changing tsampling=0 by other value between 0 and 1. For example, we can obtain the biomass index at other time of the year changing the tsampling parameter by 0.3.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1">q_A&lt;-<span class="kw">matrix</span>(<span class="dv">1</span>,<span class="dt">ncol=</span><span class="dv">41</span>,<span class="dt">nrow=</span><span class="dv">16</span>);gamma&lt;-<span class="dv">1</span>;CV_A&lt;-<span class="dv">0</span></a>
+<a class="sourceLine" id="cb23-2" title="2">IA=<span class="kw">Sampling_Survey</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;biomass&quot;</span>,<span class="dt">q_A=</span>q_A,<span class="dt">gamma=</span>gamma,<span class="dt">CV_A=</span>CV_A,<span class="dt">tsampling=</span><span class="fl">0.3</span>)</a>
+<a class="sourceLine" id="cb23-3" title="3"></a>
+<a class="sourceLine" id="cb23-4" title="4">IA<span class="op">$</span>biomass</a></code></pre></div>
+<pre><code>## , , 1
+## 
+##      1980     1981     1982     1983     1984     1985     1986     1987
+##  118.0875 97.84868 81.80599 69.44149 59.98934 52.73152 47.08135 42.59976
+##      1988    1989     1990     1991     1992     1993     1994     1995
+##  38.98239 36.0117 33.53371 31.43857 29.64653 28.09846 26.74958 25.56538
+##      1996     1997    1998     1999     2000     2001     2002    2003     2004
+##  24.51877 23.58821 22.7564 22.00926 21.33524 20.72478 20.16987 19.6638 19.20085
+##      2005     2006     2007     2008     2009     2010     2011     2012
+##  19.31746 20.78276 22.31754 23.88186 25.45302 27.01438 28.55331 30.05954
+##      2013     2014    2015     2016     2017     2018    2019     2020
+##  31.52315 32.93606 34.2917 35.58487 36.81173 37.96972 39.0575 40.07481
+## 
+## , , 2
+## 
+##      1980     1981    1982     1983    1984     1985     1986    1987     1988
+##  119.0997 101.5574 85.4962 72.28597 60.2039 53.58063 49.74429 47.3721 46.51831
+##      1989     1990     1991     1992     1993     1994     1995     1996
+##  43.62772 41.53322 39.85187 38.55091 36.86639 33.94043 31.32852 30.26151
+##      1997    1998     1999     2000     2001     2002     2003     2004
+##  28.65841 28.1661 28.41143 26.89832 25.18472 23.81546 22.95736 21.74923
+##      2005    2006     2007     2008     2009     2010     2011     2012
+##  21.76586 24.2454 25.33425 26.80937 30.82536 34.25148 36.64316 36.71137
+##      2013     2014     2015     2016     2017     2018     2019     2020
+##  37.59626 36.59143 38.17104 38.99536 40.82589 41.17365 43.97567 45.73488</code></pre>
+<p>Note that when type=“biomass” the abundance index is also reported, and you can access it as follows.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="co">#IA$abundance</span></a></code></pre></div>
+</div>
+<div id="length-sample" class="section level4">
+<h4>Length sample</h4>
+<p>First of all we need to specify the values of the parameter <em>par</em> not required for the previous indices but important for obtaining the length sample. In this case we fix it as follows.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1">q_A&lt;-<span class="kw">matrix</span>(<span class="dv">1</span>,<span class="dt">ncol=</span><span class="dv">41</span>,<span class="dt">nrow=</span><span class="dv">16</span>);gamma&lt;-<span class="dv">1</span>;CV_A&lt;-<span class="dv">0</span></a>
+<a class="sourceLine" id="cb26-2" title="2">par=<span class="kw">c</span>(<span class="fl">0.2</span>,<span class="dv">1000</span>,<span class="dv">3000</span>)</a></code></pre></div>
+<p>First we compute a stock sample length at tsampling=0.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1">our.sample1&lt;-<span class="kw">Sampling_Survey</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;LengthS&quot;</span>,<span class="dt">q_A=</span>q_A,<span class="dt">gamma=</span>gamma,<span class="dt">CV_A=</span>CV_A,<span class="dt">par=</span>par,<span class="dt">tsampling=</span><span class="dv">0</span>)</a></code></pre></div>
+<pre><code>## It is working, please give us a while :)</code></pre>
+<p>Second we compute the stock sample length at tsampling=0.4.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1">our.sample2&lt;-<span class="kw">Sampling_Survey</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;LengthS&quot;</span>,<span class="dt">q_A=</span>q_A,<span class="dt">gamma=</span>gamma,<span class="dt">CV_A=</span>CV_A,<span class="dt">par=</span>par,<span class="dt">tsampling=</span><span class="fl">0.4</span>)</a></code></pre></div>
+<pre><code>## It is working, please give us a while :)</code></pre>
+<p>Now, we plot the density of both samples (in black for tsampling=0 and red for tsampling=0.4) and we verify that the performance is the expected one. Note that the plot refers to the first iteration and last year.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">plot</span>(<span class="kw">density</span>(our.sample1<span class="op">$</span>length[,<span class="dv">41</span>,<span class="dv">1</span>]), <span class="dt">xlab=</span><span class="st">&quot;Length&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Densities of length samples&quot;</span>)</a>
+<a class="sourceLine" id="cb31-2" title="2"><span class="kw">lines</span>(<span class="kw">density</span>(our.sample2<span class="op">$</span>length[,<span class="dv">41</span>,<span class="dv">1</span>]),<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAwFBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrY6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kLY6kNtmAABmADpmOgBmOjpmkJBmkLZmkNtmtrZmtttmtv+QOgCQZgCQZjqQkGaQkLaQtpCQttuQtv+Q29uQ2/+2ZgC2Zjq2ZpC2kGa2tma227a229u22/+2/9u2//++vr7bkDrbkGbbtmbbtpDb27bb/7bb////AAD/tmb/25D/27b//7b//9v////LLlLDAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAKsElEQVR4nO2dC3ukthlGNa63M42bNp1pkraxu+nNbJvEcUh268H28P//VXRBIK4v4jJo8HueZ20WkD5xRkiCwUKkpBOxdAFCh4IAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgL0EhQLzeaPD73yPN2Jd0/y138f7WI/Th92Qnzh5NAnjQwiy7e57xukLZ+2iD6CpKLb/sFevrzyFJSoEPvO4lbRQQIS5FOQSKiy+1AcZ29BJkgAgvSxfvpSiK3K7IM09cWT3rD5j/zPtS7ezzfZWaiDRcrn1Y/Z2ZanKPayfPxKiN/85UkdbP4JnKrJSoFOekm5MUEeS1vTSpSPstTic7np9SC2H2/E5pv0553ZV2bxvYx+/dAQ0WbhI0iFkLnIn4rrx6JqqcPKlu155QqqpygqV7ZC7lUT1BJIblRLN66gSq5OlCRPmGUnxI3dFhW5tkW88hJkFqT3h/R5p1qLWOuPVcuhPp+n9Be1aIJFuSsnhbOXQa6VO+gcaqdYcyB1yNunUySyspiDeWe3Zh+kU5bfPuWx5U+5VnyT7avyeFBrtu0F9RW0uZdJ93adjHOrD3Krflz/UDm8TJCTwtnLkLVUkcmtJKglUJZEbnUF3eo1+9y6G+XT/26Ug7z+v8uMKUG3WfDWgvoLkknzimkOSdnOKr5uTKqCnBTOXo7LrPJUBLUH0kkiV1C+1SbPo5zem0y22Xbz0wrSxxWbgjUX1F9QIhrLLXtcs/bfNUFuimIvjT2oRH2WFUEtgWySDkHlsojrf3w6dAlSwVsL6iVI5qIr322xwS3Zy7c3urltqEHO+Mnu1acGNQXqUYOcKMbEa6cgtwbVCuoj6OVOOJ9gXZA6sr/b87ncBm1L+em9zGJ3G9QYqKkNqgmyURLbeO0bBdXaoFpBBwwUIzWUeDmY3icvmSzJn9TwOa9BcdF7FimcvUzW3b1YU6BSLxZnI4yyICeKzt/9ZCuCqr1YraADLjWywUK1ZB8qYwp1QpfHQWrfYq9y3kpYVVBLIGccZII81mpQqSxdjXQ22HmsR7RZDLlYfXkvW3u9XCrZL+qU/Twflerx7g+mwShSFHtZ9Ej6r2laF9QWSOX8hwdzCqsgD/VTrIiierHrf6lGorEN+vG9iVCLaLO43NsdkcdlcGsW+HLxAgVF+p6IGTSOzWmVguxoZfQV/FoFpS9f7frfvetirYLOCgUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAgwsSBxMSwlaNrs5oOCABQECE1QcOICE9S/TTwXoQkKrgpREICCAGEJEuG10hQEoCAABQHOLAhcA4rJAk1GcDWIgrqyoyCQHQWB7CioOzsxQ6CxUBCAggAUBKAgQHiCAjNEQQAKAlAQgIIAFASgIIC/oNrkQtPFXYcgMwnOvn3P4XHXIigd7qj7luuKBBlFvnOwgrjCs0hnYZggNfHMbXq6Gz5z0ZoFqfm7jJlkeBWCgo7HoVlPy5BebPyERZ2CzO9jGoahAYL+bPx0VJ/Xg2rAk65W6g0IioGgWJ2Gr4eWqcmRoGP2b3F8BUVFR93ezStBmZq4pR1fraCiBnWgBD3vtKC2E3HFgnowvgZpN2sWpE7BbWqb657ZVQUFYchTkDzgfMb3zkGQ3EuOBpLWhmqtgmaNS0Egu7UIUu1KLEbOINsQVzgLFy0oUrNTb9No1G2zFQtS/Xcir+U7LzWK4WT/cdCaBEVqEvSOXux0h67zuwSlwpoJwNCQU2z7elDz3nedYqc7cAKuWZAe4iADiWi8Su265boaQXPFpSCQ3WoE2RcsjLhlv25BkY+Ztr5uxYJaL9DHxi1WHRuWlmLYOGiWuGsRBIc4Q+OuRVDbEKcEbMjrcZ01ly2ozw2z2N4oa71jtmJBPTjd5Vr635N+S4Kcdrz/txqNgpY3NESQfn9k1NHZj6xBx2ZXyzCkkd7cx+pqvsNQbNvxQW3QhQtS1UPVi677QXlL3npftlNQY4+/EMMGikrQiGdfGuOuRpCtQdGou/YrFpS1QXGP4aJX3GZBixsa2IuNfu3bqgWNCdd+y5WCurMrNTsXLcj04GPfzLleQZFpnOORz9qvVlBiG+fsCbLJ4rYJWtqQpyDnbtnE382vRJBzBdZ5qeEftzw2DOcc8xYEb2QMjEtBIG6+4ljdvKwhCgJQEMBbEHw0amDclQiaLy4FgezaBS1rKBRBZT8UhASFc45dgqD06PV6gmm5EEFqjV51zJi2NB1cgiBhfEhDhZmzOQrllmunIPtceUnKmQxdQA0SZq3UU9F6FkWBCKp/EZavyduefLnY9wyKQhN0rK0p7Vk9NedXNJMg3yfM2gVVd6yWY25F8wjyfsKsVVB9+HNmRbMI8n8+qF1QQ9KzKppFkPcTZnU/2aq2qd2rkuYbO4ZRgxoEmXUdUauSZnI0Vxvk94RZmyAQtKkeTS1ppl7M8wmzJkFyZY8L1NrAfGpHYYyD7P+OHfuA/FxLU0oKWZB/poWkyRwFMVBsPMOG4V4MTyIpiIHiRBWolKUjaZSmELr54rTwiNGDvDKNuckWwEBRzFCBSqEyhllavgZZP+e4dWEtebg680Axb0N/csjK+9O5OfZiFkFD/hQhUMIYBwUMBQHmFuTxd/NhslgNuhgWEuQTwX/DpEl6QkGAiS9WfSKsUBC+WPWJsD5BPS41fCKsT9CwZ2HfkCDWIAT+VsMnwgoF4YtVnwhrFPQGoSAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQYCZBSUtc1oV71Hqy/Nnj17p9O3z/aBQJeYVpCaVSZoMPf/Ocyqw14O+h9k73elOho2VF+9QZWYVZG5BNs0n4zt9QZJ9k9I7nZnmR30BPG6mhHkFFaWsEvtV+UTszXH6plPVaNw82fMK0rW76SOMfi88X5pscvFMp+bp9w9VYlZBpvlpaITUO2Bk8X2KrQV5plO3zgeEKrGMoGyzT+vg7Nw3XVL0XcMbooVOMbPZZ740J5ee6dyvXoZPzbZQI202+3TArqBe6UoT+g3v65fp5o05/1PMI539Dm9AqBILDRS1NP9Gun+6553dyT9UiZkvNeK26XPVu5O9moWsDvRNF5tvOFVw71AleLEKoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQGCEtTjNcrJrfvn+2fgwgQpORTUAQVlS7F5MvX18LeDeXYlEmLz7eafOyHe/f/w9W7MAy1+hCko3tzrR6BeD+pBZ/lPPc+biM29qUHZyrMQpCDzVtPk6lEvPO9uzXN0kRW0H/3C3P4EKcg8tScd6OZG/jCPlyVW0G16voYoTEHZRGy5oJiCNOUalKYpa1CZog3Kjt66yB64piC3F7NtsnZR9GL7Ny3IND17Mw6STgoXctPVd+pvd9Q46M0KAoz807hhXIYg3QY573w/I5chyHT857wEy7kQQctBQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggC/AiW0tFW7WZ/+AAAAAElFTkSuQmCC" /><!-- --></p>
+<p>The same plot can be done also for the stochastic iteration.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">plot</span>(<span class="kw">density</span>(our.sample1<span class="op">$</span>length[,<span class="dv">41</span>,<span class="dv">2</span>]), <span class="dt">xlab=</span><span class="st">&quot;Length&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Densities of length samples&quot;</span>)</a>
+<a class="sourceLine" id="cb32-2" title="2"><span class="kw">lines</span>(<span class="kw">density</span>(our.sample2<span class="op">$</span>length[,<span class="dv">41</span>,<span class="dv">2</span>]),<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAwFBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrY6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kLY6kNtmAABmADpmOgBmOjpmkJBmkLZmkNtmtrZmtttmtv+QOgCQZgCQZjqQkGaQkLaQtpCQttuQtv+Q29uQ2/+2ZgC2Zjq2ZpC2kGa2tma227a229u22/+2/9u2//++vr7bkDrbkGbbtmbbtpDb27bb/7bb////AAD/tmb/25D/27b//7b//9v////LLlLDAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAKq0lEQVR4nO2dCXvrNBaGlU4vCXRYJmEd0rkwS31ngFIM907jtvH//1do8SKvn+QlUdzvfaCY2NKR38pHsuPaIiW9iHM3IHQoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAggJOgWGhWn9871Xm8FW8e5X/++5AvunF8txHiC6sGlzIyiGzf6s41SFc9XRF9BElFe/dgz19deQpKVIhtb3Pr6CABCfJpSCRU230o99NZkAkSgCC9rx++EmKtKnsnTX3xqFes/iP/51o37/eb7CjUwSLl8+rX7GgrSpRb5bz/Woi/fPuodrb4DRzrxSqBjnpJuTFBHipr01qU97LV4lO56mUn1u9vxOr79PeN2VZW8bOMfn3fEjGvwkeQCiFrkT8V1w9l11K7lS3nx5UtqFmi7FzZB3KrhqCOQHKlWrqxBdVqtaIkRcGsOiFu8nVRWWtXxCsvQWZBer9PnzYqW8Raf6wyh/r9PKZ/qEUTLCpcWSWsrQzyU7mBrqFxiLUHUru8fjxGImuL2Zk3+drsF2m15aPHIrb8KT8V32fbqjru1Sfr7ob6ClrdyaLb/DMZZ693cq1+XP9S271MkFXC2sqQZarI1FYR1BEoKyLX2oL2+pNtYd2O8uF/N8pB0f/fZMaUoH0WvLOh/oJk0aJjml1StrOOr5NJXZBVwtrKcpl1npqg7kC6SGQLKtbmxYsox7emknW23vzMBen9ik3D2hvqLygRre2WI6759N8NQXaJcitNvlOJ+l3WBHUEyov0CKq2RVz/+GHXJ0gF72yolyBZi+58+3KF3bLnH250um3pQdb8Kd/KpQe1BXLoQVYUY+KlV5DdgxoN9RH0fCus32BTkNqzf+THczUHrSv16a3MYn8Oag3UloMagvIoSZ68tq2CGjmo0dABE8VITSWed2b0KVomW/I3NX0uelBcjp5lCWsrU3X/KNYWqDKKxdkMoyrIiqLrt3+zNUH1UazR0AGnGtlkod6yd7U5hTqgq/MgtW25VbVuJawuqCOQNQ8yQR4aPajSlr4knU12HpoR8yqGnKw+v5XZXi9XWvaHOmQ/LWaler77i0kYZYlyqxw9k/4uTZuCugKpmj+7N4ewCnLfPMTKKGoUu/6XShKtOejXtyZCI2JexeVe7og8ToM7q8CnixcoKNLXRMykcWxNixSUz1ZGn8EvVVD6/PXG/epdH0sVdFIoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBgIkFiYvhXIKmrW4+KAhAQYDABIXnLSxB7inxZAQmKLwuREEACgIEJUgEmKUpCEBBAAoCnFhQ/zmgmCzOdITWgyiorzoKAtVREKiOgkB1FASqoyBQHQX1VydmiDMaCgJQEICCABQEoCBAcIJCM0RBAAoC+AtqPFxosrgLEWQegrPt3nJw3MUISoc76r3kuiRBRpHvM1hB3AUJUg+e2afH2+FPLlqyIPX8LmMmGd6FWuIKzxadhiGj2PgHFmFBh8P4GJMwQNCXxk9P93nZqQSe9GWpVyAoBoJidRi+7DoeTQ4EHfQ/IeArKCoH6u5hXgnK1MQdeXyxgsoe1IMS9LTRgroOxAULcmBUD1L/VXKWLUgdgus0T9du1dUEBWLIU5Dc4eKJ772TILmVnA0knYlqqYLmjEtBoLrFCFJ5JRYjnyDbKyhTE4ShAYIi9XTqdRqNumy2YEFq/E7kuXzvqUY5nfSeBy1CUKQegt4zih1v0Xl+M64oFy5bkDy2Xnbqufd9h9jxFhyASxakpzjIQCJaz1J7LrkuR9BMcSkIVFcKysVcqqD8BQsjLtm7CQrC0JAk7WOma6zrEZReuKDOE/SRcRckyOkFj95xFyMITnEGxl2MoK4pTgWYyHsEHcol18bNyJBDDF8wi/MLZZ1XzJwEhWBolnnQ8bbQ4n5N+jUJsvK487calpWLF6TfHxn1DPZDetCCBCWru1idzfcYivM87p6DliNIdQ/VL/quBxWZvPO67IIFqQSjBI2496UtbqugAAwN70HRqKv2CxaU5aDYYbroE9c+rkI6xgaOYqNf+9Yt6NB61nE2TnzBrPuSKwWB6pYjyIzgY9/MuVxBkUnO8ch77R0Fnd+Qr6AkT87ZHWSTxV2IIOtq2cTfzS9EkHUG1nuq4R83/+CQXrggeCFjYFwK6o9bucxqrzy3IQoCUBDAWxC8NWpY3KUImi2unaODMkRBAAoCUBAgfEFnNhSIoMogRkHN6voEpQef11tMTSCXXPsECfX3q2czFFgPOjRXi2zyeCiYtiWA4AXpJe2l7GWndBS6IOvQshZP2JFmEuR7h1m3IHuj6uB2GkvzCPK9w6zup/iglpubqXp2S7MI8r4/qCEo/6Qxn2x7sdWsfWkWQd53mHUJ6g1anSzMpSjoHgQnPydQNFcO8rvDLPu/Q+0jl5iiNrg5t9GRmUYxzzvM2gU5hhSzOgpiHtQ8wuoZBtVWz9mj2latevINB1TXJsi/Rmtom9BREBPFliNsMLmlqRyFMFEUUwoyFU7nKIRhfmo/plLD6DlkABPFIm94RHCllDS09vP3oDn9FCEKTd6mTjxRLM6jfivI2/3bqTg4ozefRdCAP0UIlSDmQSFDQYC5Bbn/3XygnK0HXQxnEuQewPPziarx318KAkx8suoeYJGC8Mmqe4AlCnI41XAPsERBg+6FfU2C2IMQ+FsN9wCLFIRPVt0DLFPQK4SCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUB5hWUtD/SqnyLkgtPnzy4l9FXzbfeMbqZVZB6pkzSYujpY48Hgb3s9NVLtzLHWxkuVl68YvQwpyBzBbLlcTI+Dy9Isu9Q3MqYp/uo733HPSChZE5BZWtrxO49PxFbs6seZXSv9dm+j1kF6V7e8quM/io8XplsKvApox7P7xejmzkFmfTTTELqDTByL1xbrwX5lFFXzD1jdHMOQdla1yRhbehUJinHrgkS0VkOMbPW9WlpVgUuZexvXEY+kU1xliRt1rqOw7YgXKbyHL8JxvpzDPNGnN8h5lom/+rOM0Y3Z5koamd+SdqxzNMm38IvRjfznmrEHU/PVW9Ods4OWTdwKhObLzZVUK8Y3fBkFUBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCBCXI4TXKyd7+8/0TcGGClBwK6oGCsqXY3KL6svv7ztzEEgmx+mH1z40Qb/6/+2YzyZ0tToQpKF7d6XuhXnbqjmf5r7qxNxGrO9ODsg9PQpCCzFtNk6sHvfC02Zsb6qJc0HaS2zPdCFKQuW1POtDpRv4wN5kluaB9erpEFKag7EFshaCYgjTVHpSmKXtQlTIHZXufu8juuKYgexTLc7J2UY5i21ctyKSerZkHSSelC7nq6if1RzxqHvRqBQGm+hs5Ly5DkM5B1jvfT8hlCDID/ylPwQouRND5oCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEGAPwEtkrKakRseiAAAAABJRU5ErkJggg==" /><!-- --></p>
+<p>As you can see above, the stock length sample can be access using:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1"><span class="co">#our.sample2$length</span></a></code></pre></div>
+<p>Note that when type=“LengthS”, the abundance index is also reported and can be access using:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1"><span class="co">#our.sample2$abundance</span></a></code></pre></div>
+</div>
+</div>
+<div id="sampling_catch" class="section level3">
+<h3><span style="color:blue">Sampling_Catch</span></h3>
+<p>The function <strong>Sampling_Catch</strong> which are going to describe has a similar structure as the previous one but instead of focus on the stock the aim are the catches.</p>
+<p>The function returns the catch numbers for each year, age and iteration, the catch weight for each year and iteration, and a sample of the catch length (for each year and iteration) derived from the corresponding length distribution.</p>
+<p>The arguments of this function are described above:</p>
+<ul>
+<li><em>Pop.Mod</em> is a list containing the components returned by Population.Modeling function (main function).</li>
+<li><em>type</em> is an indicator of which element must be computed: catch weight (type=“catch weight”), catch numbers (type=“catch numbers”), or length catch sample (type=“LengthC”).</li>
+<li><em>CV_CN</em> is the coefficient of variation associated to the catch numbers. Default value 0.</li>
+<li><em>par</em> is a vector containing the required parameters if type=“LengthC”.
+<ul>
+<li><p><em>CV</em> is the coefficient of variation associated to the log-normal distribution used to compute the catch length distribution from which the length sample is obtained (a deep explanation below).</p></li>
+<li><p><em>RF.value</em> is the number of values generated for each age (given a year and an iteration) from the log-normal distribution used to obtain the catch length distribution from which the length sample is obtained (a deep explanation below). By default RF.value=1000.</p></li>
+<li><p><em>sample.size</em> is the size of the desired sample.</p></li>
+</ul></li>
+</ul>
+<p>The <strong>result</strong> is an array containing the catch numbers for each year, age, and iteration. If type=“catch weight” an array containing the catch weight for each year and iteration is also reported. If type=“LengthC” an array containing in each column (year) the corresponding length sample for each iteration (third dimension) is also provided.</p>
+<p>The important point is: <strong>How such results are obtained?</strong> Below the corresponding details are provided.</p>
+<p>Let’s start explaining the catch numbers.</p>
+<p><strong>CATCH NUMBERS</strong></p>
+<p>When <span class="math inline">\({CV}_{CN}=0\)</span>, the catch numbers are equal to the matrix <span class="math inline">\(C_N\)</span> reported by the Population.Modeling function (main function). Whereas if <span class="math inline">\({CV}_{CN}\)</span>&gt;0, then the catch number for year t and age i (<span class="math inline">\({C_{N,S}}_{it}\)</span>) is generated from a log normal distribution center in <span class="math inline">\({C_N}_{it}\)</span> and variability determined for the corresponding <span class="math inline">\({CV}_{CN}\)</span>.</p>
+<p><strong>CATCH WEIGHT</strong></p>
+<p>Once the matrix of catch numbers <span class="math inline">\({C_{N,S}}\)</span> is computed, we can continue computing the catch weight.</p>
+<p>Firstly, we compute the WC (third dimensional array containing the weight corresponding to the catch length for each age, year and iteration) at time tc (see Population.Modeling function). Then, we define <span class="math inline">\(C_W\)</span> (third dimensional array containing the catch weight for each age, year and iteration) multiplying the catch numbers (<span class="math inline">\(C_{N,S}\)</span>) by the weight WC. Finally, the catch weight for each year is the sum by columns of matrix <span class="math inline">\(C_W\)</span>.</p>
+<p><strong>SAMPLE LENGTH</strong></p>
+<p>The procedure to obtain a catch sample length needs a detailed explanation.</p>
+<p>A catch length sample is obtained generating random values from the computed <strong>catch length distribution</strong>.</p>
+<p>Hence, the question is: <strong>How the catch distribution length is computed?</strong></p>
+<p>The catch distribution length from which the sampling procedure is carried out is computed as follows. It is computed generating for each age, year and iteration RF.value random values from a log-normal distribution centered in the corresponding catch length (LC matrix) and whose variability comes from the given CV. The distribution obtained for each age (given a year and an iteration) is scaled using the corresponding catch numbers (<span class="math inline">\(C_{N,S}\)</span>).</p>
+<p>Remember that the matrix LC (catch length) is computed at the time instant tc (see Population.Modeling function).</p>
+</div>
+<div id="practical-use-of-sampling_catch" class="section level3">
+<h3>PRACTICAL USE OF Sampling_Catch</h3>
+<div id="catch-numbers" class="section level4">
+<h4>CATCH NUMBERS</h4>
+<p>First, we check that if <span class="math inline">\({CV}_{CN}=0\)</span> then the catch numbers reported by Sampling_Catch function are equal to the matrix <span class="math inline">\(C_N\)</span> reported by the main function (Population.Modeling function).</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">IC=<span class="kw">Sampling_Catch</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;catch numbers&quot;</span>,<span class="dt">CV_CN=</span><span class="dv">0</span>)</a></code></pre></div>
+<p>We check such correspondence at last year and first iteration, as an example.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1"><span class="kw">cbind</span>(Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>C_N[,<span class="dv">41</span>,<span class="dv">1</span>],IC[,<span class="dv">41</span>,<span class="dv">1</span>])</a></code></pre></div>
+<pre><code>##           [,1]        [,2]
+## 0  366.9999916 366.9999916
+## 1  143.3866083 143.3866083
+## 2   73.5578386  73.5578386
+## 3   41.6586892  41.6586892
+## 4   25.4424956  25.4424956
+## 5   15.9265909  15.9265909
+## 6   10.1788806  10.1788806
+## 7    6.6636281   6.6636281
+## 8    4.3495234   4.3495234
+## 9    2.8300473   2.8300473
+## 10   1.8351760   1.8351760
+## 11   1.1857285   1.1857285
+## 12   0.7632225   0.7632225
+## 13   0.4894269   0.4894269
+## 14   0.3128875   0.3128875
+## 15   0.5325618   0.5325618</code></pre>
+<p>Now, taking <span class="math inline">\({CV}_{CN}\)</span>=0.2 we can compare using the following code the catch numbers for the first iteration and last year obtained above using <span class="math inline">\({CV}_{CN}\)</span>=0 (black color) with 100 replications computed using <span class="math inline">\({CV}_{CN}\)</span>=0.2 (red color).</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1">IC=<span class="kw">list</span>()</a>
+<a class="sourceLine" id="cb38-2" title="2"></a>
+<a class="sourceLine" id="cb38-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb38-4" title="4">IC[[i]]=<span class="kw">Sampling_Catch</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;catch numbers&quot;</span>,<span class="dt">CV_CN=</span><span class="fl">0.2</span>)</a>
+<a class="sourceLine" id="cb38-5" title="5">}</a>
+<a class="sourceLine" id="cb38-6" title="6"></a>
+<a class="sourceLine" id="cb38-7" title="7"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>C_N[,<span class="dv">41</span>,<span class="dv">1</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;Ages&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;Catch numbers&quot;</span>)</a>
+<a class="sourceLine" id="cb38-8" title="8"></a>
+<a class="sourceLine" id="cb38-9" title="9"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb38-10" title="10"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,IC[[i]][,<span class="dv">41</span>,<span class="dv">1</span>],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb38-11" title="11">}</a>
+<a class="sourceLine" id="cb38-12" title="12"></a>
+<a class="sourceLine" id="cb38-13" title="13"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>C_N[,<span class="dv">41</span>,<span class="dv">1</span>])</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>We can also compare the catch numbers using <span class="math inline">\({CV}_{CN}\)</span>=0 (black color) with the mean of the above 100 replications using <span class="math inline">\({CV}_{CN}\)</span>=0.2 (red color).</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1">a=<span class="kw">matrix</span>(<span class="dv">0</span>,<span class="dt">ncol=</span><span class="dv">100</span>,<span class="dt">nrow=</span><span class="dv">16</span>)</a>
+<a class="sourceLine" id="cb39-2" title="2"></a>
+<a class="sourceLine" id="cb39-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb39-4" title="4">  a[,i]=IC[[i]][,<span class="dv">41</span>,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb39-5" title="5">}</a>
+<a class="sourceLine" id="cb39-6" title="6"></a>
+<a class="sourceLine" id="cb39-7" title="7">amean=<span class="kw">rowMeans</span>(a)</a>
+<a class="sourceLine" id="cb39-8" title="8"></a>
+<a class="sourceLine" id="cb39-9" title="9"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>C_N[,<span class="dv">41</span>,<span class="dv">1</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;Ages&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;Catch numbers&quot;</span>)</a>
+<a class="sourceLine" id="cb39-10" title="10"></a>
+<a class="sourceLine" id="cb39-11" title="11"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,amean,<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAV1BMVEUAAAAAADoAAGYAOpAAZrY6AAA6ADo6AGY6Ojo6kNtmAABmADpmZjpmtv+QOgCQkGaQ2/+2ZgC2tma225C2///bkDrb////AAD/tmb/25D//7b//9v////zo4nDAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAHX0lEQVR4nO2dDXPiNhCGTUKuTdqjcRuDA/7/v7NIsgmE2K9XWqNFvM9M5ubusDc8I60+LMlVRyapcv8C1qEgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQBlQdXdkEuQ7u2Wg4IAEYL2b69dU1XP2/S4u5Rb3IYIQfXz9vNl3dXr9LhFCtq//e7a6vjz9JEct1hB9VFOoyCosm8opoqt92/P2/2bQhW7gyIUlaSr1fthk+SnaEGacUsUdNi86sUtUZBL0mpxSxSU2L5f3s5+MxZTgvpRnEIzfwdFKPdYjILA7YoUdKxkz9s6rS0rWVC7em9cTzrJUMGCXD/oKEhlLHYHzVhcP8gJ0hjNd/aLUHwJqpNmzAoW1OegpkrqUJcsKHQVV+86cUsUlBLu6mkKBYHbWW/GoqtY2kONs9uVJ6j16blJS0IFCxomzJSa+fIEDRNmSh3F8gQN0/UNS9DIB9vK1bFWKwcZNyQUdJpO1JpR7AoTtERcCgK3K07QUM1YxX7+4GGT2In+Hrc0QaoPDj2mDWV+9OwpTFD3+SttKugqbnGCXnCSPmzAZwoWNGdlUFP11bCtRupjwYJmJOmzNDU2YjuPa3rObJEkfeZwbMx/EbcsQTOStLAEFSZozvKX0zOhWTmoMEGzGCyOdrofXZDsdmUJ0l1hFjBsKLoETU9JizqKZQqa3Mwi6ygWKmiiCEmb+TIFTSygGu8ojux0LFHQ1GaWxy5BsIvTiTuKlg2Z6Cg+oCDp7YoSBPs4EXGLElTPMNMcBfo0NNbWFSxozgpyt3goNHMPKWjmjKJ/gDZTkF1Di8xJDw7r5+0DCuqX4E1x6ijW6wcUNGtGsf+/42cfT9Ashq70YUNBOnEpCN3OqiEKAlAQgIIARgarnVlDCw1WI+IWIyhxu/N4XJuGLKxR7ClFUOrRSuNxTRqKWoKnUIRKFbTEXo0vLBoy0w9yUBC6nUFDMYLcZszRJ4JJccsQFDarxp2jiE4htmcovh+ktWf1ghIEDRPOOsfjfMecoYgqFqZTP19UDlj6TgmCwmYNrcNNvmPNkK1mvitB0P6vUHYWSdKdOUPxgpZJ0ncvqP7qySySpDtrhuJL0HJxTRkyl6QdO0OKIgRp75v/CTuG4sZizTp12gzFNWMobtK+dUujlI7HGcGKobjB6ucfH/5nybhGDMUNVl1LtrQgI6k6ZrB6zM7169JVzGHBUNSM4npi6ZhqXAOFyGQ/6IzsiqwLcoqyOhILCg9WE6fLhL5zKpIKcu89Ov9z8biBfMVIPJofvCidaT+fXR5JQkEz9hIqx70ggyTxs3l4bIly3CtuLEks6KsEZRLk2N3OkjgHnZ6nTp4GLDxYIIrd7haepIJOsxyT0x3SgwVS2P2E2t3l/aD+KzdTU9LibeHq/GhNiuwXPRvNu7ozuXJBfLCAYRYZauQvQXosMxYTHyxgl4UGq9KDBeySbTR/N2QSJCUm/K2uSb1SBQpaIDwFGbkm9UoVKGiB8BRk5JrUK1WgoAXCP5Qg+1AQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCBARkHhIZtom36/yr2V7K0N10QEC2QUJH8l3v7NLwlwbxOe/Ubh/pro9+9lFCRey9aGhUlhicDU+z+ur4lfOJdRUCMs8G316r9mWMI0byXccI042ImMguo/K+kO2SDI15bZRSJ8MCJYIJ+gsCS7Fv3S/suG9DM7CflrYoIFcjfzstwQLSgmWCC3INkW0PgqFhEskF2QqPkVJ+nuUlBEW59PUPieEVVM1MxfSL2zKua/YkSSlnUUh1ZMHiyQs4q58zBkSaEvAo1kqNFfIw8WyJ2DzENBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCmBRUJ77lTBOLgj5//a3xUlwdLApqnv7TeGOnDgYFHTbr4aWvdVWt/nErXZp+jap/g9VN5RkU5NZGNX79j3v9dFv1f3VHOfuFYu1NDRkU5M4C9WenhnVz9eo9nKTaPn2kHTQbhT1B4dBvX3iGBXdhvd3RV7/x4pbYE9T0p7D97heyOkGnf/LHYT52Durzs3ud6bcSNFAnvmZQhjlBg4xjXu4XRLscdF5odF78Phdzgobjml0qumjFXMnx9uavANbAmqCv3QLOzrEf9PSvq2guMfl9GlXyizyFWBN0TYam/RzLgnxpSnxNQzKWBfkKddtG/RrTgixAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggD/A+o02wF1TwFbAAAAAElFTkSuQmCC" /><!-- --></p>
+<p>The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>C_N[,<span class="dv">41</span>,<span class="dv">2</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;Ages&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;Catch numbers&quot;</span>)</a>
+<a class="sourceLine" id="cb40-2" title="2"></a>
+<a class="sourceLine" id="cb40-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb40-4" title="4">  <span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,IC[[i]][,<span class="dv">41</span>,<span class="dv">2</span>],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb40-5" title="5">}</a>
+<a class="sourceLine" id="cb40-6" title="6"></a>
+<a class="sourceLine" id="cb40-7" title="7"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>,Pop.Mod<span class="op">$</span>Matrices<span class="op">$</span>C_N[,<span class="dv">41</span>,<span class="dv">2</span>])</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="catch-weight" class="section level4">
+<h4>CATCH WEIGHT</h4>
+<p>The first checking is to verify, as an example, that the catch weight when <span class="math inline">\({CV}_{CN}\)</span>=0 matches the weight of the catches reported by Sum.Pop.Mod function.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" title="1">IC=<span class="kw">Sampling_Catch</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;catch weight&quot;</span>,<span class="dt">CV_CN=</span><span class="dv">0</span>)</a></code></pre></div>
+<p>The above comparison is done for the first iteration.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1"><span class="kw">cbind</span>(IC<span class="op">$</span>weight[,,<span class="dv">1</span>],<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;C&quot;</span>))<span class="op">$</span>C[,,<span class="dv">1</span>])</a></code></pre></div>
+<pre><code>##           [,1]      [,2]
+## 1980 21.907582 21.907582
+## 1981 18.179029 18.179029
+## 1982 15.246326 15.246326
+## 1983 12.993464 12.993464
+## 1984 11.270956 11.270956
+## 1985  9.944957  9.944957
+## 1986  8.908261  8.908261
+## 1987  8.082617  8.082617
+## 1988  7.413446  7.413446
+## 1989  6.861843  6.861843
+## 1990  6.400228  6.400228
+## 1991  6.008846  6.008846
+## 1992  5.673287  5.673287
+## 1993  5.382814  5.382814
+## 1994  5.129260  5.129260
+## 1995  4.906306  4.906306
+## 1996  4.708977  4.708977
+## 1997  4.533306  4.533306
+## 1998  4.376096  4.376096
+## 1999  4.234742  4.234742
+## 2000  4.107103  4.107103
+## 2001  3.991399  3.991399
+## 2002  3.886143  3.886143
+## 2003  3.790079  3.790079
+## 2004  3.702145  3.702145
+## 2005  1.889922  1.889922
+## 2006  2.032783  2.032783
+## 2007  2.181310  2.181310
+## 2008  2.332083  2.332083
+## 2009  2.483111  2.483111
+## 2010  2.632889  2.632889
+## 2011  2.780281  2.780281
+## 2012  2.924298  2.924298
+## 2013  3.064027  3.064027
+## 2014  3.198724  3.198724
+## 2015  3.327787  3.327787
+## 2016  3.450746  3.450746
+## 2017  3.567260  3.567260
+## 2018  3.677112  3.677112
+## 2019  3.780198  3.780198
+## 2020  3.876512  3.876512</code></pre>
+<p>Now, taking <span class="math inline">\({CV}_{CN}\)</span>=0.2 we can compare using the following code the catch weight for the first iteration obtained above using <span class="math inline">\({CV}_{CN}\)</span>=0 (black color) with 100 replications computed using <span class="math inline">\({CV}_{CN}\)</span>=0.2 (red color).</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1">IC=<span class="kw">list</span>()</a>
+<a class="sourceLine" id="cb44-2" title="2"></a>
+<a class="sourceLine" id="cb44-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb44-4" title="4">  IC[[i]]=<span class="kw">Sampling_Catch</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;catch weight&quot;</span>,<span class="dt">CV_CN=</span><span class="fl">0.2</span>)</a>
+<a class="sourceLine" id="cb44-5" title="5">}</a>
+<a class="sourceLine" id="cb44-6" title="6"></a>
+<a class="sourceLine" id="cb44-7" title="7"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;C&quot;</span>))<span class="op">$</span>C[,,<span class="dv">1</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;years&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Catch weight&quot;</span>)</a>
+<a class="sourceLine" id="cb44-8" title="8"></a>
+<a class="sourceLine" id="cb44-9" title="9"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb44-10" title="10">  <span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,IC[[i]]<span class="op">$</span>weight[,,<span class="dv">1</span>],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb44-11" title="11">}</a>
+<a class="sourceLine" id="cb44-12" title="12"></a>
+<a class="sourceLine" id="cb44-13" title="13"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;C&quot;</span>))<span class="op">$</span>C[,,<span class="dv">1</span>])</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>We can also compare the catch weight using <span class="math inline">\({CV}_{CN}\)</span>=0 (black color) with the mean of the above 100 replications using <span class="math inline">\({CV}_{CN}\)</span>=0.2 (red color).</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" title="1">a=<span class="kw">matrix</span>(<span class="dv">0</span>,<span class="dt">ncol=</span><span class="dv">100</span>,<span class="dt">nrow=</span><span class="dv">41</span>)</a>
+<a class="sourceLine" id="cb45-2" title="2"></a>
+<a class="sourceLine" id="cb45-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb45-4" title="4">  a[,i]=IC[[i]]<span class="op">$</span>weight[,,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb45-5" title="5">}</a>
+<a class="sourceLine" id="cb45-6" title="6"></a>
+<a class="sourceLine" id="cb45-7" title="7">amean=<span class="kw">rowMeans</span>(a)</a>
+<a class="sourceLine" id="cb45-8" title="8"></a>
+<a class="sourceLine" id="cb45-9" title="9"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;C&quot;</span>))<span class="op">$</span>C[,,<span class="dv">1</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;years&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Catch weight&quot;</span>)</a>
+<a class="sourceLine" id="cb45-10" title="10"></a>
+<a class="sourceLine" id="cb45-11" title="11"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,amean,<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The above plot focus on the deterministic iteration (iter=1) but the plot can be done also for the second iteration (stochastic).</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" title="1"><span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;C&quot;</span>))<span class="op">$</span>C[,,<span class="dv">2</span>],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab =</span> <span class="st">&quot;years&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Catch weight&quot;</span>)</a>
+<a class="sourceLine" id="cb46-2" title="2"></a>
+<a class="sourceLine" id="cb46-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb46-4" title="4">  <span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,IC[[i]]<span class="op">$</span>weight[,,<span class="dv">2</span>],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb46-5" title="5">}</a>
+<a class="sourceLine" id="cb46-6" title="6"></a>
+<a class="sourceLine" id="cb46-7" title="7"><span class="kw">lines</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">41</span>,<span class="kw">Sum.Pop.Mod</span>(Pop.Mod,<span class="kw">c</span>(<span class="st">&quot;C&quot;</span>))<span class="op">$</span>C[,,<span class="dv">2</span>])</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Note that if type=“catch weight” the catch numbers are also reported and you can access as follows.</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" title="1">IC=<span class="kw">Sampling_Catch</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;catch weight&quot;</span>,<span class="dt">CV_CN=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb47-2" title="2"><span class="co">#IC$weight</span></a>
+<a class="sourceLine" id="cb47-3" title="3"><span class="co">#IC$numbers</span></a></code></pre></div>
+</div>
+<div id="length-sample-1" class="section level4">
+<h4>Length sample</h4>
+<p>First of all we need to specify the values of the parameter par not required for catch weight or numbers but important for obtaining the length sample. In this case we fix it as follows.</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1">par=<span class="kw">c</span>(<span class="fl">0.2</span>,<span class="dv">1000</span>,<span class="dv">3000</span>)</a></code></pre></div>
+<p>Below, we compute a stock length sample and a catch length sample for <span class="math inline">\({CV}_{CN}\)</span>=0 and <span class="math inline">\({CV}_{A}\)</span>=0. Then we plot the density of both samples for the first iteration and last year. Note that stock sample density is in black and the catch sample density is in red.</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" title="1">IC=<span class="kw">Sampling_Catch</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;LengthC&quot;</span>,<span class="dt">CV_CN=</span><span class="dv">0</span>,<span class="dt">par=</span>par)</a></code></pre></div>
+<pre><code>## It is working, please give us a while :)</code></pre>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb51-1" title="1">q_A&lt;-<span class="kw">matrix</span>(<span class="dv">1</span>,<span class="dt">ncol=</span><span class="dv">41</span>,<span class="dt">nrow=</span><span class="dv">16</span>);gamma&lt;-<span class="dv">1</span></a>
+<a class="sourceLine" id="cb51-2" title="2">IAS=<span class="kw">Sampling_Survey</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;LengthS&quot;</span>,<span class="dt">q_A=</span>q_A,<span class="dt">gamma=</span>gamma,<span class="dt">CV_A=</span><span class="dv">0</span>,<span class="dt">par=</span>par,<span class="dt">tsampling=</span><span class="dv">0</span>)</a></code></pre></div>
+<pre><code>## It is working, please give us a while :)</code></pre>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb53-1" title="1"><span class="kw">plot</span>(<span class="kw">density</span>(IAS<span class="op">$</span>length[,<span class="dv">41</span>,<span class="dv">1</span>]),<span class="dt">xlab=</span><span class="st">&quot;Length&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Densities of length samples&quot;</span>)</a>
+<a class="sourceLine" id="cb53-2" title="2"><span class="kw">lines</span>(<span class="kw">density</span>(IC<span class="op">$</span>length[,<span class="dv">41</span>,<span class="dv">1</span>]),<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The same plot is carried out in the above code but for <span class="math inline">\({CV}_{CN}\)</span>=0.2 and <span class="math inline">\({CV}_{A}\)</span>=0.2.</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" title="1">par=<span class="kw">c</span>(<span class="fl">0.2</span>,<span class="dv">1000</span>,<span class="dv">3000</span>)</a>
+<a class="sourceLine" id="cb54-2" title="2">IC=<span class="kw">Sampling_Catch</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;LengthC&quot;</span>,<span class="dt">CV_CN=</span><span class="fl">0.2</span>,<span class="dt">par=</span>par)</a></code></pre></div>
+<pre><code>## It is working, please give us a while :)</code></pre>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" title="1">IAS=<span class="kw">Sampling_Survey</span>(<span class="dt">Pop.Mod=</span>Pop.Mod,<span class="dt">type=</span><span class="st">&quot;LengthS&quot;</span>,<span class="dt">q_A=</span>q_A,<span class="dt">gamma=</span>gamma,<span class="dt">CV_A=</span><span class="fl">0.2</span>,<span class="dt">par=</span>par,<span class="dt">tsampling=</span><span class="dv">0</span>)</a></code></pre></div>
+<pre><code>## It is working, please give us a while :)</code></pre>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" title="1"><span class="kw">plot</span>(<span class="kw">density</span>(IAS<span class="op">$</span>length[,<span class="dv">41</span>,<span class="dv">1</span>]),<span class="dt">xlab=</span><span class="st">&quot;Length&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Densities of length samples&quot;</span>)</a>
+<a class="sourceLine" id="cb58-2" title="2"><span class="kw">lines</span>(<span class="kw">density</span>(IC<span class="op">$</span>length[,<span class="dv">41</span>,<span class="dv">1</span>]),<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>As you can see above, the catch length sample can be access using:</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" title="1"><span class="co">#IC$length</span></a></code></pre></div>
+<p>Note that when type=“LengthC”, the catch numbers also reported and can be access using:</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" title="1"><span class="co">#IC$numbers</span></a></code></pre></div>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
