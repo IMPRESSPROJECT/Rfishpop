@@ -12,6 +12,9 @@ install.packages (c("FLAssess", "Flash", "ggplotFL", "FLBRP", "FLCore", repos = 
 
 install.packages (c("ggplot2", "tydiverse", "reshape2", "LBSPR")) # From CRAN
 
+Depending on the R version maybe some package is not available on CRAN in such case
+go to the Github version of such package.
+
 PLEASE DON'T STOP THE PROCESS! IT NEEDS TIME TO CREATE ALSO THE VIGNETTES.
 
 2. Version without vignettes: install_github("IMPRESSPROJECT/Rfishpop") this option is faster and don't need the installation of all the previous packages.
