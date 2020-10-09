@@ -3,6 +3,7 @@ Population dynamic tools in support of fisheries managment
 
 Please restart R after install the package.
 
+Install devtools package: install.packages("devtools") 
 
 USE install_github("IMPRESSPROJECT/Rfishpop", build_vignettes = TRUE) to install the package including the vignettes. 
 
