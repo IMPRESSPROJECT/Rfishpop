@@ -1,7 +1,7 @@
 # Rfishpop
 Population dynamic tools in support of fisheries managment.
 
-First step is to install devtools package using install.packages("devtools"). 
+First step is to install `devtools` package using `install.packages("devtools")`. 
 
 
 There are two options for installing our package:
