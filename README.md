@@ -1,4 +1,7 @@
 # Rfishpop
+
+Authors: Cousido-Rocha, M., Pennino, M.G., Cerviño, S.
+
 Population dynamic tools in support of fisheries managment.
 
 First step is to install devtools package using `install.packages("devtools")`. 
